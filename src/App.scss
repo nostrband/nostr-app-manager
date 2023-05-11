@@ -1,0 +1,14 @@
+// Override default variables before the import
+// $body-bg: #000;
+
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
+
+.App {
+    max-width: 720px;
+//    border: 1px solid #000;
+}
+
+img.profile {
+    border-radius: 5px;
+}
