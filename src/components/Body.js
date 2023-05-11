@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import * as qs from 'native-querystring';
 import platform from 'platform-detect'
+
 import NDK, { NDKFilter, NDKEvent } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools'
+
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -10,8 +12,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+
 import Event from "./Event";
 import NostrApp from "./NostrApp";
+import Index from "./Index";
 
 const apps = [
   {
@@ -181,7 +185,7 @@ function setAppForKind(kind, app) {
 }
 
 function getKindLabel(kind) {
-  let label = "this Nostr event";
+  let label = "Nostr event";
   switch (kind) {
   case 0: label = "profile"; break;
   case 1: label = "note"; break;
@@ -214,11 +218,78 @@ function getRememberLabel(kind, platform) {
 
 const Body = () => {
   const [ndk, setNDK] = useState(null);
-  const [addr, setAddr] = useState(null);
+  const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
+  const [error, setError] = useState("");
   const [kindApps, setKindApps] = useState([]);
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
+
+  const fetch = async (n, addr) => {
+    const filter: NDKFilter = {};
+    if (addr.event_id) {
+      // note, nevent
+      filter.ids = [addr.event_id];
+    } else if (addr.pubkey && addr.d_tag !== undefined && addr.kind !== undefined) {
+      // naddr
+      filter['#d'] = [addr.d_tag];
+      filter.authors = [addr.pubkey];
+      filter.kinds = [addr.kind];
+    } else if (addr.pubkey && addr.kind !== undefined) {
+      // npub, nprofile
+      filter.authors = [addr.pubkey];
+      filter.kinds = [addr.kind];
+    }
+    console.log("loading event by filter", filter);
+ 
+    const reqs = [n.fetchEvent(filter)];
+    if (addr.hex) {
+      const profile_filter: NDKFilter = {
+	kinds: [0],
+	authors: [addr.event_id]
+      };
+      console.log("loading profile by filter", profile_filter);
+      reqs.push(n.fetchEvent(profile_filter));
+    }
+
+    const e = await Promise.any(reqs);
+    console.log("event", e);
+    return e;
+  }
+
+  const getUrl = (app, e) => {
+    if (!e)
+      e = event;
+    let url = e.kind ? app.event_url : app.profile_url;
+
+    if (event?.kind === 0) {
+      const npub = nip19.npubEncode(e.pubkey);
+      const nprofile = nip19.nprofileEncode({ pubkey: e.pubkey, relays: addr.relays });
+      url = url
+	.replaceAll ("{npub}", npub)
+	.replaceAll ("{nprofile}", nprofile)
+	.replaceAll ("{pubkey}", e.pubkey)
+      ;
+    } else if (url) {
+      const note = nip19.noteEncode(e.id);
+      const nevent = nip19.neventEncode({
+	// FIXME add kind!
+	id: e.id, relays: addr.relays, author: e.pubkey });
+      const naddr = nip19.naddrEncode({
+	identifier: addr.d_tag,
+	pubkey: e.pubkey,
+	kind: e.kind,
+	relays: addr.relays
+      });
+      url = url
+	.replaceAll ("{note}", note)
+	.replaceAll ("{nevent}", nevent)
+	.replaceAll ("{naddr}", naddr)
+	.replaceAll ("{event_id}", e.id);
+    }
+
+    return url;
+  };
 
   const init = useCallback(async () => {
     
@@ -226,12 +297,17 @@ const Body = () => {
     if (!params)
     {
       console.log("No params");
+      setAddr(null);
       return;
     }
 
-    const id = params.split('?')[0].split('#')[1];
+    const id = params.split('#')[1].split('?')[0];
     console.log("id", id);
-    // qs.parse('becky=1&jackson=brody&jackson=winnie');
+
+    const q = qs.parse(params.split('?')[1]);
+    console.log("q", q);
+
+    const select = q.select == 'true';
 
     let addr = {
       kind: undefined,
@@ -239,42 +315,48 @@ const Body = () => {
       event_id: undefined,
       d_tag: undefined,
       relays: undefined,
+      hex: false,
     };
 
     try {
       const {type, data} = nip19.decode(id)
 
       switch (type) {
-      case "npub":
-	addr.kind = 0;
-	addr.pubkey = data;
-	break;
-      case "nprofile":
-	addr.kind = 0;
-	addr.pubkey = data.pubkey;
-	addr.relays = data.relays;
-	break;
-      case "note":
-	addr.event_id = data;
-	break;
-      case "nevent":
-	addr.event_id = data.id;
-	addr.relays = data.relays;
-	addr.pubkey = data.author;
-	// FIXME add support for kind to nevent to nostr-tool 
-	break;
-      case "naddr":
-	addr.d_tag = data.identifier || "";
-	addr.kind = data.kind;
-	addr.pubkey = data.pubkey;
-	addr.relays = data.relays;
-	break;
+	case "npub":
+	  addr.kind = 0;
+	  addr.pubkey = data;
+	  break;
+	case "nprofile":
+	  addr.kind = 0;
+	  addr.pubkey = data.pubkey;
+	  addr.relays = data.relays;
+	  break;
+	case "note":
+	  addr.event_id = data;
+	  break;
+	case "nevent":
+	  addr.event_id = data.id;
+	  addr.relays = data.relays;
+	  addr.pubkey = data.author;
+	  // FIXME add support for kind to nevent to nostr-tool 
+	  break;
+	case "naddr":
+	  addr.d_tag = data.identifier || "";
+	  addr.kind = data.kind;
+	  addr.pubkey = data.pubkey;
+	  addr.relays = data.relays;
+	  break;
       }
 
     } catch (e) {
-      console.log("bad id, go home");
-      window.location.href = "/";
-      return;
+      if (id.length == 64) {
+	addr.event_id = id;
+	addr.hex = true;
+      } else {
+	console.log("bad id, go home");
+	setError("Failed to parse link " + id);
+	return;
+      }
     }
     
     console.log("addr", addr);
@@ -282,11 +364,11 @@ const Body = () => {
 
     let app = null;
     if (addr.kind !== undefined) {
-      console.log("know kind, get the app from local store");
-      app = getAppForKind(addr.kind);
+      const pubkey = getAppForKind(addr.kind);
+      console.log("kind", event.kind, "app_pubkey", pubkey);
     }
 
-    if (!app || addr.kind === undefined) {
+    if (select || !app || addr.kind === undefined) {
       const relays = ["wss://relay.nostr.band", "wss://nos.lol", "wss://nostr.mutinywallet.com"];
       if (addr.relays)
 	relays.push(...addr.relays);
@@ -295,40 +377,37 @@ const Body = () => {
       console.log("ndk connecting...");
       await n.connect();
 
-      console.log("loading event");
-      const filter: NDKFilter = {};
-      if (addr.event_id) {
-	// note, nevent
-	filter.ids = [addr.event_id];
-      } else if (addr.pubkey && addr.d_tag !== undefined && addr.kind !== undefined) {
-	// naddr
-	filter['#d'] = [addr.d_tag];
-	filter.authors = [addr.pubkey];
-	filter.kinds = [addr.kind];
-      } else if (addr.pubkey && addr.kind !== undefined) {
-	// npub, nprofile
-	filter.authors = [addr.pubkey];
-	filter.kinds = [addr.kind];
+      const e = await fetch(n, addr);
+      if (e) {
+	const pubkey = getAppForKind(e.kind);
+	console.log("kind", e.kind, "app_pubkey", pubkey, "select", select);
+	if (!select) {
+	  for (const a of apps) {
+	    if (a.pubkey == pubkey) {
+	      //	      window.location.href = getUrl(a, e);
+	      console.log("Auto url", getUrl(a, e));
+	    }
+	  }
+	}
+
+	// update the addr?
+	addr.kind = e.kind;
+	addr.event_id = e.id;
+	addr.pubkey = e.pubkey;
+
+	// get author?
+	const author = n.getUser({
+	  hexpubkey: e.pubkey
+	});
+	await author.fetchProfile();
+	console.log("author", author.profile);
+	e.author = author.profile;
+
+	// set state w/ author
+	setEvent(e);
+      } else {
+	setError("Failed to find the event " + id);
       }
-      console.log("filter", filter);
-      
-      const e = await n.fetchEvent(filter);
-      console.log("event", e);
-
-      const author = n.getUser({
-	hexpubkey: e.pubkey
-      });
-      await author.fetchProfile();
-      console.log("author", author.profile);
-      e.author = author.profile;
-
-      setEvent(e);
-
-      // FIXME now get the list of apps,
-      // ideally download app lists from friends and suggest something,
-      // but fallback to this centrally-maintained list if nothing useful is found
-
-      addr.kind = e.kind;
     }
 
     let appPlatform = "desktop";
@@ -340,87 +419,90 @@ const Body = () => {
       appPlatform = "macos";
     setEnv ({appPlatform});
     
-    if (app) {
-      console.log("selected app", app, apps[app]);
-    } else {
-      let ka = [];
-      for (const a of apps) {
-	if (!a.kinds.includes (addr.kind))
-	  continue;
+    let ka = [];
+    for (const a of apps) {
+      if (!a.kinds.includes (addr.kind))
+	continue;
 
-	if (!a.platforms.includes (appPlatform) && !a.platforms.includes ("web"))
-	  continue;
-	
-	ka.push(a);
-      }
-      setKindApps(ka);
+      if (!a.platforms.includes (appPlatform) && !a.platforms.includes ("web"))
+	continue;
+
+      ka.push(a);
     }
+    setKindApps(ka);
     
-  /* Somehow get the kind for this event,
-     then determine the app to be used for it,
-     then if we've got the app set up - redirect to the one from our settings,
-     otherwise render the event and ask to choose the app
-   */
+    /* Somehow get the kind for this event,
+       then determine the app to be used for it,
+       then if we've got the app set up - redirect to the one from our settings,
+       otherwise render the event and ask to choose the app
+     */
   }, []);
-  
-  const update = (e) => {
-    console.log("update", e);
-    init().catch(console.error);
-  };
 
   // on the start
   useEffect(() => {
     init().catch(console.error);
-
-    window.addEventListener("popstate",(e) => update(e));
+    window.addEventListener("popstate",(e) => { init().catch(console.error); });
   }, [init]);
+
+  // homepage
+  if (addr === null) {
+    return (
+      <Index />
+    )
+  }
+
+  const onSelect = (a) => {
+    console.log("select", a);
+    if (remember)
+      setAppForKind(event.kind, a.pubkey);
+  };
 
   const label = getRememberLabel(event?.kind, env?.appPlatform);
   return (
-      <main className="mt-5">
+    <main className="mt-5">
       <div>
-      <h2>Choose a Nostr app for this {getKindLabel(event?.kind)}:</h2>
-      {(event && (
-	<div>
-	  <Event event={event} />
-	</div>
-      )) || "Loading..."}</div>
+	<h2>Choose a Nostr app for this {getKindLabel(event?.kind)}:</h2>
+	{(event && (
+	  <div>
+	    <Event event={event} />
+	  </div>
+	)) || error || "Loading..."}</div>
       <div className="mt-5">
-      <h2>Suggested Nostr apps:</h2>
-      <Form>
-      <Form.Check 
-        type="switch"
-        id="remember-app"
-        checked={remember ? "checked" : ""}
-        onChange={e => setRemember(e.target.checked)}
-        label={label}
-    style={{display: "inline-block"}}
-      />
-      <OverlayTrigger
-        placement="top"
-        overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
-      >
-      {({ ref, ...triggerHandler }) => (
-      <i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
-      )}
-      </OverlayTrigger>
-      </Form>
-      <ListGroup>
-      {kindApps?.map(a => (
-	  <NostrApp key={a.pubkey} app={a} event={event} addr={addr} />
-      ))}
-      </ListGroup>
+	<h2>Suggested apps:</h2>
+	<Form>
+	  <Form.Check
+            type="switch"
+            id="remember-app"
+            checked={remember ? "checked" : ""}
+            onChange={e => setRemember(e.target.checked)}
+            label={label}
+            style={{display: "inline-block"}}
+	  />
+	  <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
+	  >
+	    {({ ref, ...triggerHandler }) => (
+	      <i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
+	    )}
+	  </OverlayTrigger>
+	</Form>
+	<ListGroup>
+	  {kindApps?.map(a => (
+	    <NostrApp key={a.pubkey} app={a} getUrl={getUrl} select={onSelect} />
+	  ))}
+	</ListGroup>
       </div>
       <div className="mt-5">
-      <h2>New here?</h2>
-      <Button href="/about" size="lg" variant="outline-primary">What is Nostrapp.Link?</Button>
+	<h2>New here?</h2>
+	<Button href="/about" size="lg" variant="outline-primary">What is NostrApp.Link?</Button>
       </div>
       <div className="mt-5">
-      <h2>New to Nostr?</h2>      
-      <Button href="https://nosta.me" size="lg" variant="outline-primary">Get started</Button>
-      <Button href="https://heynostr.com" size="lg" variant="outline-secondary" className="ms-2">Learn more</Button>
+	<h2>New to Nostr?</h2>
+	<Button href="https://nosta.me" size="lg" variant="outline-primary">Get started</Button>
+	<Button href="https://heynostr.com" size="lg" variant="outline-secondary" className="ms-2">Learn more</Button>
       </div>
-      </main>
+    </main>
   );
 };
 
