@@ -13,18 +13,18 @@ const EventProfile = (props) => {
     console.log(e);
   }
   return (
-      <Container className="ps-0 pe-0">
+    <Container className="ps-0 pe-0">
       <Profile profile={author} />
       <Row>
-      <Col xs={12}>
-      {profile?.about}
-      </Col>
-      {(profile?.website && ( <Col xs={12}>Website: <a href={profile.website}>{profile.website}</a></Col> ))}
-      <Col xs={12}>
-      <small className="text-muted">{(new Date(event.created_at * 1000)).toLocaleString()}</small>
-      </Col>
+	<Col xs={12}>
+	  {profile?.about}
+	</Col>
+	{(profile?.website && ( <Col xs={12}>Website: <a href={profile.website}>{profile.website}</a></Col> ))}
+	<Col xs={12}>
+	  <small className="text-muted">{(new Date(event.created_at * 1000)).toLocaleString()}</small>
+	</Col>
       </Row>
-      </Container>
+    </Container>
   )
 }
 
