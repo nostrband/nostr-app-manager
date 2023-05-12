@@ -1,14 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from "react-query";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ThemeProvider from 'react-bootstrap/ThemeProvider'
+import { IntlProvider } from "./IntlProvider";
 
-import './index.css';
+import './index.scss';
 import App from './App';
+import About from './About';
 import reportWebVitals from './reportWebVitals';
+
+const HTTP = new QueryClient();
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />
+  },
+  {
+    path: "/about",
+    element: <About />
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={HTTP}>
+      <IntlProvider>
+	<ThemeProvider>
+          <RouterProvider router={router} />
+	</ThemeProvider>
+      </IntlProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

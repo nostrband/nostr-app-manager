@@ -1,5 +1,3 @@
-import Button from 'react-bootstrap/Button';
-
 const Header = () => {
   return (
     <header>

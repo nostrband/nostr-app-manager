@@ -23,7 +23,7 @@ const Index = () => {
     try {
       const {type, data} = nip19.decode(a[0])
       console.log("nip19", a[0], type, data);
-      if (type + "1" == p)
+      if (type + "1" === p)
 	return a[0];
     }
     catch (e) {
@@ -40,7 +40,7 @@ const Index = () => {
 	    || get ("nevent1", link)
 	    || get ("nprofile1", link)
 	    || get ("naddr1", link)
-	    || (link.length == 64 ? link : "")
+	    || (link.length === 64 ? link : "")
     ;
 
     console.log("id", id);
@@ -55,7 +55,7 @@ const Index = () => {
 	<h4 className="text-muted">Discover Nostr apps, assign apps to event kinds,
 	  recommend apps to your followers.
 	</h4>
-	<Button variant="outline-primary">Learn more</Button>
+	<Button variant="outline-primary" href="/about">Learn more</Button>
       </div>
 
       <div className="mt-5">
