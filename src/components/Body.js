@@ -2,14 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import * as qs from 'native-querystring';
 import platform from 'platform-detect'
 
-import NDK, { NDKFilter, NDKEvent } from "@nostr-dev-kit/ndk";
+import NDK, { NDKFilter } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools'
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
@@ -185,34 +183,36 @@ function setAppForKind(kind, app) {
 }
 
 function getKindLabel(kind) {
-  let label = "Nostr event";
+  let label = "";
   switch (kind) {
-  case 0: label = "profile"; break;
-  case 1: label = "note"; break;
-  case 30023: label = "post"; break;
-  case 9802: label = "highlight"; break;
-  case 31337: label = "audio track"; break;
-  case 30000: label = "profile list"; break;
-  case 30001: label = "bookmark list"; break;
+    case 0: label = "profile"; break;
+    case 1: label = "note"; break;
+    case 30023: label = "post"; break;
+    case 9802: label = "highlight"; break;
+    case 31337: label = "audio track"; break;
+    case 30000: label = "profile list"; break;
+    case 30001: label = "bookmark list"; break;
+    default: label = "Nostr event"; break;
   }
   return label;
 }
 
 function getRememberLabel(kind, platform) {
-  let label = "these Nostr events";
+  let label = "";
   switch (kind) {
-  case 0: label = "profiles"; break;
-  case 1: label = "notes"; break;
-  case 30023: label = "posts"; break;
-  case 9802: label = "highlights"; break;
-  case 31337: label = "audio tracks"; break;
-  case 30000: label = "profile lists"; break;
-  case 30001: label = "bookmark lists"; break;
+    case 0: label = "profiles"; break;
+    case 1: label = "notes"; break;
+    case 30023: label = "posts"; break;
+    case 9802: label = "highlights"; break;
+    case 31337: label = "audio tracks"; break;
+    case 30000: label = "profile lists"; break;
+    case 30001: label = "bookmark lists"; break;
+    default: label = "these Nostr events"; break;
   }
   return  (
-      <>
+    <>
       Remember chosen app for <b>{label}</b> on <b>{platform || "all devices"}</b>
-      </>
+    </>
   )
 }
 
@@ -307,7 +307,7 @@ const Body = () => {
     const q = qs.parse(params.split('?')[1]);
     console.log("q", q);
 
-    const select = q.select == 'true';
+    const select = q.select === 'true';
 
     let addr = {
       kind: undefined,
@@ -346,10 +346,11 @@ const Body = () => {
 	  addr.pubkey = data.pubkey;
 	  addr.relays = data.relays;
 	  break;
+	default: throw "bad id";
       }
 
     } catch (e) {
-      if (id.length == 64) {
+      if (id.length === 64) {
 	addr.event_id = id;
 	addr.hex = true;
       } else {
@@ -365,7 +366,7 @@ const Body = () => {
     let app = null;
     if (addr.kind !== undefined) {
       const pubkey = getAppForKind(addr.kind);
-      console.log("kind", event.kind, "app_pubkey", pubkey);
+      console.log("kind", addr.kind, "app_pubkey", pubkey);
     }
 
     if (select || !app || addr.kind === undefined) {
@@ -383,7 +384,7 @@ const Body = () => {
 	console.log("kind", e.kind, "app_pubkey", pubkey, "select", select);
 	if (!select) {
 	  for (const a of apps) {
-	    if (a.pubkey == pubkey) {
+	    if (a.pubkey === pubkey) {
 	      //	      window.location.href = getUrl(a, e);
 	      console.log("Auto url", getUrl(a, e));
 	    }
@@ -411,11 +412,11 @@ const Body = () => {
     }
 
     let appPlatform = "desktop";
-    if (platform.os == "android")
+    if (platform.os === "android")
       appPlatform = "android";
-    else if (platform.os == "ios")
+    else if (platform.os === "ios")
       appPlatform = "ios";
-    else if (platform.os == "macos")
+    else if (platform.os === "macos")
       appPlatform = "macos";
     setEnv ({appPlatform});
     
