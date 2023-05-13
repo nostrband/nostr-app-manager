@@ -72,16 +72,17 @@ const Index = () => {
     const platform = cmn.getPlatform();
     const aps = cmn.readAppSettings();
     const appKinds = {};
-    for (const [kind, kas] of Object.entries(aps.kinds)) {
-      if (platform in kas.platforms) {
-	const pubkey = kas.platforms[platform].app;
-	if (!(pubkey in appKinds))
-	  appKinds[pubkey] = [kind];
-	else
-	  appKinds[pubkey].push(kind);
+    if (aps && aps.kinds) {
+      for (const [kind, kas] of Object.entries(aps.kinds)) {
+	if (platform in kas.platforms) {
+	  const pubkey = kas.platforms[platform].app;
+	  if (!(pubkey in appKinds))
+	    appKinds[pubkey] = [kind];
+	  else
+	    appKinds[pubkey].push(kind);
+	}
       }
     }
-
     const apps = [];
     for (const pubkey in appKinds) {
       for (const app of cmn.apps) {
@@ -180,13 +181,6 @@ const Index = () => {
       </div>
 
       <div className="mt-5">
-	<h3>What is Nostr App Manager?</h3>
-	Discover Nostr apps, assign apps to event kinds,
-	recommend apps to your followers.
-	<Button variant="outline-primary" href="/about">Learn more</Button>
-      </div>
-
-      <div className="mt-5">
 	<h3>Apps used on this device:</h3>
 	<Container className="ps-0 pe-0">
 	  <Row>
@@ -208,11 +202,28 @@ const Index = () => {
 	</Container>
       </div>
 
+      <div className="mt-5">
+	<h3>What is Nostr App Manager?</h3>
+	Discover Nostr apps, assign apps to event kinds,
+	recommend apps to your followers.
+	<Button variant="outline-primary" href="/about">Learn more</Button>
+      </div>
+
+      <div className="mt-5">
+	<h3>How are apps selected?</h3>
+	<Container className="ps-0 pe-0">
+	  <Row>
+	    <Col>
+	    </Col>
+	  </Row>
+	</Container>
+      </div>
+      
       <Modal show={editShow} onHide={handleEditClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit app</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+	<Modal.Header closeButton>
+	  <Modal.Title>Edit app</Modal.Title>
+	</Modal.Header>
+	<Modal.Body>
 	  <ListGroup>
 	    <NostrApp app={editApp} />
 	  </ListGroup>
@@ -234,14 +245,14 @@ const Index = () => {
 	    })}
 	  </ListGroup>
 	</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleEditClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleEditSave}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
+	<Modal.Footer>
+	  <Button variant="secondary" onClick={handleEditClose}>
+	    Close
+	  </Button>
+	  <Button variant="primary" onClick={handleEditSave}>
+	    Save Changes
+	  </Button>
+	</Modal.Footer>
       </Modal>
       
     </main>
