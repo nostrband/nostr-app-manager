@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import * as qs from 'native-querystring';
-import platform from 'platform-detect'
 
 import NDK, { NDKFilter } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools'
@@ -15,215 +14,26 @@ import Event from "./Event";
 import NostrApp from "./NostrApp";
 import Index from "./Index";
 
-const apps = [
-  {
-    pubkey: "damus",
-    name: "Damus",
-    picture: "https://damus.io/favicon.ico",
-    profile_url: "damus:{npub}",
-    event_url: "damus:{note}",
-    platforms: ["ios","macos"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "amethyst",
-    name: "Amethyst",
-    picture: "https://github.com/vitorpamplona/amethyst/raw/main/fastlane/metadata/android/en-US/images/icon.png",
-    platforms: ["android"],
-    profile_url: "nostr:{nprofile}",
-    event_url: "nostr:{nevent}",
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "snort",
-    name: "Snort",
-    profile_url: "https://snort.social/p/{npub}",
-    event_url: "https://snort.social/e/{nevent}",
-    picture: "https://nostr.band/snort.png",
-    platforms: ["web","android"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "iris",
-    name: "Iris",
-    profile_url: "https://iris.to/#/profile/{npub}",
-    event_url: "https://iris.to/#/post/{note}",
-    picture: "https://iris.to/favicon.ico",
-    platforms: ["web","android"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "primal",
-    name: "Primal",
-    profile_url: "https://primal.net/profile/{npub}",
-    event_url: "https://primal.net/thread/{note}",
-    picture: "https://primal.net/assets/favicon-66add1cc.ico",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "astral",
-    name: "Astral",
-    profile_url: `https://astral.ninja/{npub}`,
-    event_url: `https://astral.ninja/{note}`,
-    picture: "https://astral.ninja/favicon.ico",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "coracle",
-    name: "Coracle",
-    profile_url: "https://coracle.social/{nprofile}",
-    event_url: "https://coracle.social/{nevent}",
-    picture: "https://coracle.social/images/favicon.png",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "nostrgram",
-    name: "NostrGram",
-    profile_url: "https://nostrgram.co/#profile:allMedia:{pubkey}",
-    event_url: "https://nostrgram.co/#thread:{event_id}:{event_id}",
-    picture: "https://nostrgram.co/images/logo_new_icon.ico",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "satellite",
-    name: "Satellite.Earth",
-    profile_url: "https://satellite.earth/@{npub}",
-    event_url: "https://satellite.earth/thread/{note}",
-    picture: "https://satellite.earth/favicon.ico",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  // ...
-  {
-    pubkey: "habla",
-    name: "Habla.News",
-    about: "Long-form posts on Nostr",
-    profile_url: "https://habla.news/u/{nprofile}",
-    event_url: "https://habla.news/a/{naddr}",
-    picture: "https://habla.news/favicon.ico",
-    platforms: ["web"],
-    kinds: [0, 30023],
-  },
-  {
-    pubkey: "zapstr",
-    name: "Zapstr.Live",
-    about: "Music app on Nostr",
-    picture: "https://www.iconarchive.com/download/i50332/ncrow/mega-pack-2/Winamp.ico",
-    profile_url: "https://zapstr.live/{npub}/tracks",
-    event_url: "https://zapstr.live/?track={naddr}",
-    platforms: ["web"],
-    kinds: [0, 31337],
-  },
-  {
-    pubkey: "highlighter",
-    name: "Highlighter",
-    about: "Highlight any content and share on Nostr",
-    event_url: "https://highlighter.com/e/{note}",
-    picture: "https://highlighter.com/favicon.png",
-    platforms: ["web"],
-    kinds: [9802],
-  },
-  {
-    pubkey: "nostr_band",
-    name: "Nostr.Band",
-    about: "Search engine for Nostr",
-    picture: "https://nostr.band/favicon.ico",
-    profile_url: "https://nostr.band/{npub}",
-    event_url: "https://nostr.band/{note}",
-    platforms: ["web"],
-    kinds: [0, 1],
-  },
-  {
-    pubkey: "listr",
-    name: "Listr.Lol",
-    about: "List management app",
-    profile_url: "https://listr.lol/{npub}",
-    event_url: "https://listr.lol/a/{naddr}",
-    platforms: ["web"],
-    kinds: [30000, 30001],
-  }
-];
-
-function localGet(key) {
-  try
-  {
-    if (localStorage)
-      return localStorage.getItem(key);
-    else
-      return sessionStorage.getItem(key);
-  }
-  catch (e)
-  {
-    return null;
-  }
-}
-
-function localSet(key, value) {
-  try
-  {
-    if (localStorage)
-      localStorage.setItem(key, value);
-    else
-      sessionStorage.setItem(key, value);
-  }
-  catch (e)
-  {}
-}
-
-function getAppForKind(kind) {
-  return localGet("app"+kind);
-}
-
-function setAppForKind(kind, app) {
-  localSet("app"+kind, app);
-}
-
-function getKindLabel(kind) {
-  let label = "";
-  switch (kind) {
-    case 0: label = "profile"; break;
-    case 1: label = "note"; break;
-    case 30023: label = "post"; break;
-    case 9802: label = "highlight"; break;
-    case 31337: label = "audio track"; break;
-    case 30000: label = "profile list"; break;
-    case 30001: label = "bookmark list"; break;
-    default: label = "Nostr event"; break;
-  }
-  return label;
-}
-
-function getRememberLabel(kind, platform) {
-  let label = "";
-  switch (kind) {
-    case 0: label = "profiles"; break;
-    case 1: label = "notes"; break;
-    case 30023: label = "posts"; break;
-    case 9802: label = "highlights"; break;
-    case 31337: label = "audio tracks"; break;
-    case 30000: label = "profile lists"; break;
-    case 30001: label = "bookmark lists"; break;
-    default: label = "these Nostr events"; break;
-  }
-  return  (
-    <>
-      Remember chosen app for <b>{label}</b> on <b>{platform || "all devices"}</b>
-    </>
-  )
-}
+import * as cmn from "../common"
 
 const Body = () => {
   const [ndk, setNDK] = useState(null);
   const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
+  const [appSettings, setAppSettings] = useState({});
   const [kindApps, setKindApps] = useState([]);
+  const [savedApp, setSavedApp] = useState("");
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
+
+  const getApp = (pubkey) => {
+    for (const a of cmn.apps) {
+      if (a.pubkey === pubkey)
+	return a;
+    }
+    return null;
+  };
 
   const fetch = async (n, addr) => {
     const filter: NDKFilter = {};
@@ -240,7 +50,7 @@ const Body = () => {
       filter.authors = [addr.pubkey];
       filter.kinds = [addr.kind];
     }
-    console.log("loading event by filter", filter);
+    // console.log("loading event by filter", filter);
  
     const reqs = [n.fetchEvent(filter)];
     if (addr.hex) {
@@ -248,7 +58,7 @@ const Body = () => {
 	kinds: [0],
 	authors: [addr.event_id]
       };
-      console.log("loading profile by filter", profile_filter);
+      // console.log("loading profile by filter", profile_filter);
       reqs.push(n.fetchEvent(profile_filter));
     }
 
@@ -257,35 +67,39 @@ const Body = () => {
     return e;
   }
 
-  const getUrl = (app, e) => {
-    if (!e)
-      e = event;
-    let url = e.kind ? app.event_url : app.profile_url;
+  const getUrl = (app, ad) => {
+    if (!ad)
+      ad = addr;
 
-    if (event?.kind === 0) {
-      const npub = nip19.npubEncode(e.pubkey);
-      const nprofile = nip19.nprofileEncode({ pubkey: e.pubkey, relays: addr.relays });
+    let url = ad.kind ? app.event_url : app.profile_url;
+    if (ad?.kind === 0) {
+      const npub = nip19.npubEncode(ad.pubkey);
+      const nprofile = nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays });
       url = url
 	.replaceAll ("{npub}", npub)
 	.replaceAll ("{nprofile}", nprofile)
-	.replaceAll ("{pubkey}", e.pubkey)
+	.replaceAll ("{pubkey}", ad.pubkey)
       ;
     } else if (url) {
-      const note = nip19.noteEncode(e.id);
-      const nevent = nip19.neventEncode({
-	// FIXME add kind!
-	id: e.id, relays: addr.relays, author: e.pubkey });
-      const naddr = nip19.naddrEncode({
-	identifier: addr.d_tag,
-	pubkey: e.pubkey,
-	kind: e.kind,
-	relays: addr.relays
-      });
-      url = url
-	.replaceAll ("{note}", note)
-	.replaceAll ("{nevent}", nevent)
-	.replaceAll ("{naddr}", naddr)
-	.replaceAll ("{event_id}", e.id);
+      if (ad.kind >= 30000 && ad.kind < 40000) {
+	const naddr = nip19.naddrEncode({
+	  identifier: ad.d_tag || "",
+	  pubkey: ad.pubkey,
+	  kind: ad.kind,
+	  relays: ad.relays
+	});
+	url = url
+	  .replaceAll ("{naddr}", naddr);
+      } else if (ad.event_id) {
+	const note = nip19.noteEncode(ad.event_id);
+	const nevent = nip19.neventEncode({
+	  // FIXME add kind!
+	  id: ad.event_id, relays: ad.relays, author: ad.pubkey });
+	url = url
+	  .replaceAll ("{note}", note)
+	  .replaceAll ("{nevent}", nevent)
+	  .replaceAll ("{event_id}", ad.event_id);
+      }
     }
 
     return url;
@@ -298,6 +112,7 @@ const Body = () => {
     {
       console.log("No params");
       setAddr(null);
+      setEvent(null);
       return;
     }
 
@@ -305,7 +120,7 @@ const Body = () => {
     console.log("id", id);
 
     const q = qs.parse(params.split('?')[1]);
-    console.log("q", q);
+//    console.log("q", q);
 
     const select = q.select === 'true';
 
@@ -360,16 +175,33 @@ const Body = () => {
       }
     }
     
-    console.log("addr", addr);
-    setAddr(addr);
+    const appPlatform = cmn.getPlatform();
 
-    let app = null;
+    // load local settings
+    const appSettings = cmn.readAppSettings();
+    console.log("appSettings", appSettings);
+
+    // do we have an app from settings?
+    let savedApp = "";
     if (addr.kind !== undefined) {
-      const pubkey = getAppForKind(addr.kind);
-      console.log("kind", addr.kind, "app_pubkey", pubkey);
+      savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
+//      console.log("kind", addr.kind, "app_pubkey", savedApp);
+      if (!select) {
+	const app = getApp(savedApp);
+	if (app) {
+	  const url = getUrl(app, addr);
+	  console.log("Auto redirect url", url);
+	  window.location.href = url;
+	  return;
+	}
+      }
+
+      // clear
+      savedApp = "";
     }
 
-    if (select || !app || addr.kind === undefined) {
+    let event = null;
+    if (select || !savedApp || addr.kind === undefined) {
       const relays = ["wss://relay.nostr.band", "wss://nos.lol", "wss://nostr.mutinywallet.com"];
       if (addr.relays)
 	relays.push(...addr.relays);
@@ -378,65 +210,80 @@ const Body = () => {
       console.log("ndk connecting...");
       await n.connect();
 
-      const e = await fetch(n, addr);
-      if (e) {
-	const pubkey = getAppForKind(e.kind);
-	console.log("kind", e.kind, "app_pubkey", pubkey, "select", select);
-	if (!select) {
-	  for (const a of apps) {
-	    if (a.pubkey === pubkey) {
-	      //	      window.location.href = getUrl(a, e);
-	      console.log("Auto url", getUrl(a, e));
+      event = await fetch(n, addr);
+      if (event) {
+
+	// update the addr
+	addr.kind = event.kind;
+	addr.event_id = event.id;
+	addr.pubkey = event.pubkey;
+	if (event.kind >= 30000 && event.kind < 40000) {
+	  for (let t of event.tags) {
+	    if (t.length > 1 && t[0] === 'd') {
+	      addr.d_tag = t[1];
+	      break;
 	    }
 	  }
 	}
+	console.log("event addr", addr);
 
-	// update the addr?
-	addr.kind = e.kind;
-	addr.event_id = e.id;
-	addr.pubkey = e.pubkey;
+	savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
+	if (!select) {
+	  const app = getApp(savedApp);
+	  if (app) {
+	    const url = getUrl(app, addr);
+	    console.log("Auto redirect url", url);
+	    window.location.href = url;
+	    return;
+	  }
+	}
 
 	// get author?
 	const author = n.getUser({
-	  hexpubkey: e.pubkey
+	  hexpubkey: event.pubkey
 	});
 	await author.fetchProfile();
-	console.log("author", author.profile);
-	e.author = author.profile;
+	// console.log("author", author.profile);
+	event.author = author.profile;
 
-	// set state w/ author
-	setEvent(e);
       } else {
 	setError("Failed to find the event " + id);
       }
     }
-
-    let appPlatform = "desktop";
-    if (platform.os === "android")
-      appPlatform = "android";
-    else if (platform.os === "ios")
-      appPlatform = "ios";
-    else if (platform.os === "macos")
-      appPlatform = "macos";
-    setEnv ({appPlatform});
     
-    let ka = [];
-    for (const a of apps) {
-      if (!a.kinds.includes (addr.kind))
-	continue;
-
+    let kindApps = [];
+    for (const a of cmn.apps) {
       if (!a.platforms.includes (appPlatform) && !a.platforms.includes ("web"))
 	continue;
 
-      ka.push(a);
+      if (a.kinds.includes (addr.kind)) {
+	kindApps.push(a);
+      } else {
+	for (const k of a.kinds) {
+	  if (typeof k !== "string")
+	    continue;
+
+	  const range = k.split("-");
+	  if (range.length == 1 && (addr.kind + "") == k) {
+	    kindApps.push(a);
+	  } else {
+	    if ((!range[0].length || Number(range[0]) <= addr.kind)
+		&& (!range[1].length || Number(range[1]) >= addr.kind)) {
+	      kindApps.push(a);
+	    }
+	  }
+	}
+      }
     }
-    setKindApps(ka);
+
+    setAddr(addr);
+    setEvent(event);
+    setSavedApp(savedApp);
+    setKindApps(kindApps);
+    setRemember(!savedApp || !getApp(savedApp));
+    setAppSettings(appSettings);
+    setEnv ({appPlatform});
     
-    /* Somehow get the kind for this event,
-       then determine the app to be used for it,
-       then if we've got the app set up - redirect to the one from our settings,
-       otherwise render the event and ask to choose the app
-     */
   }, []);
 
   // on the start
@@ -452,22 +299,47 @@ const Body = () => {
     )
   }
 
+  // save the app in local settings for this platform
   const onSelect = (a) => {
     console.log("select", a);
-    if (remember)
-      setAppForKind(event.kind, a.pubkey);
+    if (!remember)
+      return;
+
+    if (!appSettings.kinds)
+      appSettings.kinds = {};
+    if (!appSettings.kinds[event.kind])
+      appSettings.kinds[event.kind] = {};
+    if (!appSettings.kinds[event.kind].platforms)
+      appSettings.kinds[event.kind].platforms = {};
+    if (!appSettings.kinds[event.kind].platforms[env.appPlatform])
+      appSettings.kinds[event.kind].platforms[env.appPlatform] = {};
+    appSettings.kinds[event.kind].platforms[env.appPlatform].app = a.pubkey;
+
+    cmn.writeAppSettings(appSettings);
   };
 
-  const label = getRememberLabel(event?.kind, env?.appPlatform);
+  const app = savedApp ? getApp(savedApp) : null;
+
   return (
     <main className="mt-5">
       <div>
-	<h2>Choose a Nostr app for this {getKindLabel(event?.kind)}:</h2>
+	<h2>Choose a Nostr app to view {cmn.getKindLabel(event?.kind)}:</h2>
 	{(event && (
 	  <div>
 	    <Event event={event} />
 	  </div>
-	)) || error || "Loading..."}</div>
+	)) || error || "Loading..."}
+      </div>
+
+      {(app && (
+	<div className="mt-5">
+	  <h2>Saved app:</h2>
+	  <ListGroup>
+	    <NostrApp key={app.pubkey} app={app} getUrl={getUrl} select={onSelect} />
+	  </ListGroup>
+	</div>
+      ))}
+
       <div className="mt-5">
 	<h2>Suggested apps:</h2>
 	<Form>
@@ -476,7 +348,7 @@ const Body = () => {
             id="remember-app"
             checked={remember ? "checked" : ""}
             onChange={e => setRemember(e.target.checked)}
-            label={label}
+            label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
             style={{display: "inline-block"}}
 	  />
 	  <OverlayTrigger
@@ -489,19 +361,20 @@ const Body = () => {
 	  </OverlayTrigger>
 	</Form>
 	<ListGroup>
-	  {kindApps?.map(a => (
-	    <NostrApp key={a.pubkey} app={a} getUrl={getUrl} select={onSelect} />
-	  ))}
+	  {kindApps?.map(a => {
+	    if (!app || a.pubkey != app.pubkey)
+	      return <NostrApp key={a.pubkey} app={a} getUrl={getUrl} select={onSelect} />
+	  })}
 	</ListGroup>
       </div>
       <div className="mt-5">
 	<h2>New here?</h2>
-	<Button href="/about" size="lg" variant="outline-primary">What is NostrApp.Link?</Button>
+	<Button href="/about" size="lg" variant="outline-primary">Learn about Nostr App Manager</Button>
       </div>
       <div className="mt-5">
 	<h2>New to Nostr?</h2>
 	<Button href="https://nosta.me" size="lg" variant="outline-primary">Get started</Button>
-	<Button href="https://heynostr.com" size="lg" variant="outline-secondary" className="ms-2">Learn more</Button>
+	<Button href="https://www.heynostr.com" size="lg" variant="outline-secondary" className="ms-2">Learn more</Button>
       </div>
     </main>
   );

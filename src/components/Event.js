@@ -21,7 +21,7 @@ const Event = (props) => {
 	<Profile profile={event.author} />
 	<Row>
 	  <Col xs={12}>
-	    <p>{event.content}</p>
+	    <p>{event.content.length > 1000 ? event.content.substring(0, 1000) + "..." : event.content}</p>
 	  </Col>
 	  <Col xs={12}>
 	    <small className="text-muted">Id: <b>{event.id}</b>
