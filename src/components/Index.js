@@ -135,7 +135,7 @@ const Index = () => {
     <main className="mt-5">
 
       <div className="mt-5">
-	<h1>Looking for an app to open a Nostr link?</h1>
+	<h1>Paste a Nostr link to find an app:</h1>
 	<Container className="ps-0 pe-0">
 	  <Row>
 	    <Col>
@@ -194,7 +194,7 @@ const Index = () => {
 	      )}
 	      {!apps.length && (
 		<>
-		  No apps saved yet. Paste a link to a nostr event above to setup your first app.
+		  No apps saved yet. Paste a link or event id to setup your first app.
 		</>
 	      )}
 	    </Col>
@@ -214,6 +214,7 @@ const Index = () => {
 	<Container className="ps-0 pe-0">
 	  <Row>
 	    <Col>
+	      <p>Application discovery NIP is coming soon, stay tuned.</p>
 	    </Col>
 	  </Row>
 	</Container>
