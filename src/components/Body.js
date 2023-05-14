@@ -89,7 +89,8 @@ const Body = () => {
 	  relays: ad.relays
 	});
 	url = url
-	  .replaceAll ("{naddr}", naddr);
+	  .replaceAll ("{naddr}", naddr)
+	  .replaceAll ("{addr}", naddr);
       } else if (ad.event_id) {
 	const note = nip19.noteEncode(ad.event_id);
 	const nevent = nip19.neventEncode({
@@ -98,6 +99,7 @@ const Body = () => {
 	url = url
 	  .replaceAll ("{note}", note)
 	  .replaceAll ("{nevent}", nevent)
+	  .replaceAll ("{addr}", nevent)
 	  .replaceAll ("{event_id}", ad.event_id);
       }
     }
@@ -264,7 +266,7 @@ const Body = () => {
 	    continue;
 
 	  const range = k.split("-");
-	  if (range.length == 1 && (addr.kind + "") == k) {
+	  if (range.length === 1 && (addr.kind + "") === k) {
 	    kindApps.push(a);
 	  } else {
 	    if ((!range[0].length || Number(range[0]) <= addr.kind)
@@ -323,11 +325,13 @@ const Body = () => {
   return (
     <main className="mt-5">
       <div>
-	<h2>Choose a Nostr app to view {cmn.getKindLabel(event?.kind)}:</h2>
 	{(event && (
-	  <div>
-	    <Event event={event} />
-	  </div>
+	  <>
+	    <h2>Choose a Nostr app to view {cmn.getKindLabel(event?.kind)}:</h2>
+	    <div>
+	      <Event event={event} />
+	    </div>
+	  </>
 	)) || error || "Loading..."}
       </div>
 
@@ -340,33 +344,37 @@ const Body = () => {
 	</div>
       ))}
 
-      <div className="mt-5">
-	<h2>Suggested apps:</h2>
-	<Form>
-	  <Form.Check
-            type="switch"
-            id="remember-app"
-            checked={remember ? "checked" : ""}
-            onChange={e => setRemember(e.target.checked)}
-            label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
-            style={{display: "inline-block"}}
-	  />
-	  <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
-	  >
-	    {({ ref, ...triggerHandler }) => (
-	      <i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
-	    )}
-	  </OverlayTrigger>
-	</Form>
-	<ListGroup>
-	  {kindApps?.map(a => {
-	    if (!app || a.pubkey != app.pubkey)
-	      return <NostrApp key={a.pubkey} app={a} getUrl={getUrl} select={onSelect} />
-	  })}
-	</ListGroup>
-      </div>
+      {event && (
+	<div className="mt-5">
+	  <h2>Suggested apps:</h2>
+	  <Form>
+	    <Form.Check
+              type="switch"
+              id="remember-app"
+              checked={remember ? "checked" : ""}
+              onChange={e => setRemember(e.target.checked)}
+              label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
+              style={{display: "inline-block"}}
+	    />
+	    <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
+	    >
+	      {({ ref, ...triggerHandler }) => (
+		<i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
+	      )}
+	    </OverlayTrigger>
+	  </Form>
+	  <ListGroup>
+	    {kindApps?.map(a => {
+	      if (!app || a.pubkey !== app.pubkey)
+		return <NostrApp key={a.pubkey} app={a} getUrl={getUrl} select={onSelect} />
+	      else
+		return <></>
+	    })}
+	  </ListGroup>
+	</div>
+      )}
       <div className="mt-5">
 	<h2>New here?</h2>
 	<Button href="/about" size="lg" variant="outline-primary">Learn about Nostr App Manager</Button>
@@ -378,6 +386,6 @@ const Body = () => {
       </div>
     </main>
   );
-};
+    };
 
 export default Body;
