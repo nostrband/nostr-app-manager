@@ -70,24 +70,25 @@ const Index = () => {
 
   useEffect(() => {
     const platform = cmn.getPlatform();
+
     const aps = cmn.readAppSettings();
     const appKinds = {};
     if (aps && aps.kinds) {
       for (const [kind, kas] of Object.entries(aps.kinds)) {
 	if (platform in kas.platforms) {
-	  const pubkey = kas.platforms[platform].app;
-	  if (!(pubkey in appKinds))
-	    appKinds[pubkey] = [kind];
+	  const id = kas.platforms[platform].app;
+	  if (!(id in appKinds))
+	    appKinds[id] = [kind];
 	  else
-	    appKinds[pubkey].push(kind);
+	    appKinds[id].push(kind);
 	}
       }
     }
     const apps = [];
-    for (const pubkey in appKinds) {
-      for (const app of cmn.apps) {
-	if (app.pubkey == pubkey) {
-	  app.forKinds = appKinds[pubkey];
+    for (const id in appKinds) {
+      for (const app of cmn.defaultApps) {
+	if (app.id == id) {
+	  app.forKinds = appKinds[id];
 	  apps.push(app);
 	}
       }
@@ -188,7 +189,7 @@ const Index = () => {
 	      {apps && (
 		<ListGroup>
 		  {apps?.map(a => {
-		    return <NostrApp key={a.pubkey} app={a} showKinds="true" select={onSelect} />
+		    return <NostrApp key={a.id} app={a} showKinds="true" select={onSelect} />
 		  })}
 		</ListGroup>
 	      )}
