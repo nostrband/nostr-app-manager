@@ -1,6 +1,22 @@
-# Getting Started with Create React App
+# Nostr App Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Every day new apps are created by awesome Nostr devs.
+
+Every minute three new event kinds are invented by Pablo.
+
+How could you discover those new apps? How could you control which apps to use? For which event kind? On which device?
+
+Nostr App Manager is here to help:
+
+- Paste a nostr identifier - pubkey, event id, note, npub, nevent, nprofile, naddr, any kind of nostr: link or a url from any Nostr web client.
+- Get a list of apps that can be used to view this Nostr event.
+- Remember the chosen app to get redirected to it next time.
+- Manage your list of apps, recommend apps to followers, etc (coming soon)
+
+This app is open source, it has no backend and no trackers. Your app settings are stored in your browser, and your app list is only published if you choose to do so.
+
+If you're a client dev, consider redirecting users to this app for event kinds that your client does not support, and for "sharing". For microapps to work, we need a smooth way for users to switch between apps. Nostr App Manager is an attempt to lubricate the microapp experience.
+
 
 ## Available Scripts
 
@@ -38,33 +54,3 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
