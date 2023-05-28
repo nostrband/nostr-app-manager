@@ -321,11 +321,11 @@ const Body = () => {
   };
 
   return (
-    <main className="mt-5">
+    <main className="mt-3">
       <div>
 	{(event && (
 	  <>
-	    <h2>Choose a Nostr app to view {cmn.getKindLabel(event?.kind)}:</h2>
+	    <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
 	    <div>
 	      <Event event={event} />
 	    </div>
@@ -334,7 +334,7 @@ const Body = () => {
       </div>
 
       {(currentApp && (
-	<div className="mt-5">
+	<div className="mt-3">
 	  <h2>Saved app:</h2>
 	  <ListGroup>
 	    <NostrApp key={currentApp.id} app={currentApp} getUrl={getUrl} select={onSelect} />
@@ -343,7 +343,7 @@ const Body = () => {
       ))}
 
       {event && (
-	<div className="mt-5">
+	<div className="mt-3">
 	  <h2>Suggested apps:</h2>
 	  <Form>
 	    <Form.Check
