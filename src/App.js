@@ -7,7 +7,7 @@ import AppPage from "./pages/AppPage";
 function App() {
 
   return(
-    <Container className="App mt-5">
+    <Container className="App mt-3">
       <AppPage />
     </Container>
   )

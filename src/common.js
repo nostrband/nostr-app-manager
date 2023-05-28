@@ -360,7 +360,7 @@ export function getRememberLabel(kind, platform) {
   }
   return  (
     <>
-      Remember chosen app for <b>{label}</b> on <b>{platform || "all devices"}</b>
+      Remember for <b>{label}</b> on <b>{platform || "all devices"}</b>
     </>
   )
 }
@@ -383,11 +383,11 @@ export function getCachedApp(platform, app_id) {
 
 export function getPlatform() {
   console.log("platform", platform);
-  if (platform.os === "android")
+  if (platform.android)
     return "android";
-  else if (platform.os === "ios")
+  else if (platform.ios)
     return "ios";
-  else if (platform.os === "macos")
+  else if (platform.macos)
     return "macos";
   else
     return "desktop";
