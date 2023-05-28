@@ -62,8 +62,9 @@ const Body = () => {
     if (!ad)
       ad = addr;
 
-    let url = ad.kind ? app.event_url : app.profile_url;
+    let url = "";
     if (ad?.kind === 0) {
+      url = app.profile_url;
       const npub = nip19.npubEncode(ad.pubkey);
       const nprofile = nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays });
       url = url
@@ -71,8 +72,9 @@ const Body = () => {
 	.replaceAll ("{nprofile}", nprofile)
 	.replaceAll ("{pubkey}", ad.pubkey)
       ;
-    } else if (url) {
+    } else {
       if (ad.kind >= 30000 && ad.kind < 40000) {
+	url = app.naddr_url;
 	const naddr = nip19.naddrEncode({
 	  identifier: ad.d_tag || "",
 	  pubkey: ad.pubkey,
@@ -83,6 +85,7 @@ const Body = () => {
 	  .replaceAll ("{naddr}", naddr)
 	  .replaceAll ("{addr}", naddr);
       } else if (ad.event_id) {
+	url = app.event_url;
 	const note = nip19.noteEncode(ad.event_id);
 	const nevent = nip19.neventEncode({
 	  // FIXME add kind!
@@ -266,7 +269,7 @@ const Body = () => {
     let currentApp = null;
     if (savedApp) {
       for (const a of kindApps) {
-	if (a.id == savedApp) {
+	if (a.id === savedApp) {
 	  currentApp = a;
 	  break;
 	}

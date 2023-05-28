@@ -612,7 +612,7 @@ function prepareApps(apps) {
 	      app.profile_url = t[1].replace("<bech32>", "{nprofile}");
 	    if (h.h_kind >= 30000 && h.h_kind < 40000) {
 	      if (t.length === 2 || t[2] === "naddr")
-		app.event_url = t[1].replace("<bech32>", "{naddr}");
+		app.naddr_url = t[1].replace("<bech32>", "{naddr}");
 	    } else {
 	      if (t.length === 2 || t[2] === "note")
 		app.event_url = t[1].replace("<bech32>", "{note}");
