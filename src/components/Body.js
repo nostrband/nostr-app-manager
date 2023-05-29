@@ -219,37 +219,33 @@ const Body = () => {
 	return redirect(app, addr);
     }
 
-    // unknown event kind, or need to show the list of apps?
-    let event = null;
-    if (select || !savedApp || addr.kind === undefined) {
+    // unknown event kind, or saved app not found, or
+    // need to show the list of apps,
+    // anyways, need to load the event
+    let event = await fetch(ndk, addr);
+    if (!event) {
+      // not found
+      setError("Failed to find the event " + id);
+      return;
+    }
 
-      event = await fetch(ndk, addr);
-      if (event) {
-
-	// update the addr
-	addr.kind = event.kind;
-	addr.event_id = event.id;
-	addr.pubkey = event.pubkey;
-	if (event.kind >= 30000 && event.kind < 40000) {
-	  for (let t of event.tags) {
-	    if (t.length > 1 && t[0] === 'd') {
-	      addr.d_tag = t[1];
-	      break;
-	    }
-	  }
+    // update the addr
+    addr.kind = event.kind;
+    addr.event_id = event.id;
+    addr.pubkey = event.pubkey;
+    if (event.kind >= 30000 && event.kind < 40000) {
+      for (let t of event.tags) {
+	if (t.length > 1 && t[0] === 'd') {
+	  addr.d_tag = t[1];
+	  break;
 	}
-	console.log("event addr", addr);
-
-	// get the addr now that we know the kind
-	savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
-
-      } else {
-
-	// not found
-	setError("Failed to find the event " + id);
-	return;
       }
     }
+    console.log("event addr", addr);
+
+    // if kind was unknown, retry getting the saved app
+    if (!savedApp)
+      savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
 
     // ok, kind is known, can we redirect now?
     if (savedApp && !select) {
