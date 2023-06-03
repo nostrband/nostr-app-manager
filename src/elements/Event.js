@@ -8,6 +8,7 @@ import EventProfile from './EventProfile';
 const Event = (props) => {
 
   const event = props.event;
+  console.log("event", event);
   
   switch (event.kind) {
     case 0: return (
@@ -18,7 +19,7 @@ const Event = (props) => {
     );
     default: return (
       <Container className="ps-0 pe-0">
-	<Profile profile={event.author} />
+	<Profile profile={event.author} pubkey={event.pubkey} />
 	<Row>
 	  <Col xs={12}>
 	    <p>{event.content.length > 1000 ? event.content.substring(0, 1000) + "..." : event.content}</p>

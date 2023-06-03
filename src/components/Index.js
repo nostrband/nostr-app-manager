@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { nip19 } from 'nostr-tools'
 
@@ -12,8 +12,9 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { Link } from 'react-router-dom';
 
-import NostrApp from "./NostrApp";
+import AppSelectItem from "../elements/AppSelectItem";
 
 import * as cmn from '../common';
 
@@ -28,7 +29,6 @@ const Index = () => {
   const [updated, setUpdated] = useState(0);
 
   const handleEditClose = () => setEditShow(false);
-  const handleEditShow = () => setEditShow(true);
 
   const get = (p, s) => {
     const r = new RegExp(p+"[a-z0-9]+");
@@ -68,7 +68,7 @@ const Index = () => {
   const open = () => redirect(true);
   const go = () => redirect(false);
 
-  useEffect(() => {
+  const init = useCallback(async () => {
     const platform = cmn.getPlatform();
 
     const aps = cmn.readAppSettings();
@@ -76,28 +76,45 @@ const Index = () => {
     if (aps && aps.kinds) {
       for (const [kind, kas] of Object.entries(aps.kinds)) {
 	if (platform in kas.platforms) {
-	  const id = kas.platforms[platform].app;
-	  if (!(id in appKinds))
-	    appKinds[id] = [kind];
+	  const naddr = kas.platforms[platform].app;
+	  if (!naddr.startsWith("naddr1"))
+	    continue;
+
+	  const a = cmn.naddrToAddr(naddr);
+	  if (!a)
+	    continue;
+
+	  if (!(a in appKinds))
+	    appKinds[a] = [Number(kind)];
 	  else
-	    appKinds[id].push(kind);
+	    appKinds[a].push(Number(kind));
 	}
       }
     }
+
+    const info = await cmn.fetchAppsByAs(Object.keys(appKinds));
+
     const apps = [];
-    for (const id in appKinds) {
-      for (const app of cmn.defaultApps) {
-	if (app.id == id) {
-	  app.forKinds = appKinds[id];
-	  apps.push(app);
-	}
-      }
+    for (const name in info.apps) {
+      const app = info.apps[name].handlers[0];
+      const a = cmn.naddrToAddr(cmn.getNaddr(app));
+      console.log("app", a, app);
+      app.forKinds = appKinds[a];
+      apps.push(app);
     }
     console.log("apps", apps);
-    setApps(apps);
-  }, [updated]);
 
-  const onSelect = (app) => {
+    setApps(apps);
+  }, []);
+
+  // on the start
+  useEffect(() => {
+    init().catch(console.error);
+  }, [init]);
+  
+  const onSelect = (app, e) => {
+    e.preventDefault();
+    
     // reset
     setOffForKinds([]);
 
@@ -107,7 +124,8 @@ const Index = () => {
   };
 
   const handleOffKind = e => {
-    const { value, checked } = e.target;
+    const checked = e.target.checked;
+    const value = Number(e.target.value);
     if (!checked) {
       // push selected value in list
       setOffForKinds(prev => [...prev, value]);
@@ -188,8 +206,8 @@ const Index = () => {
 	    <Col>
 	      {apps && (
 		<ListGroup>
-		  {apps?.map(a => {
-		    return <NostrApp key={a.id} app={a} showKinds="true" select={onSelect} />
+		  {apps.map(a => {
+		    return <AppSelectItem key={a.id} app={a} showKinds="true" onSelect={onSelect} />
 		  })}
 		</ListGroup>
 	      )}
@@ -207,18 +225,7 @@ const Index = () => {
 	<h3>What is Nostr App Manager?</h3>
 	Discover Nostr apps, assign apps to event kinds,
 	recommend apps to your followers.
-	<Button variant="outline-primary" href="/about">Learn more</Button>
-      </div>
-
-      <div className="mt-5">
-	<h3>How are apps selected?</h3>
-	<Container className="ps-0 pe-0">
-	  <Row>
-	    <Col>
-	      <p>Application discovery NIP is coming soon, stay tuned.</p>
-	    </Col>
-	  </Row>
-	</Container>
+	<Link to="/about"><Button variant="outline-primary">Learn more</Button></Link>
       </div>
       
       <Modal show={editShow} onHide={handleEditClose}>
@@ -227,7 +234,7 @@ const Index = () => {
 	</Modal.Header>
 	<Modal.Body>
 	  <ListGroup>
-	    <NostrApp app={editApp} />
+	    <AppSelectItem app={editApp} />
 	  </ListGroup>
 	  <h4 className="mt-3">Used for:</h4>
 	  <ListGroup>
@@ -236,7 +243,6 @@ const Index = () => {
 		<ListGroup.Item key={k}>
 		  <Form.Check
 		    type="switch"
-		    id={"kind"+k}
 		    value={k}
 		    checked={offForKinds.includes(k) ? "" : "checked"}
 		    onChange={handleOffKind}

@@ -8,7 +8,7 @@ const EventNote = (props) => {
   const author = event.author;
   return (
     <Container className="ps-0 pe-0">
-      <Profile profile={author} />
+      <Profile profile={author} pubkey={event.pubkey} />
       <Row>
 	<Col xs={12}>
 	  {event.content}
