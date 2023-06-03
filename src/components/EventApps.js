@@ -245,7 +245,7 @@ const EventApps = () => {
       event.author = (await cmn.fetchProfile(event.pubkey)) || {};
 
       // get apps for this kind
-      const info = await cmn.fetchAppsForKinds([addr.kind]);
+      const info = await cmn.fetchAppsByKinds([addr.kind]);
 
       // only our platform please
       const kindApps = cmn.filterAppsByPlatform(info, appPlatform);

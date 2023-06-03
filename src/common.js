@@ -347,8 +347,9 @@ function prepareHandlers(events, metaPubkey) {
 
     // init handler profile
     e.inheritedProfile = !e.content;
+    e.author = (e.pubkey in metas) ? metas[e.pubkey] : null;
     if (e.inheritedProfile) 
-      e.profile = (e.pubkey in metas) ? (metas[e.pubkey].profile || {}) : {};
+      e.profile = e.author?.profile || {};
     else
       e.profile = parseContentJson(e.content);
 
@@ -405,7 +406,7 @@ function prepareHandlers(events, metaPubkey) {
     app.kinds.push(...e.kinds);
     app.platforms.push(...e.platforms);
   }
-
+  
   return info;
 }
 
@@ -461,14 +462,17 @@ export async function fetchApps(pubkey, addr) {
   return info;
 }
 
-export async function fetchAppsForKinds(kinds) {
+export async function fetchAppsByKinds(kinds) {
 
   const ndk = await getNDK();
 
-  let events = await fetchAllEvents([ndk.fetchEvents({
+  const filter = {
     kinds: [cs.KIND_HANDLERS],
-    "#k": kinds.map(k => ""+k),
-  })]);
+  };
+  if (kinds && kinds.length > 0)
+    filter["#k"] = kinds.map(k => ""+k);
+	
+  let events = await fetchAllEvents([ndk.fetchEvents(filter)]);
   console.log("events", events);
 
   const pubkeys = {};
