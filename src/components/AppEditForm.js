@@ -250,7 +250,13 @@ const AppEditForm = (props) => {
       </div>
       <h4 className="mt-5">Handler URLs</h4>
       <div>
-	<Button variant="outline-primary" onClick={addUrl}>Add URL</Button>
+	<div>
+	  <small className="text-muted">
+	    Specify how to redirect users to this app. For each platform this app supports, specify a URL with &quot;&lt;bech32&gt;&quot; template, and a type of identifier to fill in place of this template.<br/>
+
+	    Example: https://app.com/&lt;bech32&gt; or nostr:&lt;bech32&gt;.
+	  </small>
+	</div>	
 
 	{urls.length > 0 && (
 	  <>
@@ -271,14 +277,12 @@ const AppEditForm = (props) => {
 		))}
 	      </tbody>
 	    </table>
-	    <small className="text-muted">
-	      The &lt;bech32&gt; placeholder in your URLs will be replaced by the matching event identifier.<br/>
-	      Example: https://app.com/&lt;bech32&gt; or nostr:&lt;bech32&gt;.
-	    </small>
 	  </>
 	)}
+
+	<Button variant="outline-primary mt-2" onClick={addUrl}>Add URL</Button>
       </div>
-      <div className="mt-4">
+      <div className="mt-5">
 	{error !== null && error !== "" && (
 	  <Alert variant="danger" dismissible={true}>{error}</Alert>
 	)}
