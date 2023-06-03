@@ -28,8 +28,9 @@ const EventApps = () => {
   const [remember, setRemember] = useState(true);
 
   const getUrl = (app, ad) => {
+    ad = ad || addr;
     if (!ad)
-      ad = addr;
+      return "";
 
     const findUrlType = (type) => {
       return app.urls.find(u => (u.platform === env.appPlatform || u.platform === "web") && u.type === type);
@@ -59,23 +60,31 @@ const EventApps = () => {
     };
     
     let url = "";
-    if (ad?.kind === 0) {
+    if (ad.kind === 0) {
       url = findUrl(nip19.npubEncode(ad.pubkey))
 	 || findUrl(nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays }))
 	 || findUrl(nip19.naddrEncode(naddrId))
 	 || findUrl(nip19.neventEncode(neventId))
 	 || findUrl(nip19.noteEncode(ad.event_id))
       ;
-    } else {
+    } else if (ad.kind === 3
+	       || (ad.kind >= 10000 && ad.kind < 20000)
+	       || (ad.kind >= 30000 && ad.kind < 40000)
+    ) {
       // specific order - naddr preferred
       url = findUrl(nip19.naddrEncode(naddrId))
 	 || findUrl(nip19.neventEncode(neventId))
 	 || findUrl(nip19.noteEncode(ad.event_id))
       ;
+    } else {
+      // specific order - naddr preferred
+      url = findUrl(nip19.neventEncode(neventId))
+	 || findUrl(nip19.noteEncode(ad.event_id))
+      ;
     }
 
-    return url;
-  }
+  return url;
+}
 
   const parseAddr = (id) => {
 
@@ -347,9 +356,9 @@ const EventApps = () => {
       )}
       <div className="mt-5">
 	<h2>New here?</h2>
-	<Link to="/about"><Button size="lg" variant="outline-secondary">What is App Manager?</Button></Link>
-	<Link to="https://www.heynostr.com" ><Button size="lg" variant="outline-secondary" className="ms-2">What is Nostr?</Button></Link>
-	<Link to="https://nosta.me" ><Button size="lg" variant="outline-primary ms-2">Start using Nostr</Button></Link>
+	<Link to="/about"><Button size="lg" variant="outline-secondary me-2">What is App Manager?</Button></Link>
+	<Link to="https://www.heynostr.com" ><Button size="lg" variant="outline-secondary me-2">What is Nostr?</Button></Link>
+	<Link to="https://nosta.me" ><Button size="lg" variant="outline-primary m2-2">Start using Nostr</Button></Link>
       </div>
     </main>
   );
