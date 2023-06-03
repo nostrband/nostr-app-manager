@@ -2,10 +2,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import Header from "../components/Header";
-import Body from "../components/Body";
+import EventApps from "../components/EventApps";
 import Footer from "../components/Footer";
 
-const AppPage = () => {
+const RootPage = () => {
 
   return (
     <>
@@ -13,7 +13,7 @@ const AppPage = () => {
 	<Col><Header /></Col>
       </Row>
       <Row>
-	<Col><Body /></Col>
+	<Col><EventApps /></Col>
       </Row>
       <Row>
 	<Col><Footer /></Col>
@@ -23,4 +23,4 @@ const AppPage = () => {
 
 };
 
-export default AppPage;
+export default RootPage;

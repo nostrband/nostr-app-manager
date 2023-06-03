@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import * as qs from 'native-querystring';
 
-import { NDKFilter } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools'
 
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -9,14 +8,16 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { Link } from 'react-router-dom';
 
-import Event from "./Event";
-import NostrApp from "./NostrApp";
+import Event from "../elements/Event";
+import AppSelectItem from "../elements/AppSelectItem";
 import Index from "./Index";
 
 import * as cmn from "../common"
 
-const Body = () => {
+const EventApps = () => {
+
   const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
   const [error, setError] = useState("");
@@ -26,76 +27,51 @@ const Body = () => {
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
 
-  const fetch = async (ndk, addr) => {
-    const filter: NDKFilter = {};
-    if (addr.event_id) {
-      // note, nevent
-      filter.ids = [addr.event_id];
-    } else if (addr.pubkey && addr.d_tag !== undefined && addr.kind !== undefined) {
-      // naddr
-      filter['#d'] = [addr.d_tag];
-      filter.authors = [addr.pubkey];
-      filter.kinds = [addr.kind];
-    } else if (addr.pubkey && addr.kind !== undefined) {
-      // npub, nprofile
-      filter.authors = [addr.pubkey];
-      filter.kinds = [addr.kind];
-    }
-    // console.log("loading event by filter", filter);
- 
-    const reqs = [ndk.fetchEvent(filter)];
-    if (addr.hex) {
-      const profile_filter: NDKFilter = {
-	kinds: [0],
-	authors: [addr.event_id]
-      };
-      // console.log("loading profile by filter", profile_filter);
-      reqs.push(ndk.fetchEvent(profile_filter));
-    }
-
-    const e = await Promise.any(reqs);
-    console.log("event", e);
-    return e;
-  }
-
   const getUrl = (app, ad) => {
     if (!ad)
       ad = addr;
 
+    const findUrlType = (type) => {
+      return app.urls.find(u => (u.platform === env.appPlatform || u.platform === "web") && u.type === type);
+    };
+    
+    const allUrl = findUrlType("");
+    const findUrl = (id) => {
+      const {type} = nip19.decode(id);
+      const u = findUrlType(type) || allUrl;
+      if (u != null)
+	return u.url.replace("<bech32>", id);
+
+      return null;
+    };
+
+    const naddrId = {
+      identifier: ad.d_tag || "",
+      pubkey: ad.pubkey,
+      kind: ad.kind,
+      relays: ad.relays
+    };
+    const neventId = {
+      // FIXME add kind!
+      id: ad.event_id,
+      relays: ad.relays,
+      author: ad.pubkey
+    };
+    
     let url = "";
     if (ad?.kind === 0) {
-      url = app.profile_url;
-      const npub = nip19.npubEncode(ad.pubkey);
-      const nprofile = nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays });
-      url = url
-	.replaceAll ("{npub}", npub)
-	.replaceAll ("{nprofile}", nprofile)
-	.replaceAll ("{pubkey}", ad.pubkey)
+      url = findUrl(nip19.npubEncode(ad.pubkey))
+	 || findUrl(nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays }))
+	 || findUrl(nip19.naddrEncode(naddrId))
+	 || findUrl(nip19.neventEncode(neventId))
+	 || findUrl(nip19.noteEncode(ad.event_id))
       ;
     } else {
-      if (ad.kind >= 30000 && ad.kind < 40000) {
-	url = app.naddr_url;
-	const naddr = nip19.naddrEncode({
-	  identifier: ad.d_tag || "",
-	  pubkey: ad.pubkey,
-	  kind: ad.kind,
-	  relays: ad.relays
-	});
-	url = url
-	  .replaceAll ("{naddr}", naddr)
-	  .replaceAll ("{addr}", naddr);
-      } else if (ad.event_id) {
-	url = app.event_url;
-	const note = nip19.noteEncode(ad.event_id);
-	const nevent = nip19.neventEncode({
-	  // FIXME add kind!
-	  id: ad.event_id, relays: ad.relays, author: ad.pubkey });
-	url = url
-	  .replaceAll ("{note}", note)
-	  .replaceAll ("{nevent}", nevent)
-	  .replaceAll ("{addr}", nevent)
-	  .replaceAll ("{event_id}", ad.event_id);
-      }
+      // specific order - naddr preferred
+      url = findUrl(nip19.naddrEncode(naddrId))
+	 || findUrl(nip19.neventEncode(neventId))
+	 || findUrl(nip19.noteEncode(ad.event_id))
+      ;
     }
 
     return url;
@@ -159,7 +135,7 @@ const Body = () => {
   const redirect = (app, addr) => {
     const url = getUrl(app, addr);
     console.log("Auto redirect url", url);
-    window.location.href = url;
+    document.location.href = url;
   }
 
   const init = useCallback(async () => {
@@ -208,86 +184,89 @@ const Body = () => {
 	return redirect(app, addr);
     }
 
-    // if we can't get everything from cache, start ndk
-    const ndk = await cmn.getNDK();
+    // if we can't get everything from cache, then we need
+    // to start ndk and fetch from network
+    async function reload() {
 
-    // if have saved app, try to get app info now
-    if (savedApp && !select) {
-      const app = await cmn.getApp(ndk, appPlatform, savedApp);
-      console.log("saved app remote info", app);
-      if (app)
-	return redirect(app, addr);
-    }
+      // if have saved app, try to get app info now
+      if (savedApp && !select) {
+	const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
+	console.log("saved app remote info", app);
+	if (app)
+	  return redirect(app, addr);
+      }
 
-    // unknown event kind, or saved app not found, or
-    // need to show the list of apps,
-    // anyways, need to load the event
-    let event = await fetch(ndk, addr);
-    if (!event) {
-      // not found
-      setError("Failed to find the event " + id);
-      return;
-    }
+      // unknown event kind, or saved app not found, or
+      // need to show the list of apps,
+      // anyways, need to load the event
+      const event = await cmn.fetchEvent(addr);
+      if (!event) {
+	// not found
+	setError("Failed to find the event " + id);
+	return;
+      }
 
-    // update the addr
-    addr.kind = event.kind;
-    addr.event_id = event.id;
-    addr.pubkey = event.pubkey;
-    if (event.kind >= 30000 && event.kind < 40000) {
-      for (let t of event.tags) {
-	if (t.length > 1 && t[0] === 'd') {
-	  addr.d_tag = t[1];
-	  break;
+      // update the addr
+      addr.kind = event.kind;
+      addr.event_id = event.id;
+      addr.pubkey = event.pubkey;
+      if (event.kind >= 30000 && event.kind < 40000) {
+	for (let t of event.tags) {
+	  if (t.length > 1 && t[0] === 'd') {
+	    addr.d_tag = t[1];
+	    break;
+	  }
 	}
       }
-    }
-    console.log("event addr", addr);
+      console.log("event addr", addr);
 
-    // if kind was unknown, retry getting the saved app
-    if (!savedApp)
-      savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
+      // if kind was unknown, retry getting the saved app
+      if (!savedApp)
+	savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
 
-    // ok, kind is known, can we redirect now?
-    if (savedApp && !select) {
-      const app = await cmn.getApp(ndk, appPlatform, savedApp);
-      console.log("saved app remote info", app);
-      if (app)
-	return redirect(app, addr);
-    }
-
-    // fetch author, need to display the event
-    event.author = await cmn.getAuthor(ndk, event);
-
-    // get apps for this kind
-    const kindApps = await cmn.getKindApps(ndk, appPlatform, addr.kind);
-
-    // find the one we saved
-    let currentApp = null;
-    if (savedApp) {
-      for (const a of kindApps) {
-	if (a.id === savedApp) {
-	  currentApp = a;
-	  break;
-	}
+      // ok, kind is known, can we redirect now?
+      if (savedApp && !select) {
+	const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
+	console.log("saved app remote info", app);
+	if (app)
+	  return redirect(app, addr);
       }
-    }
 
-    setAddr(addr);
-    setEvent(event);
-    setCurrentApp(currentApp);
-    setKindApps(kindApps);
-    setRemember(!currentApp);
-    setAppSettings(appSettings);
-    setEnv ({appPlatform});
+      // fetch author, need to display the event
+      event.author = (await cmn.fetchProfile(event.pubkey)) || {};
+
+      // get apps for this kind
+      const info = await cmn.fetchAppsForKinds([addr.kind]);
+
+      // only our platform please
+      const kindApps = cmn.filterAppsByPlatform(info, appPlatform);
+
+      // add default apps
+      cmn.addDefaultApps(addr.kind, kindApps);
+
+      // find the one we saved
+      let currentApp = null;
+      if (savedApp)
+	currentApp = kindApps.find(a => cmn.getNaddr(a) === savedApp);
+
+      setAddr(addr);
+      setEvent(event);
+      setCurrentApp(currentApp);
+      setKindApps(kindApps);
+      setRemember(!currentApp);
+      setAppSettings(appSettings);
+      setEnv ({appPlatform});
+    };
     
+    cmn.addOnNostr(reload);
+    reload();
   }, []);
 
   // on the start
   useEffect(() => {
     init().catch(console.error);
-    window.addEventListener("popstate",(e) => {
-      init().catch(console.error);
-    });
+    window.addEventListener("popstate", e => init().catch(console.error));
+    window.addEventListener("goHome", e => init().catch(console.error));
   }, [init]);
 
   // homepage
@@ -311,13 +290,13 @@ const Body = () => {
       appSettings.kinds[event.kind].platforms = {};
     if (!appSettings.kinds[event.kind].platforms[env.appPlatform])
       appSettings.kinds[event.kind].platforms[env.appPlatform] = {};
-    appSettings.kinds[event.kind].platforms[env.appPlatform].app = a.id;
+    appSettings.kinds[event.kind].platforms[env.appPlatform].app = cmn.getNaddr(a);
 
     cmn.writeAppSettings(appSettings);
   };
 
   return (
-    <main className="mt-3">
+    <main className="mt-5">
       <div>
 	{(event && (
 	  <>
@@ -333,7 +312,7 @@ const Body = () => {
 	<div className="mt-3">
 	  <h2>Saved app:</h2>
 	  <ListGroup>
-	    <NostrApp key={currentApp.id} app={currentApp} getUrl={getUrl} select={onSelect} />
+	    <AppSelectItem key={currentApp.id} app={currentApp} getUrl={getUrl} onSelect={onSelect} />
 	  </ListGroup>
 	</div>
       ))}
@@ -360,24 +339,20 @@ const Body = () => {
 	    </OverlayTrigger>
 	  </Form>
 	  <ListGroup>
-	    {kindApps?.map(a => {
-	      if (!currentApp || a.id !== currentApp.id)
-		return <NostrApp key={a.id} app={a} getUrl={getUrl} select={onSelect} />
+	    {kindApps?.filter(a => !currentApp || a.id !== currentApp.id).map(a => {
+	      return <AppSelectItem key={a.id} app={a} getUrl={getUrl} onSelect={onSelect} />
 	    })}
 	  </ListGroup>
 	</div>
       )}
       <div className="mt-5">
 	<h2>New here?</h2>
-	<Button href="/about" size="lg" variant="outline-primary">Learn about Nostr App Manager</Button>
-      </div>
-      <div className="mt-5">
-	<h2>New to Nostr?</h2>
-	<Button href="https://nosta.me" size="lg" variant="outline-primary">Get started</Button>
-	<Button href="https://www.heynostr.com" size="lg" variant="outline-secondary" className="ms-2">Learn more</Button>
+	<Link to="/about"><Button size="lg" variant="outline-secondary">What is App Manager?</Button></Link>
+	<Link to="https://www.heynostr.com" ><Button size="lg" variant="outline-secondary" className="ms-2">What is Nostr?</Button></Link>
+	<Link to="https://nosta.me" ><Button size="lg" variant="outline-primary ms-2">Start using Nostr</Button></Link>
       </div>
     </main>
   );
 };
 
-export default Body;
+export default EventApps;

@@ -7,11 +7,13 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.2.3",
+    "bs5-lightbox": "^1.8.3",
     "native-querystring": "^1.1.1",
     "nostr-tools": "^1.10.1",
     "platform-detect": "^3.0.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
+    "react-bootstrap-icons": "^1.10.3",
     "react-dom": "^18.2.0",
     "react-intl": "^6.4.2",
     "react-query": "^3.39.3",
@@ -34,9 +36,11 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
     ],
     "development": [
       "last 1 chrome version",

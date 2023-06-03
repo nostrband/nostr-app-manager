@@ -6,8 +6,11 @@ import ThemeProvider from 'react-bootstrap/ThemeProvider'
 import { IntlProvider } from "./IntlProvider";
 
 import './index.scss';
-import App from './App';
+import Root from './Root';
 import About from './About';
+import Profile from './Profile';
+import AppInfo from './AppInfo';
+import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
 
 const HTTP = new QueryClient();
@@ -15,11 +18,23 @@ const HTTP = new QueryClient();
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />
+    element: <Root />
   },
   {
     path: "/about",
     element: <About />
+  },
+  {
+    path: "/p/:npub",
+    element: <Profile />
+  },
+  {
+    path: "/a/:naddr",
+    element: <AppInfo />
+  },
+  {
+    path: "/edit/:naddr?",
+    element: <AppEdit />
   },
 ]);
 

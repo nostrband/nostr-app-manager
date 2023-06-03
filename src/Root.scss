@@ -1,7 +1,7 @@
 // Override default variables before the import
 // $body-bg: #000;
 
-.App {
+.Root {
     max-width: 720px;
 }
 
@@ -10,9 +10,15 @@ header a {
 }
 
 img.profile {
+    border: 1px solid #eee;
     border-radius: 5px;
 }
 
-.app-row:hover {
+.highlight:hover {
     background-color: #eee;
+}
+
+img.banner {
+    border: 1px solid #eee;
+    border-radius: 10px;
 }
