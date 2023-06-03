@@ -322,18 +322,22 @@ async function fetchAllEvents(reqs) {
   return dedupEvents(events);
 }
 
-function prepareHandlers(events) {
+function prepareHandlers(events, metaPubkey) {
 
   const info = {
     meta: null,
     apps: {}
   };
 
+  const metas = {};
   for (const e of events) {
     if (e.kind === cs.KIND_META) {
+      metas[e.pubkey] = e;
+
       e.profile = parseContentJson(e.content);
-      info.meta = e;
-      break;
+
+      if (metaPubkey && metaPubkey === e.pubkey)
+	info.meta = e;
     }
   }
 
@@ -343,7 +347,10 @@ function prepareHandlers(events) {
 
     // init handler profile
     e.inheritedProfile = !e.content;
-    e.profile = e.inheritedProfile ? (info.meta?.profile || {}) : parseContentJson(e.content);
+    if (e.inheritedProfile) 
+      e.profile = (e.pubkey in metas) ? (metas[e.pubkey].profile || {}) : {};
+    else
+      e.profile = parseContentJson(e.content);
 
     const kinds = {};
     for (const t of getTags(e, "k")) {
@@ -426,7 +433,7 @@ export async function fetchApps(pubkey, addr) {
   console.log("events", events);
 
   // find handlers
-  const info = prepareHandlers(events);
+  const info = prepareHandlers(events, pubkey);
 
   // drop unneeded ones
   if (addr) {
@@ -458,17 +465,29 @@ export async function fetchAppsForKinds(kinds) {
 
   const ndk = await getNDK();
 
-  const events = await fetchAllEvents([ndk.fetchEvents({
+  let events = await fetchAllEvents([ndk.fetchEvents({
     kinds: [cs.KIND_HANDLERS],
     "#k": kinds.map(k => ""+k),
   })]);
   console.log("events", events);
 
+  const pubkeys = {};
+  for (const e of events)
+    pubkeys[e.pubkey] = 1;
+
+  if (events.length > 0) {
+    const metas = await fetchAllEvents([ndk.fetchEvents({
+      kinds: [cs.KIND_META],
+      authors: Object.keys(pubkeys),
+    })]);
+    console.log("metas", metas);
+
+    events = [...events, ...metas];
+  }
+  
   // parse
   const info = prepareHandlers(events);
 
-  // FIXME inject pre-defined set of apps
-  
   console.log("apps", info);
   return info;
 }
@@ -485,9 +504,12 @@ export async function fetchAppByNaddr(naddr, platform) {
     authors: [data.pubkey],
     kinds: [cs.KIND_HANDLERS],
     '#d': [data.identifier]
+  }), ndk.fetchEvents({
+    authors: [data.pubkey],
+    kinds: [cs.KIND_META],
   })]);
   console.log("events", events);
-
+  
   // parse
   const info = prepareHandlers(events);
 
@@ -671,7 +693,7 @@ export async function fetchAppsByAs(aTags) {
   const appEvents = await fetchAllEvents([
     ndk.fetchEvents(appFilter),
     ndk.fetchEvents(metaFilter),      
-    ]);
+  ]);
 
   // find meta first
   const info = prepareHandlers(appEvents);
