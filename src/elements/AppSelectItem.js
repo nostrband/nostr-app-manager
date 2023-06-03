@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 import * as cmn from "../common"
 import OtherApp from "../icons/OtherApp"
+import Profile from "./Profile"
 
 const AppSelectItem = (props) => {
 
@@ -36,6 +37,11 @@ const AppSelectItem = (props) => {
 	  {app?.about}
 	  {showKinds && (
 	    <div><small className="text-muted">Used for: {used}</small></div>
+	  )}
+	  {props.showAuthor && props.app.author && (
+	    <div className="d-flex justify-content-end">
+	      <Profile profile={props.app.author} small={true} pubkey={props.app.pubkey} />
+	    </div>
 	  )}
 	</div>
 	</Col>

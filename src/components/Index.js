@@ -27,6 +27,7 @@ const Index = () => {
   const [editApp, setEditApp] = useState(null);
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
+  const [allApps, setAllApps] = useState(null);
 
   const handleEditClose = () => setEditShow(false);
 
@@ -92,19 +93,36 @@ const Index = () => {
       }
     }
 
-    const info = await cmn.fetchAppsByAs(Object.keys(appKinds));
+    async function reload() {
+      if (Object.keys(appKinds).length) {
+	const info = await cmn.fetchAppsByAs(Object.keys(appKinds));
 
-    const apps = [];
-    for (const name in info.apps) {
-      const app = info.apps[name].handlers[0];
-      const a = cmn.naddrToAddr(cmn.getNaddr(app));
-      console.log("app", a, app);
-      app.forKinds = appKinds[a];
-      apps.push(app);
-    }
-    console.log("apps", apps);
+	const apps = [];
+	for (const name in info.apps) {
+	  const app = info.apps[name].handlers[0];
+	  const a = cmn.naddrToAddr(cmn.getNaddr(app));
+	  console.log("app", a, app);
+	  app.forKinds = appKinds[a];
+	  apps.push(app);
+	}
+	console.log("apps", apps);
 
-    setApps(apps);
+	setApps(apps);
+      }
+
+      const info = await cmn.fetchAppsByKinds(null);
+      const allApps = [];
+      for (const name in info.apps) {
+	const app = info.apps[name].handlers[0];
+	allApps.push(app);
+      }
+      allApps.sort((a, b) => {return b.created_at - a.created_at; });
+
+      setAllApps(allApps);
+    };
+    cmn.addOnNostr(reload);
+    reload();
+    
   }, []);
 
   // on the start
@@ -200,6 +218,12 @@ const Index = () => {
       </div>
 
       <div className="mt-5">
+	<h3>What is Nostr App Manager?</h3>
+	<p>Discover Nostr apps, recommend to your followers, publish your own apps.</p>
+	<Link to="/about"><Button variant="outline-primary">Learn more</Button></Link>
+      </div>
+
+      <div className="mt-5">
 	<h3>Apps used on this device:</h3>
 	<Container className="ps-0 pe-0">
 	  <Row>
@@ -220,12 +244,24 @@ const Index = () => {
 	  </Row>
 	</Container>
       </div>
-
+      
       <div className="mt-5">
-	<h3>What is Nostr App Manager?</h3>
-	Discover Nostr apps, assign apps to event kinds,
-	recommend apps to your followers.
-	<Link to="/about"><Button variant="outline-primary">Learn more</Button></Link>
+	<h3>New apps:</h3>
+	<Container className="ps-0 pe-0">
+	  <Row>
+            <Col>
+	      {allApps === null && ("Loading...")}
+	      {allApps != null && !allApps.length && ("Nothing found on relays.")}
+	      {allApps && (
+		<ListGroup>
+		  {allApps.map(a => {
+		    return <AppSelectItem key={a.id} app={a} showAuthor={true} />
+		  })}
+		</ListGroup>
+	      )}
+	    </Col>
+	  </Row>
+	</Container>
       </div>
       
       <Modal show={editShow} onHide={handleEditClose}>
