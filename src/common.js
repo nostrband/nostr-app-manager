@@ -51,11 +51,8 @@ export function enableNostr() {
 	nostrEnabled = true;
 
 	// reconnect
-	console.log("enabled nostr", ndkObject);
 	if (ndkObject) {
 	  ndkObject.signer = new NDKNip07Signer();
-	  console.log("set signer", ndkObject.signer);
-	  //	  ndkObject = await createConnectNDK();
 	}
 
 	// execute handlers
@@ -64,7 +61,6 @@ export function enableNostr() {
 	
 	ok ();
       } else {
-	// console.log("wait nostr", period, !!window.nostr);
 	if (window.nostr) {
 	  hasNostr = true;
 	  // wait until it initializes
@@ -886,6 +882,68 @@ export async function publishEvent(event) {
   const r = await ndkEvent.publish(relaySet);
   console.log("r", r);
   return true;  
+}
+
+export async function publishRecomms(app, addKinds, addPlatforms) {
+
+  if (addKinds.length === 0 || addPlatforms.length === 0) {
+    return "Choose kinds and platforms";
+  }
+
+  if (!isAuthed()) {
+    return "Please login";
+  }
+
+  const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
+  const events = [];
+  for (const k of addKinds) {
+
+    // template
+    const event = {
+      kind: cs.KIND_RECOMM,
+      content: "",
+    };
+
+    const list = lists.find(l => getTagValue(l, "d", 0, "") === ""+k);
+    if (list) {
+      console.log("list for", k, "exits", list);
+      event.tags = list.tags;
+    } else {
+      console.log("new list for", k);
+      event.tags = [
+	["d", ""+k],
+      ];
+    }
+
+    const a = getEventTagA(app);
+    let changed = false;
+    for (const p of addPlatforms) {
+      if (event.tags.find(t => t.length >= 4 && t[0] === "a" && t[1] === a && t[3] === p) === undefined) {
+	console.log("added to list for", k);
+	event.tags.push(["a", a, "wss://relay.nostr.band", p]);
+	changed = true;
+      } 
+    }
+    if (changed) {
+      events.push(event);
+    } else {
+      console.log("already on the list", k);
+    }
+  }
+  
+  console.log("events", events);
+  if (events.length === 0) {
+    return "";
+  }
+
+  let r = null;
+  for (const e of events) {
+    r = await publishEvent(e);
+    if (!r || r.error)
+      break;
+  }
+
+  return (!r || r.error) ? (r?.error || "Failed") : "";
 }
 
 export function formatAppUrl(naddr) {

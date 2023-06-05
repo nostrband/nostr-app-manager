@@ -8,6 +8,7 @@ import { IntlProvider } from "./IntlProvider";
 import './index.scss';
 import Root from './Root';
 import About from './About';
+import Recommendations from './Recommendations';
 import Profile from './Profile';
 import AppInfo from './AppInfo';
 import AppEdit from './AppEdit';
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
   {
     path: "/about",
     element: <About />
+  },
+  {
+    path: "/recommendations",
+    element: <Recommendations />
   },
   {
     path: "/p/:npub",

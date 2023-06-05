@@ -12,7 +12,6 @@ import Profile from "../elements/Profile"
 import AppInfo from "../elements/AppInfo"
 
 import * as cmn from "../common"
-import * as cs from "../const"
 
 const AppInfoView = () => {
   const params = useParams();
@@ -76,81 +75,19 @@ const AppInfoView = () => {
 
   async function addApp() {
 
-    if (addKinds.length === 0 || addPlatforms.length === 0) {
-      setError("Choose kinds and platforms");
-      return;
-    }
-
-    if (!cmn.isAuthed()) {
-      setError("Please login");
-      return;
-    }
-    
     setSending(true);
-
-    const lists = await cmn.fetchUserRecomms(cmn.getLoginPubkey(), addKinds);
-    const events = [];
-    for (const k of addKinds) {
-
-      // template
-      const event = {
-	kind: cs.KIND_RECOMM,
-	content: "",
-      };
-
-      const list = lists.find(l => cmn.getTagValue(l, "d", 0, "") === ""+k);
-      if (list) {
-	console.log("list for", k, "exits", list);
-	event.tags = list.tags;
-      } else {
-	console.log("new list for", k);
-	event.tags = [
-	  ["d", ""+k],
-	];
-      }
-
-      const a = cmn.getEventTagA(appInfo);
-      let changed = false;
-      for (const p of addPlatforms) {
-	if (event.tags.find(t => t.length >= 4 && t[0] === "a" && t[1] === a && t[3] === p) === undefined) {
-	  console.log("added to list for", k);
-	  event.tags.push(["a", a, "wss://relay.nostr.band", p]);
-	  changed = true;
-	} 
-      }
-      if (changed) {
-	events.push(event);
-      } else {
-	console.log("already on the list", k);
-      }
-    }
-    
-    console.log("events", events);
-    if (events.length === 0) {
-      setShowAddApp(false);
-      setSending(false);
+    const r = await cmn.publishRecomms(appInfo, addKinds, addPlatforms);
+    setSending(false);
+    if (r !== "") {
+      setError(r);
       return;
     }
 
-    let r = null;
-    for (const e of events) {
-      r = await cmn.publishEvent(e);
-      if (!r || r.error)
-	break;
-    }
-
-    // done
-    setSending(false);
+    // hide the modal
+    setShowAddApp(false);
 
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
-
-    // check
-    if (!r || r.error) {
-      setError(r ? r.error : "Failed");
-    } else {
-      setShowAddApp(false);
-    }
   };
   
   return (

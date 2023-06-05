@@ -6,11 +6,11 @@ import { nip19 } from 'nostr-tools'
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+//import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
 
-import Event from "../elements/Event";
+import NostrEvent from "../elements/Event";
 import AppSelectItem from "../elements/AppSelectItem";
 import Index from "./Index";
 
@@ -83,8 +83,8 @@ const EventApps = () => {
       ;
     }
 
-  return url;
-}
+    return url;
+  }
 
   const parseAddr = (id) => {
 
@@ -270,13 +270,22 @@ const EventApps = () => {
     // no personalized data here
     //    cmn.addOnNostr(reload);
     reload();
+
   }, []);
 
   // on the start
   useEffect(() => {
     init().catch(console.error);
-    window.addEventListener("popstate", e => init().catch(console.error));
-    window.addEventListener("goHome", e => init().catch(console.error));
+
+    const handler = e => init().catch(console.error);    
+    window.addEventListener("popstate", handler);
+    window.addEventListener("goHome", handler);
+
+    return () => {
+      window.removeEventListener("popstate", handler);
+      window.removeEventListener("goHome", handler);
+    };
+    
   }, [init]);
 
   // homepage
@@ -287,7 +296,7 @@ const EventApps = () => {
   }
 
   // save the app in local settings for this platform
-  const onSelect = (a) => {
+  const onSelect = async (a, e) => {
     console.log("select", a);
     if (!remember)
       return;
@@ -303,8 +312,24 @@ const EventApps = () => {
     appSettings.kinds[event.kind].platforms[env.appPlatform].app = cmn.getNaddr(a);
 
     cmn.writeAppSettings(appSettings);
+
+    // publish the recommendation
+    if (cmn.isAuthed()) {
+
+      e.preventDefault();
+      const r = await cmn.publishRecomms(a, [event.kind], [env.appPlatform]);
+      if (r)
+	console.log(r);
+
+      redirect(a);
+    }    
   };
 
+  const login = (e) => {
+    e.preventDefault();
+    window.dispatchEvent(new Event('login'));
+  };
+  
   return (
     <main className="mt-5">
       <div>
@@ -312,7 +337,7 @@ const EventApps = () => {
 	  <>
 	    <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
 	    <div>
-	      <Event event={event} />
+	      <NostrEvent event={event} />
 	    </div>
 	  </>
 	)) || error || "Loading..."}
@@ -339,14 +364,22 @@ const EventApps = () => {
               label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
               style={{display: "inline-block"}}
 	    />
-	    <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
-	    >
-	      {({ ref, ...triggerHandler }) => (
+	    {/*<OverlayTrigger
+		placement="top"
+		overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
+		>
+		{({ ref, ...triggerHandler }) => (
 		<i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
+		)}
+		</OverlayTrigger>*/}
+	    <div className="text-muted mb-2">
+	      {remember && !cmn.isAuthed() && (
+		<small><Link onClick={login}>Login</Link> to recommend the app on Nostr.</small>
 	      )}
-	    </OverlayTrigger>
+	      {remember && cmn.isAuthed() && (
+		<small>Chosen app will be <Link to="/recommendations">recommended</Link>.</small>
+	      )}
+	    </div>
 	  </Form>
 	  <ListGroup>
 	    {kindApps?.filter(a => !currentApp || a.id !== currentApp.id).map(a => {

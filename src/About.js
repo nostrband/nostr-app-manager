@@ -17,6 +17,9 @@ function About() {
       </Row>
       <Row className="mt-5">
         <Col>
+
+	  <h1>About</h1>
+	  
 	  <p>Every day new apps are created by awesome Nostr devs.</p>
 
 	  <p>Every minute three new event kinds are invented by Pablo.</p>
