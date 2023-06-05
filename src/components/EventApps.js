@@ -266,8 +266,9 @@ const EventApps = () => {
       setAppSettings(appSettings);
       setEnv ({appPlatform});
     };
-    
-    cmn.addOnNostr(reload);
+
+    // no personalized data here
+    //    cmn.addOnNostr(reload);
     reload();
   }, []);
 
