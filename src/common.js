@@ -173,7 +173,11 @@ export function getSavedApp(kind, platform, settings) {
       && kind in settings.kinds
       && "platforms" in settings.kinds[kind]
       && platform in settings.kinds[kind].platforms)
-    return settings.kinds[kind].platforms[platform].app || "";
+  {
+    const app = settings.kinds[kind].platforms[platform].app || "";
+    if (app.startsWith("naddr1"))
+      return app;
+  }
 
   return "";
 }
