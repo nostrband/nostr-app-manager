@@ -28,16 +28,13 @@ const ProfileView = () => {
     if (!pubkey)
       return;
 
-    async function reload() {
-      const apps = await cmn.fetchApps(pubkey);
-      setApps(apps);
+    const apps = await cmn.fetchApps(pubkey);
+    setApps(apps);
 
-      const recomms = await cmn.fetchUserRecommsApps(pubkey);
-      setRecomms(recomms);
-    };
+    const recomms = await cmn.fetchUserRecommsApps(pubkey);
+    setRecomms(recomms);
 
-    cmn.addOnNostr(reload);
-    reload();
+    // NOTE: no authed user personalization atm
 
   }, [npub]); 
 

@@ -120,7 +120,9 @@ const Index = () => {
 
       setAllApps(allApps);
     };
-    cmn.addOnNostr(reload);
+
+    // no personalized data here
+    // cmn.addOnNostr(reload);
     reload();
     
   }, []);

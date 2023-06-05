@@ -22,6 +22,9 @@ const AppSelectItem = (props) => {
   }
 
   const showKinds = props.showKinds && props.app.forKinds;
+  let about = app.about;
+  if (about?.length > 200)
+    about = about.substring(0, 200) + "...";
   
   return (
     <ListGroup.Item className="highlight position-relative">
@@ -34,7 +37,7 @@ const AppSelectItem = (props) => {
 	</Col>
 	<Col><div className="ms-2 me-auto">
 	  <div className="fw-bold">{app.display_name || app.name}</div>
-	  {app?.about}
+	  {about}
 	  {showKinds && (
 	    <div><small className="text-muted">Used for: {used}</small></div>
 	  )}

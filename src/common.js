@@ -1,5 +1,5 @@
 import platform from 'platform-detect'
-import NDK, { NDKFilter, NDKEvent, NDKNip07Signer } from "@nostr-dev-kit/ndk";
+import NDK, { NDKFilter, NDKEvent, NDKNip07Signer, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { nip19 } from 'nostr-tools'
 
 import * as cs from "./const"
@@ -13,12 +13,28 @@ const profileCache = {};
 let onNostrHandlers = [];
 let nostrEnabled = false;
 
+const readRelays = ["wss://relay.nostr.band/all", "wss://nos.lol", "wss://relay.damus.io"];
+const writeRelays = [...readRelays, "wss://nostr.mutinywallet.com"] // for broadcasting
+
 export async function addOnNostr(handler) {
   
   if (nostrEnabled)
     await handler();
   else
     onNostrHandlers.push(handler);
+}
+
+export async function onAuthed(handler) {
+  // not the current authed state
+  const wasAuthed = isAuthed();
+  await handler();
+
+  // after nostr extension is ready, recheck the
+  // authed state and reload if needed
+  addOnNostr(async () => {
+    if (wasAuthed !== isAuthed ())
+      await handler();
+  });
 }
 
 export function enableNostr() {
@@ -35,7 +51,12 @@ export function enableNostr() {
 	nostrEnabled = true;
 
 	// reconnect
-	ndkObject = await createConnectNDK();
+	console.log("enabled nostr", ndkObject);
+	if (ndkObject) {
+	  ndkObject.signer = new NDKNip07Signer();
+	  console.log("set signer", ndkObject.signer);
+	  //	  ndkObject = await createConnectNDK();
+	}
 
 	// execute handlers
 	for (const h of onNostrHandlers)
@@ -104,11 +125,21 @@ export function getKindLabel(kind) {
   switch (Number(kind)) {
     case 0: label = "profile"; break;
     case 1: label = "note"; break;
+    case 3: label = "contact list"; break;
+    case 4: label = "DM"; break;
+    case 6: label = "repost"; break;
+    case 7: label = "reaction"; break;
+    case 8: label = "badge award"; break;
+    case 1063: label = "file info"; break;
+    case 1984: label = "report"; break;
+    case 9735: label = "zap"; break;
     case 9802: label = "highlight"; break;
     case 31337: label = "audio track"; break;
     case 10000: label = "mute list"; break;
     case 30000: label = "profile list"; break;
     case 30001: label = "bookmark list"; break;
+    case 30009: label = "badge definitions"; break;
+    case 30008: label = "profile badges"; break;
     case 30023: label = "long post"; break;
     case 31989: label = "used apps"; break;
     case 31990: label = "app handlers"; break;
@@ -122,6 +153,7 @@ export function getRememberLabel(kind, platform) {
   switch (kind) {
     case 0: label = "profiles"; break;
     case 1: label = "notes"; break;
+    case 3: label = "contact lists"; break;
     case 30023: label = "posts"; break;
     case 9802: label = "highlights"; break;
     case 31337: label = "audio tracks"; break;
@@ -169,16 +201,19 @@ export function getPlatform() {
 
 
 async function createConnectNDK (custom_relays) {
-  const relays = ["wss://relay.nostr.band/all", "wss://nos.lol", "wss://relay.damus.io",
-		  "wss://nostr.mutinywallet.com" // for broadcasting
-  ];
+
+  // FIXME the issue is that NDK would return EOSE even if some dumb relay
+  // returns EOSE immediately w/o returning anything, while others are trying to stream the
+  // data, which takes some time. And so instead of getting a merged result from
+  // several relays, you get truncated result from just one of them
+  
+  const relays = [...new Set([...readRelays, ...writeRelays])];
   if (custom_relays)
     relays.push(...custom_relays);
   const nip07signer = nostrEnabled ? new NDKNip07Signer() : null;
-  const n = new NDK({ explicitRelayUrls: relays, signer: nip07signer });
+  ndkObject = new NDK({ explicitRelayUrls: relays, signer: nip07signer });
   console.log("ndk connecting, signer", nip07signer != null);
-  await n.connect();
-  return n;
+  await ndkObject.connect();
 }
 
 export async function getNDK (relays) {
@@ -188,7 +223,7 @@ export async function getNDK (relays) {
   }
 
   return new Promise(async function (ok) {
-    ndkObject = await createConnectNDK(relays);
+    await createConnectNDK(relays);
     ok(ndkObject);
   });
 }
@@ -258,7 +293,7 @@ export function dedupEvents(events) {
       map[addr] = e;
     }
   }
-  
+
   return Object.values(map);
 }
 
@@ -410,6 +445,29 @@ function prepareHandlers(events, metaPubkey) {
   return info;
 }
 
+function startFetch(ndk, filter) {
+  const relaySet = NDKRelaySet.fromRelayUrls(readRelays, ndk);
+
+  // have to reimplement the ndk's fetchEvents method to allow:
+  // - relaySet - only read relays to exclude the mutiny relay that returns EOSE on everything which
+  // breaks the NDK's internal EOSE handling (sends eose too early assuming this "fast" relay has sent all we need)
+  // - turn of NDK's dedup logic bcs it is faulty (doesn't handle 0, 3, 10k)
+  return new Promise((resolve) => {
+    const events = [];
+    const opts = {};
+    const relaySetSubscription = ndk.subscribe(filter, { ...opts, closeOnEose: true }, relaySet);
+    relaySetSubscription.on("event", (event) => {
+      event.ndk = this;
+      events.push(event);
+    });
+    relaySetSubscription.on("eose", () => {
+      resolve(events);
+    });
+  });
+
+//  return ndk.fetchEvents(filter, opts);
+}
+
 export async function fetchApps(pubkey, addr) {
 
   const ndk = await getNDK();
@@ -419,15 +477,15 @@ export async function fetchApps(pubkey, addr) {
     kinds: [cs.KIND_META],
   };
 
-  const reqs = [ndk.fetchEvents(filter)];
-  
-  const apps_filter: NDKFilter = {
+  const reqs = [startFetch(ndk, filter)];
+    
+  const appsFilter: NDKFilter = {
     authors: [pubkey],
     kinds: [cs.KIND_HANDLERS],
   };
-  reqs.push(ndk.fetchEvents(apps_filter));
+  reqs.push(startFetch(ndk, appsFilter));
 
-  console.log("loading profile and apps for", pubkey);
+  console.log("loading profile and apps for", pubkey, isAuthed());
 
   // wait for both subs
   const events = await fetchAllEvents(reqs);
@@ -472,7 +530,7 @@ export async function fetchAppsByKinds(kinds) {
   if (kinds && kinds.length > 0)
     filter["#k"] = kinds.map(k => ""+k);
 	
-  let events = await fetchAllEvents([ndk.fetchEvents(filter)]);
+  let events = await fetchAllEvents([startFetch(ndk, filter)]);
   console.log("events", events);
 
   const pubkeys = {};
@@ -480,7 +538,7 @@ export async function fetchAppsByKinds(kinds) {
     pubkeys[e.pubkey] = 1;
 
   if (events.length > 0) {
-    const metas = await fetchAllEvents([ndk.fetchEvents({
+    const metas = await fetchAllEvents([startFetch(ndk, {
       kinds: [cs.KIND_META],
       authors: Object.keys(pubkeys),
     })]);
@@ -504,11 +562,11 @@ export async function fetchAppByNaddr(naddr, platform) {
 
   const ndk = await getNDK();
     
-  const events = await fetchAllEvents([ndk.fetchEvents({
+  const events = await fetchAllEvents([startFetch(ndk, {
     authors: [data.pubkey],
     kinds: [cs.KIND_HANDLERS],
     '#d': [data.identifier]
-  }), ndk.fetchEvents({
+  }), startFetch(ndk, {
     authors: [data.pubkey],
     kinds: [cs.KIND_META],
   })]);
@@ -538,7 +596,7 @@ export function filterAppsByPlatform(info, platform) {
 }
 
 export async function fetchRecomms(addr, count, friendPubkeys) {
-  count = count || 10;
+  count = count || 100;
   
   const ndk = await getNDK();
 
@@ -546,7 +604,7 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
 
   const a = addr.kind + ":" + addr.pubkey + ":" + addr.identifier;
   if (friendPubkeys) {
-    reqs.push(ndk.fetchEvents({
+    reqs.push(startFetch(ndk, {
       "#a": [a],
       kinds: [cs.KIND_RECOMM],
       authors: friendPubkeys,
@@ -554,11 +612,11 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
     }));
   }
   
-  reqs.push(ndk.fetchEvents({
+  reqs.push(startFetch(ndk, {
     "#a": [a],
     kinds: [cs.KIND_RECOMM],
     limit: 100,
-  }));
+  })); // {cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
 
   const events = await fetchAllEvents(reqs);
   console.log("recomms", events);
@@ -581,10 +639,12 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
     const authors = {};
     for (const e of events)
       authors[e.pubkey] = 1;
-    const metas = await fetchAllEvents([ndk.fetchEvents({
+    console.log("authors", Object.keys(authors).length, events.length);
+    const metas = await fetchAllEvents([startFetch(ndk, {
       kinds: [cs.KIND_META],
       authors: Object.keys(authors),
     })]);
+    console.log("metas", metas);
 
     for (const m of metas) {
       m.profile = parseContentJson(m.content);
@@ -609,7 +669,7 @@ export async function fetchUserRecomms(pubkey, kinds) {
   if (kinds)
     filter["#d"] = kinds.map(k => ""+k);
 
-  const events = await fetchAllEvents([ndk.fetchEvents(filter)]);
+  const events = await fetchAllEvents([startFetch(ndk, filter)]);
   console.log("user recomms", events);
 
   return events;
@@ -625,7 +685,7 @@ export async function fetchUserRecommsApps(pubkey, kinds) {
   if (kinds)
     filter["#d"] = kinds.map(k => ""+k);
 
-  const events = await fetchAllEvents([ndk.fetchEvents(filter)]);
+  const events = await fetchAllEvents([startFetch(ndk, filter)]);
   console.log("user recomms", events);
 
   const addrEvents = {};
@@ -695,8 +755,8 @@ export async function fetchAppsByAs(aTags) {
   };
 
   const appEvents = await fetchAllEvents([
-    ndk.fetchEvents(appFilter),
-    ndk.fetchEvents(metaFilter),      
+    startFetch(ndk, appFilter),
+    startFetch(ndk, metaFilter),      
   ]);
 
   // find meta first
@@ -713,7 +773,7 @@ export async function fetchProfile(pubkey) {
   
   const ndk = await getNDK();
 
-  const events = await fetchAllEvents([ndk.fetchEvents({
+  const events = await fetchAllEvents([startFetch(ndk, {
     kinds: [cs.KIND_META],
     authors: [pubkey],
   })]);
@@ -746,14 +806,14 @@ export async function fetchEvent (addr) {
   }
   // console.log("loading event by filter", filter);
   
-  const reqs = [ndk.fetchEvents(filter)];
+  const reqs = [startFetch(ndk, filter)];
   if (addr.hex) {
-    const profile_filter: NDKFilter = {
+    const profileFilter: NDKFilter = {
       kinds: [0],
       authors: [addr.event_id]
     };
     // console.log("loading profile by filter", profile_filter);
-    reqs.push(ndk.fetchEvents(profile_filter));
+    reqs.push(startFetch(ndk, profileFilter));
   }
 
   const events = await fetchAllEvents(reqs);
@@ -820,7 +880,10 @@ export async function publishEvent(event) {
   ndkEvent.kind = event.kind;
   ndkEvent.content = event.content;
   ndkEvent.tags = event.tags;
-  const r = await ndkEvent.publish();
+  ndkEvent.created_at = Math.floor(Date.now() / 1000);
+
+  const relaySet = NDKRelaySet.fromRelayUrls(writeRelays, ndk);
+  const r = await ndkEvent.publish(relaySet);
   console.log("r", r);
   return true;  
 }

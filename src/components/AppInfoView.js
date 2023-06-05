@@ -40,21 +40,19 @@ const AppInfoView = () => {
     const addr = data;
     setAddr(addr);
 
-    async function reload() {
-      const info = await cmn.fetchApps(addr.pubkey, addr);
-      setInfo(info);
-      if (info === null || !Object.values(info.apps).length)
-	return;
+    // app info doesn't require authed user data
+    const info = await cmn.fetchApps(addr.pubkey, addr);
+    setInfo(info);
+    if (info === null || !Object.values(info.apps).length)
+      return;
 
-      const appInfo = Object.values(info.apps)[0].addrHandler;
-      setAddKinds(appInfo.kinds);
-      setAddPlatforms(appInfo.platforms);
-      
-      cmn.fetchRecomms(addr).then(setRecomms);
-    };
-
-    cmn.addOnNostr(reload);
-    reload();
+    const appInfo = Object.values(info.apps)[0].addrHandler;
+    setAddKinds(appInfo.kinds);
+    setAddPlatforms(appInfo.platforms);
+    
+    cmn.onAuthed(async () => {
+      setRecomms(await cmn.fetchRecomms(addr));
+    });
   }, [naddr]); 
 
   // on the start
@@ -183,7 +181,10 @@ const AppInfoView = () => {
 	    if (recomms != null && recomms.length > 0) {
 	      const profiles = {};
 	      recomms.map(r => profiles[r.pubkey] = r);
-	      return Object.values(profiles).map(r => {
+	      let list = Object.values(profiles);
+	      if (list.length > 10)
+		list.length = 10;
+	      return list.map(r => {
 		return (
 		  <Profile key={r.id} profile={r} pubkey={r.pubkey} small={true} />
 		);
@@ -205,7 +206,7 @@ const AppInfoView = () => {
 	<h3 className="mt-3">Event kinds:</h3>
 	<div>
 	  {app.kinds.map(k => (
-	    <Form.Check type="switch" key={k} label={cmn.getKinds()[k]}
+	    <Form.Check type="switch" key={k} label={cmn.getKindLabel(k)}
 	      checked={addKinds.includes(k)} onChange={e => toggleAddKind(k, e.target.checked)} />
 	  ))}
 	</div>
