@@ -44,14 +44,14 @@ const Header = () => {
       cmn.fetchProfile(pubkey).then(p => setProfile(p?.profile));
     });
   }, []);
-  
+
   async function login() {
     setError("");
     if (!window.nostr) {
       setError("Please install extension");
       return;
     }
-      
+    
     const pubkey = await window.nostr.getPublicKey();
     console.log("pubkey", pubkey);
     if (pubkey) {
@@ -63,6 +63,11 @@ const Header = () => {
       setError("Failed to login");
     }    
   };
+
+  // let other components activate the modal
+  window.addEventListener('login', () => {
+    setShowLogin(true);
+  });
   
   async function logout() {
     cmn.setLoginPubkey("");
