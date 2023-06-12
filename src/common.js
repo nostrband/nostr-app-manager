@@ -863,6 +863,7 @@ export function getLoginPubkey() {
 }
 
 export function setLoginPubkey(pubkey) {
+  authed = !!pubkey;
   return localSet("loginPubkey", pubkey);
 }
 
