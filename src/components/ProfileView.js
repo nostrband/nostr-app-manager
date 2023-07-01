@@ -92,7 +92,7 @@ const ProfileView = () => {
           {recomms.length > 0 && (
             <ListGroup>
               {reorganizeData().map((group) => (
-                <div key={group.name} className="mb-4">
+                <div key={group.name} className="mb-3">
                   {group.apps.map((app) => (
                     <AppSelectItem key={app.id} app={app} />
                   ))}
