@@ -98,8 +98,8 @@ const ProfileView = () => {
                   ))}
                   <h6 className="mt-3">
                     {group.kinds && group.kinds.length !== 1
-                      ? 'Used kinds: '
-                      : 'Used kind: '}
+                      ? 'Used for kinds: '
+                      : 'Used for kind: '}
                     {group.kinds.map((kind) => (
                       <span key={kind}>
                         {kinds[kind]}
