@@ -94,23 +94,12 @@ const ProfileView = () => {
               {reorganizeData().map((group) => (
                 <div key={group.name} className="mb-3">
                   {group.apps.map((app) => (
-                    <AppSelectItem key={app.id} app={app} />
+                    <AppSelectItem
+                      showKinds
+                      key={app.id}
+                      app={{ ...app, forKinds: group.kinds }}
+                    />
                   ))}
-                  <h6 className="mt-3">
-                    {group.kinds && group.kinds.length !== 1
-                      ? 'Used for kinds: '
-                      : 'Used for kind: '}
-                    {group.kinds.map((kind) => (
-                      <span key={kind}>
-                        {kinds[kind]}
-                        <span style={{ color: 'gray', fontWeight: 600 }}>
-                          {' '}
-                          {`(${kind})`}
-                        </span>
-                        {kind !== group.kinds[group.kinds.length - 1] && ', '}
-                      </span>
-                    ))}
-                  </h6>
                 </div>
               ))}
             </ListGroup>
