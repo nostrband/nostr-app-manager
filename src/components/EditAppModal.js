@@ -7,7 +7,6 @@ import Button from 'react-bootstrap/Button';
 import AppSelectItem from '../elements/AppSelectItem';
 
 const EditAppModal = ({ selectedApp, openModal, handleEditClose }) => {
-  console.log(selectedApp, 'SELECTED APP');
   const [offForKinds, setOffForKinds] = useState([]);
 
   const handleOffKind = (e) => {
