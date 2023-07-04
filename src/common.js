@@ -1,8 +1,13 @@
-import platform from 'platform-detect'
-import NDK, { NDKFilter, NDKEvent, NDKNip07Signer, NDKRelaySet } from "@nostr-dev-kit/ndk";
-import { nip19 } from 'nostr-tools'
+import platform from 'platform-detect';
+import NDK, {
+  NDKFilter,
+  NDKEvent,
+  NDKNip07Signer,
+  NDKRelaySet,
+} from '@nostr-dev-kit/ndk';
+import { nip19 } from 'nostr-tools';
 
-import * as cs from "./const"
+import * as cs from './const';
 
 let ndkObject = null;
 let authed = false;
@@ -13,15 +18,16 @@ const profileCache = {};
 let onNostrHandlers = [];
 let nostrEnabled = false;
 
-const readRelays = ["wss://relay.nostr.band/all", "wss://nos.lol", "wss://relay.damus.io"];
-const writeRelays = [...readRelays, "wss://nostr.mutinywallet.com"] // for broadcasting
+const readRelays = [
+  'wss://relay.nostr.band/all',
+  'wss://nos.lol',
+  'wss://relay.damus.io',
+];
+const writeRelays = [...readRelays, 'wss://nostr.mutinywallet.com']; // for broadcasting
 
 export async function addOnNostr(handler) {
-  
-  if (nostrEnabled)
-    await handler();
-  else
-    onNostrHandlers.push(handler);
+  if (nostrEnabled) await handler();
+  else onNostrHandlers.push(handler);
 }
 
 export async function onAuthed(handler) {
@@ -32,14 +38,12 @@ export async function onAuthed(handler) {
   // after nostr extension is ready, recheck the
   // authed state and reload if needed
   addOnNostr(async () => {
-    if (wasAuthed !== isAuthed ())
-      await handler();
+    if (wasAuthed !== isAuthed()) await handler();
   });
 }
 
 export function enableNostr() {
   return new Promise(function (ok) {
-
     // check window.nostr periodically, backoff exponentially,
     // and if we've detected window.nostr give it a bit more time
     // to init
@@ -47,28 +51,26 @@ export function enableNostr() {
     let hasNostr = false;
     async function checkNostr() {
       if (hasNostr) {
+        nostrEnabled = true;
 
-	nostrEnabled = true;
+        // reconnect
+        if (ndkObject) {
+          ndkObject.signer = new NDKNip07Signer();
+        }
 
-	// reconnect
-	if (ndkObject) {
-	  ndkObject.signer = new NDKNip07Signer();
-	}
+        // execute handlers
+        for (const h of onNostrHandlers) await h();
 
-	// execute handlers
-	for (const h of onNostrHandlers)
-	  await h();
-	
-	ok ();
+        ok();
       } else {
-	if (window.nostr) {
-	  hasNostr = true;
-	  // wait until it initializes
-	  setTimeout(checkNostr, 500);
-	} else {
-	  period *= 2;
-	  setTimeout(checkNostr, period);
-	}
+        if (window.nostr) {
+          hasNostr = true;
+          // wait until it initializes
+          setTimeout(checkNostr, 500);
+        } else {
+          period *= 2;
+          setTimeout(checkNostr, period);
+        }
       }
     }
 
@@ -78,108 +80,164 @@ export function enableNostr() {
 }
 
 export function localGet(key) {
-  try
-  {
-    if (localStorage)
-      return localStorage.getItem(key);
-    else
-      return sessionStorage.getItem(key);
-  }
-  catch (e)
-  {
+  try {
+    if (localStorage) return localStorage.getItem(key);
+    else return sessionStorage.getItem(key);
+  } catch (e) {
     return null;
   }
 }
 
 export function localSet(key, value) {
-  try
-  {
-    if (localStorage)
-      localStorage.setItem(key, value);
-    else
-      sessionStorage.setItem(key, value);
-  }
-  catch (e)
-  {}
+  try {
+    if (localStorage) localStorage.setItem(key, value);
+    else sessionStorage.setItem(key, value);
+  } catch (e) {}
 }
 
 export function readAppSettings() {
-  const json = localGet("appSettings");
+  const json = localGet('appSettings');
+  console.log(json, 'JSSOOOON');
   try {
-    return json ? JSON.parse (json) : {};
+    return json ? JSON.parse(json) : {};
   } catch (e) {
     return {};
   }
 }
 
 export function writeAppSettings(apps) {
-  localSet("appSettings", JSON.stringify(apps));
+  localSet('appSettings', JSON.stringify(apps));
 }
 
 export function getKindLabel(kind) {
-  let label = "";
+  let label = '';
   switch (Number(kind)) {
-    case 0: label = "profile"; break;
-    case 1: label = "note"; break;
-    case 3: label = "contact list"; break;
-    case 4: label = "DM"; break;
-    case 6: label = "repost"; break;
-    case 7: label = "reaction"; break;
-    case 8: label = "badge award"; break;
-    case 1063: label = "file info"; break;
-    case 1984: label = "report"; break;
-    case 9735: label = "zap"; break;
-    case 9802: label = "highlight"; break;
-    case 31337: label = "audio track"; break;
-    case 10000: label = "mute list"; break;
-    case 30000: label = "profile list"; break;
-    case 30001: label = "bookmark list"; break;
-    case 30009: label = "badge definitions"; break;
-    case 30008: label = "profile badges"; break;
-    case 30023: label = "long post"; break;
-    case 31989: label = "used apps"; break;
-    case 31990: label = "app handlers"; break;
-    default: label = "event kind "+kind; break;
+    case 0:
+      label = 'profile';
+      break;
+    case 1:
+      label = 'note';
+      break;
+    case 3:
+      label = 'contact list';
+      break;
+    case 4:
+      label = 'DM';
+      break;
+    case 6:
+      label = 'repost';
+      break;
+    case 7:
+      label = 'reaction';
+      break;
+    case 8:
+      label = 'badge award';
+      break;
+    case 1063:
+      label = 'file info';
+      break;
+    case 1984:
+      label = 'report';
+      break;
+    case 9735:
+      label = 'zap';
+      break;
+    case 9802:
+      label = 'highlight';
+      break;
+    case 31337:
+      label = 'audio track';
+      break;
+    case 10000:
+      label = 'mute list';
+      break;
+    case 30000:
+      label = 'profile list';
+      break;
+    case 30001:
+      label = 'bookmark list';
+      break;
+    case 30009:
+      label = 'badge definitions';
+      break;
+    case 30008:
+      label = 'profile badges';
+      break;
+    case 30023:
+      label = 'long post';
+      break;
+    case 31989:
+      label = 'used apps';
+      break;
+    case 31990:
+      label = 'app handlers';
+      break;
+    default:
+      label = 'event kind ' + kind;
+      break;
   }
   return label;
 }
 
 export function getRememberLabel(kind, platform) {
-  let label = "";
+  let label = '';
   switch (kind) {
-    case 0: label = "profiles"; break;
-    case 1: label = "notes"; break;
-    case 3: label = "contact lists"; break;
-    case 30023: label = "posts"; break;
-    case 9802: label = "highlights"; break;
-    case 31337: label = "audio tracks"; break;
-    case 10000: label = "mute lists"; break;
-    case 30000: label = "profile lists"; break;
-    case 30001: label = "bookmark lists"; break;
-    case 31989: label = "used apps"; break;
-    case 31990: label = "app handlers"; break;
-    default: label = "events of kind "+kind; break;
+    case 0:
+      label = 'profiles';
+      break;
+    case 1:
+      label = 'notes';
+      break;
+    case 3:
+      label = 'contact lists';
+      break;
+    case 30023:
+      label = 'posts';
+      break;
+    case 9802:
+      label = 'highlights';
+      break;
+    case 31337:
+      label = 'audio tracks';
+      break;
+    case 10000:
+      label = 'mute lists';
+      break;
+    case 30000:
+      label = 'profile lists';
+      break;
+    case 30001:
+      label = 'bookmark lists';
+      break;
+    case 31989:
+      label = 'used apps';
+      break;
+    case 31990:
+      label = 'app handlers';
+      break;
+    default:
+      label = 'events of kind ' + kind;
+      break;
   }
-  return  (
+  return (
     <>
-      Remember for <b>{label}</b> on <b>{platform || "all devices"}</b>
+      Remember for <b>{label}</b> on <b>{platform || 'all devices'}</b>
     </>
-  )
+  );
 }
 
 export function getSavedApp(kind, platform, settings) {
-
-  if ("kinds" in settings
-      && kind in settings.kinds
-      && "platforms" in settings.kinds[kind]
-      && platform in settings.kinds[kind].platforms)
-  {
-    const app = settings.kinds[kind].platforms[platform].app || "";
-    if (app.startsWith("naddr1"))
-      return app;
+  if (
+    'kinds' in settings &&
+    kind in settings.kinds &&
+    'platforms' in settings.kinds[kind] &&
+    platform in settings.kinds[kind].platforms
+  ) {
+    const app = settings.kinds[kind].platforms[platform].app || '';
+    if (app.startsWith('naddr1')) return app;
   }
 
-  return "";
+  return '';
 }
 
 export function getCachedApp(platform, app_id) {
@@ -188,36 +246,29 @@ export function getCachedApp(platform, app_id) {
 }
 
 export function getPlatform() {
-  console.log("platform", platform);
-  if (platform.android)
-    return "android";
-  else if (platform.ios)
-    return "ios";
-  else if (platform.macos)
-    return "macos";
-  else
-    return "desktop";
+  console.log('platform', platform);
+  if (platform.android) return 'android';
+  else if (platform.ios) return 'ios';
+  else if (platform.macos) return 'macos';
+  else return 'desktop';
 }
 
-
-async function createConnectNDK (custom_relays) {
-
+async function createConnectNDK(custom_relays) {
   // FIXME the issue is that NDK would return EOSE even if some dumb relay
   // returns EOSE immediately w/o returning anything, while others are trying to stream the
   // data, which takes some time. And so instead of getting a merged result from
   // several relays, you get truncated result from just one of them
-  
+
   const relays = [...new Set([...readRelays, ...writeRelays])];
-  if (custom_relays)
-    relays.push(...custom_relays);
+  if (custom_relays) relays.push(...custom_relays);
   const nip07signer = nostrEnabled ? new NDKNip07Signer() : null;
   ndkObject = new NDK({ explicitRelayUrls: relays, signer: nip07signer });
-  console.log("ndk connecting, signer", nip07signer != null);
+  console.log('ndk connecting, signer', nip07signer != null);
   await ndkObject.connect();
 }
 
-export async function getNDK (relays) {
-  if (ndkObject) {    
+export async function getNDK(relays) {
+  if (ndkObject) {
     // FIXME add relays to the pool
     return ndkObject;
   }
@@ -230,14 +281,13 @@ export async function getNDK (relays) {
 
 export function isPlatform(t) {
   for (const p of cs.platforms) {
-    if (p === t)
-      return true;
+    if (p === t) return true;
   }
   return false;
 }
 
 export function isType(type) {
-  return cs.types.find(t => t === type) !== undefined;
+  return cs.types.find((t) => t === type) !== undefined;
 }
 
 export function getTypes() {
@@ -253,39 +303,38 @@ export function getKinds() {
 }
 
 export function getTags(e, name) {
-  return e.tags.filter(t => t.length > 0 && t[0] === name);
+  return e.tags.filter((t) => t.length > 0 && t[0] === name);
 }
 
 export function getTag(e, name) {
   const tags = getTags(e, name);
-  if (tags.length === 0)
-    return null;
+  if (tags.length === 0) return null;
   return tags[0];
 }
 
 export function getTagValue(e, name, index, def) {
   const tag = getTag(e, name);
-  if (tag === null || !tag.length || (index && index >= tag.length)) return def !== undefined ? def : "";
+  if (tag === null || !tag.length || (index && index >= tag.length))
+    return def !== undefined ? def : '';
   return tag[1 + (index || 0)];
 }
 
 export function getEventTagA(e) {
-  let addr = e.kind + ":" + e.pubkey + ":";
-  if (e.kind >= 30000 && e.kind < 40000)
-    addr += getTagValue (e, "d");
+  let addr = e.kind + ':' + e.pubkey + ':';
+  if (e.kind >= 30000 && e.kind < 40000) addr += getTagValue(e, 'd');
   return addr;
 }
 
 export function dedupEvents(events) {
-
   const map = {};
   for (const e of events) {
     let addr = e.id;
-    if (e.kind === 0
-	|| e.kind === 3
-	|| (e.kind >= 10000 && e.kind < 20000)
-	|| (e.kind >= 30000 && e.kind < 40000)) {
-
+    if (
+      e.kind === 0 ||
+      e.kind === 3 ||
+      (e.kind >= 10000 && e.kind < 20000) ||
+      (e.kind >= 30000 && e.kind < 40000)
+    ) {
       addr = getEventTagA(e);
     }
 
@@ -301,7 +350,7 @@ export function parseContentJson(content) {
   try {
     return JSON.parse(content);
   } catch (ex) {
-    console.log("Bad json content", ex, content);
+    console.log('Bad json content', ex, content);
   }
   return {};
 }
@@ -310,13 +359,13 @@ export function getEventAddr(e) {
   return {
     kind: e.kind,
     pubkey: e.pubkey,
-    identifier: getTagValue(e, "d"),
-  }
+    identifier: getTagValue(e, 'd'),
+  };
 }
 
 export function formatNpubShort(pubkey) {
   const npub = nip19.npubEncode(pubkey);
-  return npub.substring(0, 12) + "..." + npub.substring(npub.length - 4);
+  return npub.substring(0, 12) + '...' + npub.substring(npub.length - 4);
 }
 
 export function formatNpub(pubkey) {
@@ -332,24 +381,22 @@ export function getNaddr(e) {
 }
 
 export function naddrToAddr(naddr) {
-  const {type, data} = nip19.decode(naddr);
-  if (type !== "naddr")
-    return "";
-  return data.kind + ":" + data.pubkey + ":" + data.identifier;
+  const { type, data } = nip19.decode(naddr);
+  if (type !== 'naddr') return '';
+  return data.kind + ':' + data.pubkey + ':' + data.identifier;
 }
 
 async function fetchAllEvents(reqs) {
   const results = await Promise.allSettled(reqs);
-  console.log("results", results);
-  
+  console.log('results', results);
+
   let events = [];
   for (const r of results) {
-    if (r.status === "fulfilled") {
+    if (r.status === 'fulfilled') {
       if (r.value !== null) {
-	if (typeof r.value[Symbol.iterator] === 'function')
-	  events.push(...r.value);
-	else
-	  events.push(r.value);
+        if (typeof r.value[Symbol.iterator] === 'function')
+          events.push(...r.value);
+        else events.push(r.value);
       }
     }
   }
@@ -358,10 +405,9 @@ async function fetchAllEvents(reqs) {
 }
 
 function prepareHandlers(events, metaPubkey) {
-
   const info = {
     meta: null,
-    apps: {}
+    apps: {},
   };
 
   const metas = {};
@@ -371,30 +417,24 @@ function prepareHandlers(events, metaPubkey) {
 
       e.profile = parseContentJson(e.content);
 
-      if (metaPubkey && metaPubkey === e.pubkey)
-	info.meta = e;
+      if (metaPubkey && metaPubkey === e.pubkey) info.meta = e;
     }
   }
 
   for (const e of events) {
-    if (e.kind !== cs.KIND_HANDLERS)
-      continue;
+    if (e.kind !== cs.KIND_HANDLERS) continue;
 
     // init handler profile
     e.inheritedProfile = !e.content;
-    e.author = (e.pubkey in metas) ? metas[e.pubkey] : null;
-    if (e.inheritedProfile) 
-      e.profile = e.author?.profile || {};
-    else
-      e.profile = parseContentJson(e.content);
+    e.author = e.pubkey in metas ? metas[e.pubkey] : null;
+    if (e.inheritedProfile) e.profile = e.author?.profile || {};
+    else e.profile = parseContentJson(e.content);
 
     const kinds = {};
-    for (const t of getTags(e, "k")) {
-      if (t.length < 2)
-	continue;
-      const k = Number(t[1])
-      if (k < 0 || k > 10000000)
-	continue;
+    for (const t of getTags(e, 'k')) {
+      if (t.length < 2) continue;
+      const k = Number(t[1]);
+      if (k < 0 || k > 10000000) continue;
       kinds[k] = 1;
     }
     e.kinds = Object.keys(kinds);
@@ -405,34 +445,32 @@ function prepareHandlers(events, metaPubkey) {
       const urls = getTags(e, p);
 
       for (const url of urls) {
-	if (url.length < 2)
-	  continue;
+        if (url.length < 2) continue;
 
-	const type = url.length > 2 ? url[2] : "";
-	if (!isType(type))
-	  continue;
-	
-	ps[p] = 1;
-	e.urls.push({
-	  platform: p,
-	  url: url[1],
-	  type
-	});
+        const type = url.length > 2 ? url[2] : '';
+        if (!isType(type)) continue;
+
+        ps[p] = 1;
+        e.urls.push({
+          platform: p,
+          url: url[1],
+          type,
+        });
       }
     }
     e.platforms = Object.keys(ps);
-    
+
     // dedup by app name
-    e.name = getTagValue(e, "d");
-    if (e.content !== "")
-      e.name = e.profile.name || e.profile.display_name || "";
+    e.name = getTagValue(e, 'd');
+    if (e.content !== '')
+      e.name = e.profile.name || e.profile.display_name || '';
 
     if (!(e.name in info.apps)) {
       info.apps[e.name] = {
-	name: e.name,
-	handlers: [],
-	kinds: [],
-	platforms: [],
+        name: e.name,
+        handlers: [],
+        kinds: [],
+        platforms: [],
       };
     }
 
@@ -441,7 +479,7 @@ function prepareHandlers(events, metaPubkey) {
     app.kinds.push(...e.kinds);
     app.platforms.push(...e.platforms);
   }
-  
+
   return info;
 }
 
@@ -455,41 +493,44 @@ function startFetch(ndk, filter) {
   return new Promise((resolve) => {
     const events = [];
     const opts = {};
-    const relaySetSubscription = ndk.subscribe(filter, { ...opts, closeOnEose: true }, relaySet);
-    relaySetSubscription.on("event", (event) => {
+    const relaySetSubscription = ndk.subscribe(
+      filter,
+      { ...opts, closeOnEose: true },
+      relaySet
+    );
+    relaySetSubscription.on('event', (event) => {
       event.ndk = this;
       events.push(event);
     });
-    relaySetSubscription.on("eose", () => {
+    relaySetSubscription.on('eose', () => {
       resolve(events);
     });
   });
 
-//  return ndk.fetchEvents(filter, opts);
+  //  return ndk.fetchEvents(filter, opts);
 }
 
 export async function fetchApps(pubkey, addr) {
-
   const ndk = await getNDK();
-  
+
   const filter: NDKFilter = {
     authors: [pubkey],
     kinds: [cs.KIND_META],
   };
 
   const reqs = [startFetch(ndk, filter)];
-    
+
   const appsFilter: NDKFilter = {
     authors: [pubkey],
     kinds: [cs.KIND_HANDLERS],
   };
   reqs.push(startFetch(ndk, appsFilter));
 
-  console.log("loading profile and apps for", pubkey, isAuthed());
+  console.log('loading profile and apps for', pubkey, isAuthed());
 
   // wait for both subs
   const events = await fetchAllEvents(reqs);
-  console.log("events", events);
+  console.log('events', events);
 
   // find handlers
   const info = prepareHandlers(events, pubkey);
@@ -499,10 +540,10 @@ export async function fetchApps(pubkey, addr) {
     let app_name = null;
     for (const name in info.apps) {
       for (const handler of info.apps[name].handlers) {
-	if (getTagValue(handler, "d") === addr.identifier) {
-	  app_name = name;
-	  break;
-	}
+        if (getTagValue(handler, 'd') === addr.identifier) {
+          app_name = name;
+          break;
+        }
       }
     }
 
@@ -512,74 +553,76 @@ export async function fetchApps(pubkey, addr) {
       const app = info.apps[app_name];
       info.apps = {};
       info.apps[app_name] = app;
-      app.addrHandler = app.handlers.find(h => addr.identifier === getTagValue(h, "d"))
+      app.addrHandler = app.handlers.find(
+        (h) => addr.identifier === getTagValue(h, 'd')
+      );
     }
   }
-  
-  console.log("apps", info);
+
+  console.log('apps', info);
   return info;
 }
 
 export async function fetchAppsByKinds(kinds) {
-
   const ndk = await getNDK();
 
   const filter = {
     kinds: [cs.KIND_HANDLERS],
   };
-  if (kinds && kinds.length > 0)
-    filter["#k"] = kinds.map(k => ""+k);
-	
+  if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
+
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log("events", events);
+  console.log('events', events);
 
   const pubkeys = {};
-  for (const e of events)
-    pubkeys[e.pubkey] = 1;
+  for (const e of events) pubkeys[e.pubkey] = 1;
 
   if (events.length > 0) {
-    const metas = await fetchAllEvents([startFetch(ndk, {
-      kinds: [cs.KIND_META],
-      authors: Object.keys(pubkeys),
-    })]);
-    console.log("metas", metas);
+    const metas = await fetchAllEvents([
+      startFetch(ndk, {
+        kinds: [cs.KIND_META],
+        authors: Object.keys(pubkeys),
+      }),
+    ]);
+    console.log('metas', metas);
 
     events = [...events, ...metas];
   }
-  
+
   // parse
   const info = prepareHandlers(events);
 
-  console.log("apps", info);
+  console.log('apps', info);
   return info;
 }
 
 export async function fetchAppByNaddr(naddr, platform) {
-
-  const {type, data} = nip19.decode(naddr);
-  if (type !== "naddr" || data.kind !== cs.KIND_HANDLERS)
-    return null;
+  const { type, data } = nip19.decode(naddr);
+  if (type !== 'naddr' || data.kind !== cs.KIND_HANDLERS) return null;
 
   const ndk = await getNDK();
-    
-  const events = await fetchAllEvents([startFetch(ndk, {
-    authors: [data.pubkey],
-    kinds: [cs.KIND_HANDLERS],
-    '#d': [data.identifier]
-  }), startFetch(ndk, {
-    authors: [data.pubkey],
-    kinds: [cs.KIND_META],
-  })]);
-  console.log("events", events);
-  
+
+  const events = await fetchAllEvents([
+    startFetch(ndk, {
+      authors: [data.pubkey],
+      kinds: [cs.KIND_HANDLERS],
+      '#d': [data.identifier],
+    }),
+    startFetch(ndk, {
+      authors: [data.pubkey],
+      kinds: [cs.KIND_META],
+    }),
+  ]);
+  console.log('events', events);
+
   // parse
   const info = prepareHandlers(events);
 
   // FIXME inject pre-defined set of apps
-  
+
   const apps = filterAppsByPlatform(info, platform);
-  
-  console.log("apps", apps);
+
+  console.log('apps', apps);
   return apps.length > 0 ? apps[0] : null;
 }
 
@@ -587,7 +630,11 @@ export function filterAppsByPlatform(info, platform) {
   const apps = [];
   for (const name in info.apps) {
     const a = info.apps[name];
-    if (!platform || a.platforms.includes(platform) || a.platforms.includes("web")) {
+    if (
+      !platform ||
+      a.platforms.includes(platform) ||
+      a.platforms.includes('web')
+    ) {
       // for now show just one matching handler from the same app
       apps.push(a.handlers[0]);
     }
@@ -597,61 +644,63 @@ export function filterAppsByPlatform(info, platform) {
 
 export async function fetchRecomms(addr, count, friendPubkeys) {
   count = count || 100;
-  
+
   const ndk = await getNDK();
 
   const reqs = [];
 
-  const a = addr.kind + ":" + addr.pubkey + ":" + addr.identifier;
+  const a = addr.kind + ':' + addr.pubkey + ':' + addr.identifier;
   if (friendPubkeys) {
-    reqs.push(startFetch(ndk, {
-      "#a": [a],
-      kinds: [cs.KIND_RECOMM],
-      authors: friendPubkeys,
-      limit: 100,
-    }));
+    reqs.push(
+      startFetch(ndk, {
+        '#a': [a],
+        kinds: [cs.KIND_RECOMM],
+        authors: friendPubkeys,
+        limit: 100,
+      })
+    );
   }
-  
-  reqs.push(startFetch(ndk, {
-    "#a": [a],
-    kinds: [cs.KIND_RECOMM],
-    limit: 100,
-  })); // {cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
+
+  reqs.push(
+    startFetch(ndk, {
+      '#a': [a],
+      kinds: [cs.KIND_RECOMM],
+      limit: 100,
+    })
+  ); // {cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
 
   const events = await fetchAllEvents(reqs);
-  console.log("recomms", events);
+  console.log('recomms', events);
 
   for (const e of events) {
     e.isFriend = friendPubkeys && friendPubkeys.includes(e.pubkey);
   }
 
   events.sort((a, b) => {
-    if (a.friend === b.friend)
-      return 0;
-    if (a.friend)
-      return 1;
+    if (a.friend === b.friend) return 0;
+    if (a.friend) return 1;
     return -1;
   });
-  if (events.length > count)
-    events.length = count;
+  if (events.length > count) events.length = count;
 
   if (events.length) {
     const authors = {};
-    for (const e of events)
-      authors[e.pubkey] = 1;
-    console.log("authors", Object.keys(authors).length, events.length);
-    const metas = await fetchAllEvents([startFetch(ndk, {
-      kinds: [cs.KIND_META],
-      authors: Object.keys(authors),
-    })]);
-    console.log("metas", metas);
+    for (const e of events) authors[e.pubkey] = 1;
+    console.log('authors', Object.keys(authors).length, events.length);
+    const metas = await fetchAllEvents([
+      startFetch(ndk, {
+        kinds: [cs.KIND_META],
+        authors: Object.keys(authors),
+      }),
+    ]);
+    console.log('metas', metas);
 
     for (const m of metas) {
       m.profile = parseContentJson(m.content);
     }
-    
+
     for (const e of events) {
-      const meta = metas.find(m => m.pubkey === e.pubkey);
+      const meta = metas.find((m) => m.pubkey === e.pubkey);
       e.profile = meta?.profile || {};
     }
   }
@@ -661,84 +710,75 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
 
 export async function fetchUserRecomms(pubkey, kinds) {
   const ndk = await getNDK();
-  
+
   const filter = {
     kinds: [cs.KIND_RECOMM],
     authors: [pubkey],
   };
-  if (kinds)
-    filter["#d"] = kinds.map(k => ""+k);
+  if (kinds) filter['#d'] = kinds.map((k) => '' + k);
 
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log("user recomms", events);
+  console.log('user recomms', events);
 
   return events;
 }
 
 export async function fetchUserRecommsApps(pubkey, kinds) {
   const ndk = await getNDK();
-  
+
   const filter = {
     kinds: [cs.KIND_RECOMM],
     authors: [pubkey],
   };
-  if (kinds)
-    filter["#d"] = kinds.map(k => ""+k);
+  if (kinds) filter['#d'] = kinds.map((k) => '' + k);
 
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log("user recomms", events);
+  console.log('user recomms', events);
 
   const addrEvents = {};
   for (const e of events) {
-
     // init container
     e.apps = {};
-    
+
     for (const t of e.tags) {
-      if (t.length > 1 && t[0] === "a") {
-	const a = t[1];
-	if (a in addrEvents)
-	  addrEvents[a].push(e);
-	else
-	  addrEvents[a] = [e];
+      if (t.length > 1 && t[0] === 'a') {
+        const a = t[1];
+        if (a in addrEvents) addrEvents[a].push(e);
+        else addrEvents[a] = [e];
       }
     }
   }
 
   const uniqAddrs = Object.keys(addrEvents);
   if (uniqAddrs.length > 0) {
-
     const info = await fetchAppsByAs(uniqAddrs);
     for (const name in info.apps) {
-      for (const app of info.apps[name].handlers) {	
+      for (const app of info.apps[name].handlers) {
+        const a = getEventTagA(app);
 
-	const a = getEventTagA(app);
+        // we might get a wrong combination of pubkey+d
+        if (!(a in addrEvents)) continue;
 
-	// we might get a wrong combination of pubkey+d
-	if (!(a in addrEvents))
-	  continue;
-
-	for (const e of addrEvents[a]) {
-	  e.apps[app.id] = app;
-	}
+        for (const e of addrEvents[a]) {
+          e.apps[app.id] = app;
+        }
       }
     }
   }
-  console.log("recomms", events);
-  
+  console.log('recomms', events);
+
   return events;
 }
 
 export async function fetchAppsByAs(aTags) {
   const ndk = await getNDK();
-  
+
   const d_tags = {};
   const pubkeys = {};
   for (const a of aTags) {
-    const t = a.split(":");
-    if (Number(t[0]) !== cs.KIND_HANDLERS)
-      return;
-    
+    const t = a.split(':');
+    if (Number(t[0]) !== cs.KIND_HANDLERS) return;
+
     pubkeys[t[1]] = 1;
     d_tags[t[2]] = 1;
   }
@@ -756,29 +796,28 @@ export async function fetchAppsByAs(aTags) {
 
   const appEvents = await fetchAllEvents([
     startFetch(ndk, appFilter),
-    startFetch(ndk, metaFilter),      
+    startFetch(ndk, metaFilter),
   ]);
 
   // find meta first
   const info = prepareHandlers(appEvents);
-  console.log("info", info);
+  console.log('info', info);
 
   return info;
 }
 
 export async function fetchProfile(pubkey) {
+  if (pubkey in profileCache) return profileCache[pubkey];
 
-  if (pubkey in profileCache)
-    return profileCache[pubkey];
-  
   const ndk = await getNDK();
 
-  const events = await fetchAllEvents([startFetch(ndk, {
-    kinds: [cs.KIND_META],
-    authors: [pubkey],
-  })]);
-  if (!events.length)
-    return null;
+  const events = await fetchAllEvents([
+    startFetch(ndk, {
+      kinds: [cs.KIND_META],
+      authors: [pubkey],
+    }),
+  ]);
+  if (!events.length) return null;
 
   const p = events[0];
   p.profile = parseContentJson(p.content);
@@ -786,15 +825,18 @@ export async function fetchProfile(pubkey) {
   return p;
 }
 
-export async function fetchEvent (addr) {
-
+export async function fetchEvent(addr) {
   const ndk = await getNDK();
-  
+
   const filter: NDKFilter = {};
   if (addr.event_id) {
     // note, nevent
     filter.ids = [addr.event_id];
-  } else if (addr.pubkey && addr.d_tag !== undefined && addr.kind !== undefined) {
+  } else if (
+    addr.pubkey &&
+    addr.d_tag !== undefined &&
+    addr.kind !== undefined
+  ) {
     // naddr
     filter['#d'] = [addr.d_tag];
     filter.authors = [addr.pubkey];
@@ -805,66 +847,68 @@ export async function fetchEvent (addr) {
     filter.kinds = [addr.kind];
   }
   // console.log("loading event by filter", filter);
-  
+
   const reqs = [startFetch(ndk, filter)];
   if (addr.hex) {
     const profileFilter: NDKFilter = {
       kinds: [0],
-      authors: [addr.event_id]
+      authors: [addr.event_id],
     };
     // console.log("loading profile by filter", profile_filter);
     reqs.push(startFetch(ndk, profileFilter));
   }
 
   const events = await fetchAllEvents(reqs);
-  console.log("events", events);
+  console.log('events', events);
   return events.length > 0 ? events[0] : null;
 }
 
 export function addDefaultApps(kind, apps) {
   if (kind === 0) {
     apps.push({
-      id: "0000000000000000000000000000000000000000000000000000000000000000",
+      id: '0000000000000000000000000000000000000000000000000000000000000000',
       kind: cs.KIND_HANDLERS,
-      pubkey: "0000000000000000000000000000000000000000000000000000000000000000",
+      pubkey:
+        '0000000000000000000000000000000000000000000000000000000000000000',
       tags: [],
       kinds: [0],
       urls: [
-	{url: "nostr:<bech32>", platform: "web", type: "npub"},
-	{url: "nostr:<bech32>", platform: "web", type: "nprofile"},
+        { url: 'nostr:<bech32>', platform: 'web', type: 'npub' },
+        { url: 'nostr:<bech32>', platform: 'web', type: 'nprofile' },
       ],
       profile: {
-	name: "Other app",
-	about: "Redirect to a native app that supports nostr: links",
+        name: 'Other app',
+        about: 'Redirect to a native app that supports nostr: links',
       },
     });
   } else {
     apps.push({
-      id: "0000000000000000000000000000000000000000000000000000000000000001",
+      id: '0000000000000000000000000000000000000000000000000000000000000001',
       kind: cs.KIND_HANDLERS,
-      pubkey: "0000000000000000000000000000000000000000000000000000000000000000",
+      pubkey:
+        '0000000000000000000000000000000000000000000000000000000000000000',
       tags: [],
       kinds: [kind],
       urls: [
-	{url: "nostr:<bech32>", platform: "web", type: "note"},
-	{url: "nostr:<bech32>", platform: "web", type: "nevent"},
-	{url: "nostr:<bech32>", platform: "web", type: "naddr"},
+        { url: 'nostr:<bech32>', platform: 'web', type: 'note' },
+        { url: 'nostr:<bech32>', platform: 'web', type: 'nevent' },
+        { url: 'nostr:<bech32>', platform: 'web', type: 'naddr' },
       ],
       profile: {
-	name: "Other app",
-	about: "Redirect to a native app that supports nostr: links",
+        name: 'Other app',
+        about: 'Redirect to a native app that supports nostr: links',
       },
     });
   }
 }
 
 export function getLoginPubkey() {
-  return localGet("loginPubkey");
+  return localGet('loginPubkey');
 }
 
 export function setLoginPubkey(pubkey) {
   authed = !!pubkey;
-  return localSet("loginPubkey", pubkey);
+  return localSet('loginPubkey', pubkey);
 }
 
 export function isAuthed() {
@@ -873,7 +917,7 @@ export function isAuthed() {
 
 export async function publishEvent(event) {
   if (!isAuthed()) {
-    return {error: "Please authorize"};
+    return { error: 'Please authorize' };
   }
 
   const ndk = await getNDK();
@@ -885,82 +929,81 @@ export async function publishEvent(event) {
 
   const relaySet = NDKRelaySet.fromRelayUrls(writeRelays, ndk);
   const r = await ndkEvent.publish(relaySet);
-  console.log("r", r);
-  return true;  
+  console.log('r', r);
+  return true;
 }
 
 export async function publishRecomms(app, addKinds, addPlatforms) {
-
   if (addKinds.length === 0 || addPlatforms.length === 0) {
-    return "Choose kinds and platforms";
+    return 'Choose kinds and platforms';
   }
 
   if (!isAuthed()) {
-    return "Please login";
+    return 'Please login';
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
   const events = [];
   for (const k of addKinds) {
-
     // template
     const event = {
       kind: cs.KIND_RECOMM,
-      content: "",
+      content: '',
     };
 
-    const list = lists.find(l => getTagValue(l, "d", 0, "") === ""+k);
+    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
     if (list) {
-      console.log("list for", k, "exits", list);
+      console.log('list for', k, 'exits', list);
       event.tags = list.tags;
     } else {
-      console.log("new list for", k);
-      event.tags = [
-	["d", ""+k],
-      ];
+      console.log('new list for', k);
+      event.tags = [['d', '' + k]];
     }
 
     const a = getEventTagA(app);
     let changed = false;
     for (const p of addPlatforms) {
-      if (event.tags.find(t => t.length >= 4 && t[0] === "a" && t[1] === a && t[3] === p) === undefined) {
-	console.log("added to list for", k);
-	event.tags.push(["a", a, "wss://relay.nostr.band", p]);
-	changed = true;
-      } 
+      if (
+        event.tags.find(
+          (t) => t.length >= 4 && t[0] === 'a' && t[1] === a && t[3] === p
+        ) === undefined
+      ) {
+        console.log('added to list for', k);
+        event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
+        changed = true;
+      }
     }
     if (changed) {
       events.push(event);
     } else {
-      console.log("already on the list", k);
+      console.log('already on the list', k);
     }
   }
-  
-  console.log("events", events);
+
+  console.log('events', events);
   if (events.length === 0) {
-    return "";
+    return '';
   }
 
   let r = null;
   for (const e of events) {
     r = await publishEvent(e);
-    if (!r || r.error)
-      break;
+    if (!r || r.error) break;
   }
 
-  return (!r || r.error) ? (r?.error || "Failed") : "";
+  return !r || r.error ? r?.error || 'Failed' : '';
 }
 
 export function formatAppUrl(naddr) {
-  return "/a/" + naddr;
+  return '/a/' + naddr;
 }
 
 export function formatProfileUrl(npub) {
-  return "/p/" + npub;
+  return '/p/' + npub;
 }
 
 export function formatAppEditUrl(naddr) {
-  return "/edit/" + naddr;
+  return '/edit/' + naddr;
 }
 
 // start the window.nostr check
@@ -969,4 +1012,3 @@ addOnNostr(async () => {
   const pubkey = getLoginPubkey();
   authed = pubkey && (await window.nostr.getPublicKey()) === pubkey;
 });
-

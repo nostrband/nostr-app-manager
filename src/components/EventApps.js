@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
 import * as qs from 'native-querystring';
 
-import { nip19 } from 'nostr-tools'
+import { nip19 } from 'nostr-tools';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
@@ -10,17 +10,16 @@ import Button from 'react-bootstrap/Button';
 //import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
 
-import NostrEvent from "../elements/Event";
-import AppSelectItem from "../elements/AppSelectItem";
-import Index from "./Index";
+import NostrEvent from '../elements/Event';
+import AppSelectItem from '../elements/AppSelectItem';
+import Index from './Index';
 
-import * as cmn from "../common"
+import * as cmn from '../common';
 
 const EventApps = () => {
-
   const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [appSettings, setAppSettings] = useState({});
   const [kindApps, setKindApps] = useState([]);
   const [currentApp, setCurrentApp] = useState(null);
@@ -29,65 +28,68 @@ const EventApps = () => {
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
-    if (!ad)
-      return "";
+    if (!ad) return '';
 
     const findUrlType = (type) => {
-      return app.urls.find(u => (u.platform === env.appPlatform || u.platform === "web") && u.type === type);
+      return app.urls.find(
+        (u) =>
+          (u.platform === env.appPlatform || u.platform === 'web') &&
+          u.type === type
+      );
     };
-    
-    const allUrl = findUrlType("");
-    const findUrl = (id) => {
-      const {type} = nip19.decode(id);
-      const u = findUrlType(type) || allUrl;
-      if (u != null)
-	return u.url.replace("<bech32>", id);
 
+    const allUrl = findUrlType('');
+    const findUrl = (id) => {
+      const { type } = nip19.decode(id);
+      const u = findUrlType(type) || allUrl;
+      if (u != null) return u.url.replace('<bech32>', id);
       return null;
     };
 
     const naddrId = {
-      identifier: ad.d_tag || "",
+      identifier: ad.d_tag || '',
       pubkey: ad.pubkey,
       kind: ad.kind,
-      relays: ad.relays
+      relays: ad.relays,
     };
     const neventId = {
       // FIXME add kind!
       id: ad.event_id,
       relays: ad.relays,
-      author: ad.pubkey
+      author: ad.pubkey,
     };
-    
-    let url = "";
+
+    let url = '';
     if (ad.kind === 0) {
-      url = findUrl(nip19.npubEncode(ad.pubkey))
-	 || findUrl(nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays }))
-	 || findUrl(nip19.naddrEncode(naddrId))
-	 || findUrl(nip19.neventEncode(neventId))
-	 || findUrl(nip19.noteEncode(ad.event_id))
-      ;
-    } else if (ad.kind === 3
-	       || (ad.kind >= 10000 && ad.kind < 20000)
-	       || (ad.kind >= 30000 && ad.kind < 40000)
+      url =
+        findUrl(nip19.npubEncode(ad.pubkey)) ||
+        findUrl(
+          nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays })
+        ) ||
+        findUrl(nip19.naddrEncode(naddrId)) ||
+        findUrl(nip19.neventEncode(neventId)) ||
+        findUrl(nip19.noteEncode(ad.event_id));
+    } else if (
+      ad.kind === 3 ||
+      (ad.kind >= 10000 && ad.kind < 20000) ||
+      (ad.kind >= 30000 && ad.kind < 40000)
     ) {
       // specific order - naddr preferred
-      url = findUrl(nip19.naddrEncode(naddrId))
-	 || findUrl(nip19.neventEncode(neventId))
-	 || findUrl(nip19.noteEncode(ad.event_id))
-      ;
+      url =
+        findUrl(nip19.naddrEncode(naddrId)) ||
+        findUrl(nip19.neventEncode(neventId)) ||
+        findUrl(nip19.noteEncode(ad.event_id));
     } else {
       // specific order - naddr preferred
-      url = findUrl(nip19.neventEncode(neventId))
-	 || findUrl(nip19.noteEncode(ad.event_id))
-      ;
+      url =
+        findUrl(nip19.neventEncode(neventId)) ||
+        findUrl(nip19.noteEncode(ad.event_id));
     }
 
     return url;
-  }
+  };
 
   const parseAddr = (id) => {
-
     let addr = {
       kind: undefined,
       pubkey: undefined,
@@ -98,111 +100,106 @@ const EventApps = () => {
     };
 
     try {
-      const {type, data} = nip19.decode(id)
+      const { type, data } = nip19.decode(id);
 
       switch (type) {
-	case "npub":
-	  addr.kind = 0;
-	  addr.pubkey = data;
-	  break;
-	case "nprofile":
-	  addr.kind = 0;
-	  addr.pubkey = data.pubkey;
-	  addr.relays = data.relays;
-	  break;
-	case "note":
-	  addr.event_id = data;
-	  break;
-	case "nevent":
-	  addr.event_id = data.id;
-	  addr.relays = data.relays;
-	  addr.pubkey = data.author;
-	  // FIXME add support for kind to nevent to nostr-tool 
-	  break;
-	case "naddr":
-	  addr.d_tag = data.identifier || "";
-	  addr.kind = data.kind;
-	  addr.pubkey = data.pubkey;
-	  addr.relays = data.relays;
-	  break;
-	default: throw "bad id";
+        case 'npub':
+          addr.kind = 0;
+          addr.pubkey = data;
+          break;
+        case 'nprofile':
+          addr.kind = 0;
+          addr.pubkey = data.pubkey;
+          addr.relays = data.relays;
+          break;
+        case 'note':
+          addr.event_id = data;
+          break;
+        case 'nevent':
+          addr.event_id = data.id;
+          addr.relays = data.relays;
+          addr.pubkey = data.author;
+          // FIXME add support for kind to nevent to nostr-tool
+          break;
+        case 'naddr':
+          addr.d_tag = data.identifier || '';
+          addr.kind = data.kind;
+          addr.pubkey = data.pubkey;
+          addr.relays = data.relays;
+          break;
+        default:
+          throw 'bad id';
       }
     } catch (e) {
       if (id.length === 64) {
-	addr.event_id = id;
-	addr.hex = true;
+        addr.event_id = id;
+        addr.hex = true;
       } else {
-	console.log("bad id, go home");
-	setError("Failed to parse link " + id);
-	return null;
+        console.log('bad id, go home');
+        setError('Failed to parse link ' + id);
+        return null;
       }
     }
 
     return addr;
-  }
+  };
 
   const redirect = (app, addr) => {
     const url = getUrl(app, addr);
-    console.log("Auto redirect url", url);
+    console.log('Auto redirect url', url);
     document.location.href = url;
-  }
+  };
 
   const init = useCallback(async () => {
-    
     const params = window.location.hash;
-    if (!params)
-    {
-      console.log("No params");
+    if (!params) {
+      console.log('No params');
       setAddr(null);
       setEvent(null);
       return;
     }
 
     const id = params.split('#')[1].split('?')[0];
-    console.log("id", id);
+    console.log('id', id);
 
     const q = qs.parse(params.split('?')[1]);
-    console.log("query", q);
+    console.log('query', q);
 
     const select = q.select === 'true';
-    console.log("select", select);
+    console.log('select', select);
 
     const addr = parseAddr(id);
-    if (!addr)
-      return;
+    if (!addr) return;
 
     const appPlatform = cmn.getPlatform();
-    console.log("appPlatform", appPlatform);
+    console.log('appPlatform', appPlatform);
 
     // load local settings
     const appSettings = cmn.readAppSettings();
-    console.log("appSettings", appSettings);
+    console.log('appSettings', appSettings);
 
     // do we have an app from settings?
-    let savedApp = "";
+    let savedApp = '';
     if (addr.kind !== undefined) {
       savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
-      console.log("kind", addr.kind, "app_pubkey", savedApp);
+      console.log('kind', addr.kind, 'app_pubkey', savedApp);
     }
 
     // check cache for saved app info
     if (savedApp && !select) {
       const app = await cmn.getCachedApp(appPlatform, savedApp);
-      console.log("saved app info", app);
-      if (app)
-	return redirect(app, addr);
+      console.log('saved app info', app);
+      if (app) return redirect(app, addr);
     }
 
     // if we can't get everything from cache, then we need
     // to start ndk and fetch from network
     async function reload() {
-
       // if have saved app, try to get app info now
       if (savedApp && !select) {
-	const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
-	console.log("saved app remote info", app);
-	if (app)
-	  return redirect(app, addr);
+        const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
+        console.log('saved app remote info', app);
+        if (app) return redirect(app, addr);
       }
 
       // unknown event kind, or saved app not found, or
@@ -210,9 +207,9 @@ const EventApps = () => {
       // anyways, need to load the event
       const event = await cmn.fetchEvent(addr);
       if (!event) {
-	// not found
-	setError("Failed to find the event " + id);
-	return;
+        // not found
+        setError('Failed to find the event ' + id);
+        return;
       }
 
       // update the addr
@@ -220,25 +217,24 @@ const EventApps = () => {
       addr.event_id = event.id;
       addr.pubkey = event.pubkey;
       if (event.kind >= 30000 && event.kind < 40000) {
-	for (let t of event.tags) {
-	  if (t.length > 1 && t[0] === 'd') {
-	    addr.d_tag = t[1];
-	    break;
-	  }
-	}
+        for (let t of event.tags) {
+          if (t.length > 1 && t[0] === 'd') {
+            addr.d_tag = t[1];
+            break;
+          }
+        }
       }
-      console.log("event addr", addr);
+      console.log('event addr', addr);
 
       // if kind was unknown, retry getting the saved app
       if (!savedApp)
-	savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
+        savedApp = cmn.getSavedApp(addr.kind, appPlatform, appSettings);
 
       // ok, kind is known, can we redirect now?
       if (savedApp && !select) {
-	const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
-	console.log("saved app remote info", app);
-	if (app)
-	  return redirect(app, addr);
+        const app = await cmn.fetchAppByNaddr(savedApp, appPlatform);
+        console.log('saved app remote info', app);
+        if (app) return redirect(app, addr);
       }
 
       // fetch author, need to display the event
@@ -256,7 +252,7 @@ const EventApps = () => {
       // find the one we saved
       let currentApp = null;
       if (savedApp)
-	currentApp = kindApps.find(a => cmn.getNaddr(a) === savedApp);
+        currentApp = kindApps.find((a) => cmn.getNaddr(a) === savedApp);
 
       setAddr(addr);
       setEvent(event);
@@ -264,107 +260,106 @@ const EventApps = () => {
       setKindApps(kindApps);
       setRemember(!currentApp);
       setAppSettings(appSettings);
-      setEnv ({appPlatform});
-    };
+      setEnv({ appPlatform });
+    }
 
     // no personalized data here
     //    cmn.addOnNostr(reload);
     reload();
-
   }, []);
 
   // on the start
   useEffect(() => {
     init().catch(console.error);
 
-    const handler = e => init().catch(console.error);    
-    window.addEventListener("popstate", handler);
-    window.addEventListener("goHome", handler);
+    const handler = (e) => init().catch(console.error);
+    window.addEventListener('popstate', handler);
+    window.addEventListener('goHome', handler);
 
     return () => {
-      window.removeEventListener("popstate", handler);
-      window.removeEventListener("goHome", handler);
+      window.removeEventListener('popstate', handler);
+      window.removeEventListener('goHome', handler);
     };
-    
   }, [init]);
 
   // homepage
   if (addr === null) {
-    return (
-      <Index />
-    )
+    return <Index />;
   }
 
   // save the app in local settings for this platform
   const onSelect = async (a, e) => {
-    console.log("select", a);
-    if (!remember)
-      return;
+    console.log('select', a);
+    if (!remember) return;
 
-    if (!appSettings.kinds)
-      appSettings.kinds = {};
-    if (!appSettings.kinds[event.kind])
-      appSettings.kinds[event.kind] = {};
+    if (!appSettings.kinds) appSettings.kinds = {};
+    if (!appSettings.kinds[event.kind]) appSettings.kinds[event.kind] = {};
     if (!appSettings.kinds[event.kind].platforms)
       appSettings.kinds[event.kind].platforms = {};
     if (!appSettings.kinds[event.kind].platforms[env.appPlatform])
       appSettings.kinds[event.kind].platforms[env.appPlatform] = {};
-    appSettings.kinds[event.kind].platforms[env.appPlatform].app = cmn.getNaddr(a);
+    appSettings.kinds[event.kind].platforms[env.appPlatform].app =
+      cmn.getNaddr(a);
 
     cmn.writeAppSettings(appSettings);
 
     // publish the recommendation
     if (cmn.isAuthed()) {
-
       e.preventDefault();
       const r = await cmn.publishRecomms(a, [event.kind], [env.appPlatform]);
-      if (r)
-	console.log(r);
+      if (r) console.log(r);
 
       redirect(a);
-    }    
+    }
   };
 
   const login = (e) => {
     e.preventDefault();
     window.dispatchEvent(new Event('login'));
   };
-  
+
   return (
     <main className="mt-5">
       <div>
-	{(event && (
-	  <>
-	    <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
-	    <div>
-	      <NostrEvent event={event} />
-	    </div>
-	  </>
-	)) || error || "Loading..."}
+        {(event && (
+          <>
+            <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
+            <div>
+              <NostrEvent event={event} />
+            </div>
+          </>
+        )) ||
+          error ||
+          'Loading...'}
       </div>
 
-      {(currentApp && (
-	<div className="mt-3">
-	  <h2>Saved app:</h2>
-	  <ListGroup>
-	    <AppSelectItem key={currentApp.id} app={currentApp} getUrl={getUrl} onSelect={onSelect} />
-	  </ListGroup>
-	</div>
-      ))}
+      {currentApp && (
+        <div className="mt-3">
+          <h2>Saved app:</h2>
+          <ListGroup>
+            <AppSelectItem
+              key={currentApp.id}
+              app={currentApp}
+              getUrl={getUrl}
+              onSelect={onSelect}
+            />
+          </ListGroup>
+        </div>
+      )}
 
       {event && (
-	<div className="mt-3">
-	  <h2>Suggested apps:</h2>
-	  <Form>
-	    <Form.Check
+        <div className="mt-3">
+          <h2>Suggested apps:</h2>
+          <Form>
+            <Form.Check
               type="switch"
               id="remember-app"
-              checked={remember ? "checked" : ""}
-              onChange={e => setRemember(e.target.checked)}
+              checked={remember ? 'checked' : ''}
+              onChange={(e) => setRemember(e.target.checked)}
               label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
-              style={{display: "inline-block"}}
-	    />
-	    {/*<OverlayTrigger
+              style={{ display: 'inline-block' }}
+            />
+            {/*<OverlayTrigger
 		placement="top"
 		overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
 		>
@@ -372,27 +367,54 @@ const EventApps = () => {
 		<i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
 		)}
 		</OverlayTrigger>*/}
-	    <div className="text-muted mb-2">
-	      {remember && !cmn.isAuthed() && (
-		<small><Link onClick={login}>Login</Link> to recommend the app on Nostr.</small>
-	      )}
-	      {remember && cmn.isAuthed() && (
-		<small>Chosen app will be <Link to="/recommendations">recommended</Link>.</small>
-	      )}
-	    </div>
-	  </Form>
-	  <ListGroup>
-	    {kindApps?.filter(a => !currentApp || a.id !== currentApp.id).map(a => {
-	      return <AppSelectItem key={a.id} app={a} getUrl={getUrl} onSelect={onSelect} />
-	    })}
-	  </ListGroup>
-	</div>
+            <div className="text-muted mb-2">
+              {remember && !cmn.isAuthed() && (
+                <small>
+                  <Link onClick={login}>Login</Link> to recommend the app on
+                  Nostr.
+                </small>
+              )}
+              {remember && cmn.isAuthed() && (
+                <small>
+                  Chosen app will be{' '}
+                  <Link to="/recommendations">recommended</Link>.
+                </small>
+              )}
+            </div>
+          </Form>
+          <ListGroup>
+            {kindApps
+              ?.filter((a) => !currentApp || a.id !== currentApp.id)
+              .map((a) => {
+                return (
+                  <AppSelectItem
+                    key={a.id}
+                    app={a}
+                    getUrl={getUrl}
+                    onSelect={onSelect}
+                  />
+                );
+              })}
+          </ListGroup>
+        </div>
       )}
       <div className="mt-5">
-	<h2>New here?</h2>
-	<Link to="/about"><Button size="lg" variant="outline-secondary me-2">What is App Manager?</Button></Link>
-	<Link to="https://www.heynostr.com" ><Button size="lg" variant="outline-secondary me-2">What is Nostr?</Button></Link>
-	<Link to="https://nosta.me" ><Button size="lg" variant="outline-primary m2-2">Start using Nostr</Button></Link>
+        <h2>New here?</h2>
+        <Link to="/about">
+          <Button size="lg" variant="outline-secondary me-2">
+            What is App Manager?
+          </Button>
+        </Link>
+        <Link to="https://www.heynostr.com">
+          <Button size="lg" variant="outline-secondary me-2">
+            What is Nostr?
+          </Button>
+        </Link>
+        <Link to="https://nosta.me">
+          <Button size="lg" variant="outline-primary m2-2">
+            Start using Nostr
+          </Button>
+        </Link>
       </div>
     </main>
   );
