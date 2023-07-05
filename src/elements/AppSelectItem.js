@@ -1,6 +1,7 @@
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
+import './AppSelectItem.scss';
 import * as cmn from '../common';
 import OtherApp from '../icons/OtherApp';
 import Profile from './Profile';
@@ -26,41 +27,43 @@ const AppSelectItem = (props) => {
   return (
     <>
       <ListGroup.Item className="position-relative d-flex justify-content-between align-items-center">
-        <div style={{ display: 'flex', width: '100%', gap: '10px' }}>
-          <Col xs="auto">
-            <Link
-              to={getUrl(props.app)}
-              onClick={(e) => onSelect(props.app, e)}
-            >
+        <Link
+          className="link"
+          to={getUrl(props.app)}
+          onClick={(e) => onSelect(props.app, e)}
+        >
+          <div style={{ display: 'flex', width: '100%', gap: '10px' }}>
+            <Col xs="auto">
               {app.picture && (
                 <img alt="" width="64" height="64" src={app.picture} />
               )}
               {!app.picture && <OtherApp />}
-            </Link>
-          </Col>
-          <Col>
-            <div className="ms-2 me-auto">
-              <div className="fw-bold">{app.display_name || app.name}</div>
-              {about}
-              {showKinds && (
-                <div>
-                  <small className="text-muted">Used for: {used}</small>
-                </div>
-              )}
-              {props.showAuthor && props.app?.author && (
-                <div className="d-flex justify-content-end ">
-                  <Profile
-                    profile={props.app?.author}
-                    small={true}
-                    pubkey={props.app?.pubkey}
-                  />
-                </div>
-              )}
-            </div>
-          </Col>
-        </div>
+            </Col>
+            <Col>
+              <div className="ms-2 me-auto">
+                <div className="fw-bold">{app.display_name || app.name}</div>
+                {about}
+                {showKinds && (
+                  <div>
+                    <small className="text-muted">Used for: {used}</small>
+                  </div>
+                )}
+                {props.showAuthor && props.app?.author && (
+                  <div className="d-flex justify-content-end ">
+                    <Profile
+                      profile={props.app?.author}
+                      small={true}
+                      pubkey={props.app?.pubkey}
+                    />
+                  </div>
+                )}
+              </div>
+            </Col>
+          </div>
+        </Link>
+
         {props.myApp ? (
-          <div className="ms-3" onClick={props.selecteAppForEdit}>
+          <div className="edit-button" onClick={props.selecteAppForEdit}>
             <Edit />
           </div>
         ) : null}
