@@ -14,10 +14,10 @@ const AppSelectItem = (props) => {
 
   let used = '';
   if (props.app?.forKinds) {
-    for (const k of props.app?.forKinds) {
-      if (used) used += ', ';
-      used += cmn.getKindLabel(k);
-    }
+    const sortedKinds = props.app.forKinds.sort((a, b) =>
+      cmn.getKindLabel(a).localeCompare(cmn.getKindLabel(b))
+    );
+    used = sortedKinds.map((k) => cmn.getKindLabel(k)).join(', ');
   }
 
   const showKinds = props.showKinds && props.app?.forKinds;

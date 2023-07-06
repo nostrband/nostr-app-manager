@@ -31,6 +31,7 @@ const reorganizeData = (recomms, setReorganizesData) => {
 
       if (!(name in groupedApps)) {
         groupedApps[name] = {
+          name: name,
           kinds: [kind],
           apps: [app],
         };
@@ -38,16 +39,18 @@ const reorganizeData = (recomms, setReorganizesData) => {
         if (!groupedApps[name].kinds.includes(kind)) {
           groupedApps[name].kinds.push(kind);
         }
-        // Check for duplicate apps before adding
         if (!groupedApps[name].apps.some((a) => a.id === app.id)) {
           groupedApps[name].apps.push(app);
         }
       }
     }
   }
-  setReorganizesData(Object.values(groupedApps));
-};
 
+  const unsortedApps = Object.values(groupedApps);
+  const sortedApps = unsortedApps.sort((a, b) => a.name.localeCompare(b.name));
+
+  setReorganizesData(sortedApps);
+};
 const ProfileView = () => {
   const params = useParams();
   const npub = (params.npub ?? '').toLowerCase();
@@ -102,7 +105,6 @@ const ProfileView = () => {
               <Button variant="primary">Add app</Button>
             </Link>
           </div>
-
           <h4 className="mt-5">Used apps:</h4>
           {!recomms.length && 'Nothing yet.'}
           {recomms.length > 0 && (
@@ -110,6 +112,7 @@ const ProfileView = () => {
               {reorganizesData.map((group) => (
                 <>
                   <div key={group.name} className="mb-3">
+                    {console.log(group, 'group')}
                     {group.apps.map((app) => {
                       return (
                         <>
