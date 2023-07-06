@@ -16,10 +16,8 @@ const init = async (npub, setPubkey, setApps, setRecomms) => {
   if (!pubkey) return;
 
   const apps = await cmn.fetchApps(pubkey);
-  console.log(apps, 'APPS');
   setApps(apps);
   const recomms = await cmn.fetchUserRecommsApps(pubkey);
-  console.log(recomms, 'RECOMNS');
   setRecomms(recomms);
 };
 
@@ -28,7 +26,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
   for (const r of recomms) {
     for (const id in r.apps) {
       const app = r.apps[id];
-      console.log(app, 'APP');
       const name = app.name;
       const kind = Number(cmn.getTagValue(r, 'd'));
 
@@ -65,8 +62,13 @@ const ProfileView = () => {
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-  useEffect(() => {
+
+  const getRecomnsQuery = () => {
     init(npub, setPubkey, setApps, setRecomms).catch(console.error);
+  };
+
+  useEffect(() => {
+    getRecomnsQuery();
   }, [npub]);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ const ProfileView = () => {
   return (
     <>
       {apps && (
-        <div style={{ border: '2px solid red' }} className="mt-5">
+        <div className="mt-5">
           <Profile profile={apps.meta} pubkey={pubkey} />
           <h4 className="mt-5">Published apps:</h4>
           {!Object.keys(apps.apps).length && 'Nothing yet.'}
@@ -125,6 +127,7 @@ const ProfileView = () => {
                             app={{ ...app, forKinds: group.kinds }}
                           />
                           <EditAppModal
+                            getRecomnsQuery={getRecomnsQuery}
                             handleEditClose={handleCloseModal}
                             openModal={app.id === showEditModal}
                             selectedApp={selectedApp}

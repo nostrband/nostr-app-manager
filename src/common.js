@@ -778,7 +778,7 @@ export async function fetchAppsByAs(aTags) {
     if (Number(t[0]) !== cs.KIND_HANDLERS) return;
 
     pubkeys[t[1]] = 1;
-    d_tags[t[2]] = 1;
+    if (t[2]) d_tags[t[2]] = 1;
   }
 
   const appFilter = {
@@ -938,9 +938,7 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   if (!isAuthed()) {
     return 'Please login';
   }
-
   const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
-  console.log(lists, 'LISTS');
   const events = [];
   for (const k of addKinds) {
     // template
@@ -978,6 +976,53 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   console.log('events', events);
   if (events.length === 0) {
     return '';
+  }
+
+  let r = null;
+  for (const e of events) {
+    r = await publishEvent(e);
+    if (!r || r.error) break;
+  }
+
+  return !r || r.error ? r?.error || 'Failed' : '';
+}
+
+export async function removeKindsFromApp(app, removeKinds) {
+  if (removeKinds.length === 0) {
+    return 'No kinds specified for removal';
+  }
+
+  if (!isAuthed()) {
+    return 'Please login';
+  }
+
+  const lists = await fetchUserRecomms(getLoginPubkey());
+  const events = [];
+  for (const k of removeKinds) {
+    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+    if (list) {
+      const a = getEventTagA(app);
+      let changed = false;
+      for (let i = list.tags.length - 1; i >= 0; i--) {
+        const tag = list.tags[i];
+        if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
+          list.tags.splice(i, 1);
+          changed = true;
+        }
+      }
+      if (changed) {
+        events.push(list);
+      } else {
+        console.log('not found on the list', k);
+      }
+    } else {
+      console.log('not found in user recomms', k);
+    }
+  }
+
+  console.log('events to be updated', events);
+  if (events.length === 0) {
+    return 'No events to update';
   }
 
   let r = null;

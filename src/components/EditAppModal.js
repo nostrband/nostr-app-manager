@@ -5,8 +5,14 @@ import Form from 'react-bootstrap/Form';
 import { ListGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import AppSelectItem from '../elements/AppSelectItem';
+import { removeKindsFromApp } from '../common';
 
-const EditAppModal = ({ selectedApp, openModal, handleEditClose }) => {
+const EditAppModal = ({
+  selectedApp,
+  openModal,
+  handleEditClose,
+  getRecomnsQuery,
+}) => {
   const [offForKinds, setOffForKinds] = useState([]);
 
   const handleOffKind = (e) => {
@@ -21,8 +27,16 @@ const EditAppModal = ({ selectedApp, openModal, handleEditClose }) => {
     }
   };
 
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
+    const removedKinds = offForKinds;
+    const result = await removeKindsFromApp(selectedApp.app, removedKinds);
+    if (result) {
+      console.log(result, 'RESULT');
+    } else {
+      console.log('Changes saved successfully!');
+    }
     handleEditClose();
+    getRecomnsQuery();
   };
 
   return (
