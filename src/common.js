@@ -738,9 +738,10 @@ export async function fetchAppsByAs(aTags) {
     const t = a.split(":");
     if (Number(t[0]) !== cs.KIND_HANDLERS)
       return;
-    
+
     pubkeys[t[1]] = 1;
-    d_tags[t[2]] = 1;
+    if (t[2])
+      d_tags[t[2]] = 1;
   }
 
   const appFilter = {
