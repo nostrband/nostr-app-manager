@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-
 import { nip19 } from 'nostr-tools';
-
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -13,9 +11,7 @@ import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
-
 import AppSelectItem from '../elements/AppSelectItem';
-
 import * as cmn from '../common';
 
 const Index = () => {
@@ -147,15 +143,13 @@ const Index = () => {
 
   const handleEditSave = () => {
     setEditShow(false);
-
     const platform = cmn.getPlatform();
     const aps = cmn.readAppSettings();
-
+    console.log(aps, 'APS');
     for (const kind of offForKinds) {
       const ps = aps.kinds[kind].platforms;
       delete ps[platform];
     }
-
     cmn.writeAppSettings(aps);
     setUpdated(updated + 1);
   };

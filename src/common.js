@@ -512,7 +512,7 @@ function startFetch(ndk, filter) {
 
 export async function fetchApps(pubkey, addr) {
   const ndk = await getNDK();
-
+  console.log(ndk, 'NDK');
   const filter: NDKFilter = {
     authors: [pubkey],
     kinds: [cs.KIND_META],
@@ -530,7 +530,6 @@ export async function fetchApps(pubkey, addr) {
 
   // wait for both subs
   const events = await fetchAllEvents(reqs);
-  console.log('events', events);
 
   // find handlers
   const info = prepareHandlers(events, pubkey);
@@ -558,7 +557,6 @@ export async function fetchApps(pubkey, addr) {
       );
     }
   }
-
   console.log('apps', info);
   return info;
 }
@@ -810,7 +808,6 @@ export async function fetchProfile(pubkey) {
   if (pubkey in profileCache) return profileCache[pubkey];
 
   const ndk = await getNDK();
-
   const events = await fetchAllEvents([
     startFetch(ndk, {
       kinds: [cs.KIND_META],
@@ -943,6 +940,7 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
+  console.log(lists, 'LISTS');
   const events = [];
   for (const k of addKinds) {
     // template
@@ -953,10 +951,8 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
 
     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
     if (list) {
-      console.log('list for', k, 'exits', list);
       event.tags = list.tags;
     } else {
-      console.log('new list for', k);
       event.tags = [['d', '' + k]];
     }
 
@@ -968,7 +964,6 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
           (t) => t.length >= 4 && t[0] === 'a' && t[1] === a && t[3] === p
         ) === undefined
       ) {
-        console.log('added to list for', k);
         event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
         changed = true;
       }

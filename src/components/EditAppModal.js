@@ -20,16 +20,9 @@ const EditAppModal = ({ selectedApp, openModal, handleEditClose }) => {
       setOffForKinds((prev) => prev.filter((x) => x !== value));
     }
   };
+
   const handleEditSave = () => {
     handleEditClose();
-    // const platform = cmn.getPlatform();
-    // const aps = cmn.readAppSettings();
-    // for (const kind of offForKinds) {
-    //   const ps = aps.kinds[kind].platforms;
-    //   delete ps[platform];
-    // }
-
-    // cmn.writeAppSettings(aps);
   };
 
   return (

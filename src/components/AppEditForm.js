@@ -11,7 +11,6 @@ import * as cmn from '../common';
 import * as cs from '../const';
 
 const AppEditForm = (props) => {
-  console.log('done');
   const navigate = useNavigate();
 
   const noMeta = !Object.keys(props.app?.profile ?? {}).length;
@@ -160,7 +159,7 @@ const AppEditForm = (props) => {
 
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
   return (
-    <div style={{ border: '2px solid green' }}>
+    <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
       <div>
         <Form>

@@ -32,7 +32,11 @@ const AppSelectItem = (props) => {
           to={getUrl(props.app)}
           onClick={(e) => onSelect(props.app, e)}
         >
-          <div style={{ display: 'flex', width: '100%', gap: '10px' }}>
+          <div
+            style={{
+              display: 'flex',
+            }}
+          >
             <Col xs="auto">
               {app.picture && (
                 <img alt="" width="64" height="64" src={app.picture} />

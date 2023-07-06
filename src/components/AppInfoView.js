@@ -16,7 +16,6 @@ import * as cmn from '../common';
 const AppInfoView = () => {
   const params = useParams();
   const naddr = (params.naddr ?? '').toLowerCase();
-
   const [error, setError] = useState('');
   const [info, setInfo] = useState(null);
   const [addr, setAddr] = useState(null);
@@ -79,6 +78,7 @@ const AppInfoView = () => {
   async function addApp() {
     setSending(true);
     const r = await cmn.publishRecomms(appInfo, addKinds, addPlatforms);
+    console.log(r, 'R');
     setSending(false);
     if (r !== '') {
       setError(r);
