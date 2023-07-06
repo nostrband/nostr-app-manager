@@ -26,31 +26,34 @@ const reorganizeData = (recomms, setReorganizesData) => {
   for (const r of recomms) {
     for (const id in r.apps) {
       const app = r.apps[id];
-      const name = app.profile.name || app.profile.display_name;
+      const app_id = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
 
-      if (!(name in groupedApps)) {
-        groupedApps[name] = {
-          name: name,
+      if (!(app_id in groupedApps)) {
+        groupedApps[app_id] = {
+          app_id: app_id,
           kinds: [kind],
           apps: [app],
         };
       } else {
-        if (!groupedApps[name].kinds.includes(kind)) {
-          groupedApps[name].kinds.push(kind);
+        if (!groupedApps[app_id].kinds.includes(kind)) {
+          groupedApps[app_id].kinds.push(kind);
         }
-        if (!groupedApps[name].apps.some((a) => a.id === app.id)) {
-          groupedApps[name].apps.push(app);
+        if (!groupedApps[app_id].apps.some((a) => a.id === app.id)) {
+          groupedApps[app_id].apps.push(app);
         }
       }
     }
   }
 
   const unsortedApps = Object.values(groupedApps);
-  const sortedApps = unsortedApps.sort((a, b) => a.name.localeCompare(b.name));
+  const sortedApps = unsortedApps.sort((a, b) =>
+    a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })
+  );
 
   setReorganizesData(sortedApps);
 };
+
 const ProfileView = () => {
   const params = useParams();
   const npub = (params.npub ?? '').toLowerCase();
