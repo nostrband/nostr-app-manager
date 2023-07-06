@@ -26,7 +26,7 @@ const reorganizeData = (recomms, setReorganizesData) => {
   for (const r of recomms) {
     for (const id in r.apps) {
       const app = r.apps[id];
-      const name = app.name;
+      const name = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
 
       if (!(name in groupedApps)) {
