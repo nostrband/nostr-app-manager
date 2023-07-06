@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -13,23 +13,38 @@ const EditAppModal = ({
   handleEditClose,
   getRecomnsQuery,
 }) => {
-  const [offForKinds, setOffForKinds] = useState([]);
+  const [kinds, setKinds] = useState([]);
+  const [platforms, newPlatforms] = useState([]);
+  useEffect(() => {
+    setKinds(selectedApp.kinds);
+    newPlatforms(selectedApp.platforms);
+  }, [selectedApp]);
 
   const handleOffKind = (e) => {
     const checked = e.target.checked;
     const value = Number(e.target.value);
     if (!checked) {
-      // push selected value in list
-      setOffForKinds((prev) => [...prev, value]);
+      setKinds((prev) => prev.filter((x) => x !== value));
     } else {
-      // remove unchecked value from the list
-      setOffForKinds((prev) => prev.filter((x) => x !== value));
+      setKinds((prev) => [...prev, value]);
+    }
+  };
+
+  const handleOffPlatform = (e) => {
+    const checked = e.target.checked;
+    if (!checked) {
+      newPlatforms((prev) => prev.filter((x) => x !== e.target.value));
+    } else {
+      newPlatforms((prev) => [...prev, e.target.value]);
     }
   };
 
   const handleEditSave = async () => {
-    const removedKinds = offForKinds;
-    const result = await removeKindsFromApp(selectedApp.app, removedKinds);
+    const result = await cmn.updateAppWithKindsAndPlatforms(
+      selectedApp.app,
+      kinds,
+      platforms
+    );
     if (result) {
       console.log(result, 'RESULT');
     } else {
@@ -50,20 +65,35 @@ const EditAppModal = ({
         </ListGroup>
         <h4 className="mt-3">Used for:</h4>
         <ListGroup>
-          {selectedApp.kinds &&
-            selectedApp.kinds.map((k) => {
-              return (
-                <ListGroup.Item key={k}>
-                  <Form.Check
-                    type="switch"
-                    value={k}
-                    checked={offForKinds.includes(k) ? '' : 'checked'}
-                    onChange={handleOffKind}
-                    label={cmn.getKindLabel(k)}
-                  />
-                </ListGroup.Item>
-              );
-            })}
+          {Object.keys(cmn.getKinds()).map((k) => {
+            return (
+              <ListGroup.Item key={k}>
+                <Form.Check
+                  type="switch"
+                  value={k}
+                  checked={!kinds?.includes(Number(k)) ? '' : 'checked'}
+                  onChange={handleOffKind}
+                  label={cmn.getKindLabel(k)}
+                />
+              </ListGroup.Item>
+            );
+          })}
+        </ListGroup>
+        <h4 className="mt-3">Platforms:</h4>
+        <ListGroup>
+          {cmn.getPlatforms().map((k) => {
+            return (
+              <ListGroup.Item key={k}>
+                <Form.Check
+                  type="switch"
+                  value={k}
+                  checked={!platforms?.includes(k) ? '' : 'checked'}
+                  onChange={handleOffPlatform}
+                  label={k}
+                />
+              </ListGroup.Item>
+            );
+          })}
         </ListGroup>
       </Modal.Body>
       <Modal.Footer>

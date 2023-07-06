@@ -28,7 +28,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
       const app = r.apps[id];
       const app_id = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
-
       if (!(app_id in groupedApps)) {
         groupedApps[app_id] = {
           app_id: app_id,
@@ -50,7 +49,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
   const sortedApps = unsortedApps.sort((a, b) =>
     a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })
   );
-
   setReorganizesData(sortedApps);
 };
 
@@ -115,7 +113,6 @@ const ProfileView = () => {
               {reorganizesData.map((group) => (
                 <>
                   <div key={group.name} className="mb-3">
-                    {console.log(group, 'group')}
                     {group.apps.map((app) => {
                       return (
                         <>
@@ -125,6 +122,7 @@ const ProfileView = () => {
                               setSelectedApp({
                                 app: { ...app },
                                 kinds: group.kinds,
+                                platforms: group.apps[0].platforms,
                               });
                               setShowEditModal(app.id);
                             }}

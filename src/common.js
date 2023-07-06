@@ -931,6 +931,7 @@ export async function publishEvent(event) {
 }
 
 export async function publishRecomms(app, addKinds, addPlatforms) {
+  console.log(addPlatforms, 'add platforms');
   if (addKinds.length === 0 || addPlatforms.length === 0) {
     return 'Choose kinds and platforms';
   }
@@ -987,40 +988,68 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   return !r || r.error ? r?.error || 'Failed' : '';
 }
 
-export async function removeKindsFromApp(app, removeKinds) {
-  if (removeKinds.length === 0) {
-    return 'No kinds specified for removal';
-  }
-
+export async function updateAppWithKindsAndPlatforms(
+  app,
+  newKinds,
+  newPlatforms
+) {
   if (!isAuthed()) {
     return 'Please login';
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
   const events = [];
-  for (const k of removeKinds) {
-    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
-    if (list) {
-      const a = getEventTagA(app);
-      let changed = false;
-      for (let i = list.tags.length - 1; i >= 0; i--) {
-        const tag = list.tags[i];
-        if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
-          list.tags.splice(i, 1);
-          changed = true;
-        }
+
+  for (const list of lists) {
+    const k = getTagValue(list, 'd', 0, '');
+    const a = getEventTagA(app);
+    const existingPlatforms = [];
+
+    // Удаление платформ, которых нет в newPlatforms
+    for (let i = list.tags.length - 1; i >= 0; i--) {
+      const tag = list.tags[i];
+      if (
+        tag.length >= 4 &&
+        tag[0] === 'a' &&
+        tag[1] === a &&
+        tag[2] === 'wss://relay.nostr.band' &&
+        !newPlatforms.includes(tag[3])
+      ) {
+        list.tags.splice(i, 1);
+      } else if (
+        tag.length >= 4 &&
+        tag[0] === 'a' &&
+        tag[1] === a &&
+        tag[2] === 'wss://relay.nostr.band'
+      ) {
+        existingPlatforms.push(tag[3]);
       }
-      if (changed) {
-        events.push(list);
-      } else {
-        console.log('not found on the list', k);
+    }
+
+    // Добавление новых платформ, которых нет в existingPlatforms
+    for (const p of newPlatforms) {
+      if (!existingPlatforms.includes(p)) {
+        list.tags.push(['a', a, 'wss://relay.nostr.band', p]);
       }
+    }
+
+    if (newKinds.includes(parseInt(k))) {
+      // Удаляем событие, если kinds присутствует в newKinds
+      events.push(list);
     } else {
-      console.log('not found in user recomms', k);
+      // Добавляем событие, если kinds отсутствует в newKinds
+      const event = {
+        kind: cs.KIND_RECOMM,
+        content: '',
+        tags: [['d', '' + k]],
+      };
+      for (const p of newPlatforms) {
+        event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
+      }
+      events.push(event);
     }
   }
 
-  console.log('events to be updated', events);
   if (events.length === 0) {
     return 'No events to update';
   }
