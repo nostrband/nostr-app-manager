@@ -30,30 +30,26 @@ const EditAppModal = ({
     }
   };
 
-  const handleOffPlatform = (e) => {
-    const checked = e.target.checked;
-    if (!checked) {
-      newPlatforms((prev) => prev.filter((x) => x !== e.target.value));
-    } else {
-      newPlatforms((prev) => [...prev, e.target.value]);
-    }
-  };
-
   const handleEditSave = async () => {
-    const result = await cmn.updateAppWithKindsAndPlatforms(
-      selectedApp.app,
-      kinds,
-      platforms
-    );
-    if (result) {
-      console.log(result, 'RESULT');
-    } else {
-      console.log('Changes saved successfully!');
+    const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
+    const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
+    if (removedKinds) {
+      const result = await cmn.removeKindsFromApp(
+        selectedApp.app,
+        removedKinds,
+        []
+      );
+    }
+    if (addedKinds) {
+      const result = await cmn.publishRecomms(
+        selectedApp.app,
+        addedKinds,
+        selectedApp.platforms
+      );
     }
     handleEditClose();
     getRecomnsQuery();
   };
-
   return (
     <Modal show={openModal} onHide={handleEditClose}>
       <Modal.Header closeButton>
@@ -65,7 +61,7 @@ const EditAppModal = ({
         </ListGroup>
         <h4 className="mt-3">Used for:</h4>
         <ListGroup>
-          {Object.keys(cmn.getKinds()).map((k) => {
+          {selectedApp?.app?.kinds.map((k) => {
             return (
               <ListGroup.Item key={k}>
                 <Form.Check
@@ -81,16 +77,10 @@ const EditAppModal = ({
         </ListGroup>
         <h4 className="mt-3">Platforms:</h4>
         <ListGroup>
-          {cmn.getPlatforms().map((k) => {
+          {selectedApp?.app?.platforms.map((k) => {
             return (
               <ListGroup.Item key={k}>
-                <Form.Check
-                  type="switch"
-                  value={k}
-                  checked={!platforms?.includes(k) ? '' : 'checked'}
-                  onChange={handleOffPlatform}
-                  label={k}
-                />
+                <span>{k}</span>
               </ListGroup.Item>
             );
           })}

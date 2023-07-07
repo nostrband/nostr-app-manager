@@ -62,7 +62,10 @@ const ProfileView = () => {
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = nip19.npubEncode(pubKey);
   const [selectedApp, setSelectedApp] = useState({
-    app: {},
+    app: {
+      kinds: [],
+      platforms: [],
+    },
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
@@ -130,13 +133,15 @@ const ProfileView = () => {
                             key={app.id}
                             app={{ ...app, forKinds: group.kinds }}
                           />
-                          <EditAppModal
-                            getRecomnsQuery={getRecomnsQuery}
-                            handleEditClose={handleCloseModal}
-                            openModal={app.id === showEditModal}
-                            selectedApp={selectedApp}
-                            setSelectedApp={setSelectedApp}
-                          />
+                          {app.id === showEditModal ? (
+                            <EditAppModal
+                              getRecomnsQuery={getRecomnsQuery}
+                              handleEditClose={handleCloseModal}
+                              openModal={app.id === showEditModal}
+                              selectedApp={selectedApp}
+                              setSelectedApp={setSelectedApp}
+                            />
+                          ) : null}
                         </>
                       );
                     })}
