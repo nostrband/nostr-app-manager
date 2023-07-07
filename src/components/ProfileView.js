@@ -28,15 +28,22 @@ const reorganizeData = (recomms, setReorganizesData) => {
       const app = r.apps[id];
       const app_id = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
+      const platforms = app.urls.map((url) => url.platform); // получаем массив платформ для приложения
       if (!(app_id in groupedApps)) {
         groupedApps[app_id] = {
           app_id: app_id,
           kinds: [kind],
+          platforms: platforms,
           apps: [app],
         };
       } else {
         if (!groupedApps[app_id].kinds.includes(kind)) {
           groupedApps[app_id].kinds.push(kind);
+        }
+        for (const platform of platforms) {
+          if (!groupedApps[app_id].platforms.includes(platform)) {
+            groupedApps[app_id].platforms.push(platform);
+          }
         }
         if (!groupedApps[app_id].apps.some((a) => a.id === app.id)) {
           groupedApps[app_id].apps.push(app);
@@ -44,7 +51,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
       }
     }
   }
-
   const unsortedApps = Object.values(groupedApps);
   const sortedApps = unsortedApps.sort((a, b) =>
     a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })
@@ -85,7 +91,6 @@ const ProfileView = () => {
   const handleCloseModal = () => {
     setShowEditModal(null);
   };
-
   if (!npub) return null;
 
   return (
@@ -125,7 +130,7 @@ const ProfileView = () => {
                               setSelectedApp({
                                 app: { ...app },
                                 kinds: group.kinds,
-                                platforms: group.apps[0].platforms,
+                                platforms: group.platforms,
                               });
                               setShowEditModal(app.id);
                             }}

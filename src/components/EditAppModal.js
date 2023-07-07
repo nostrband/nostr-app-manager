@@ -14,10 +14,11 @@ const EditAppModal = ({
   getRecomnsQuery,
 }) => {
   const [kinds, setKinds] = useState([]);
-  const [platforms, newPlatforms] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
+
   useEffect(() => {
     setKinds(selectedApp.kinds);
-    newPlatforms(selectedApp.platforms);
+    setPlatforms(selectedApp.platforms);
   }, [selectedApp]);
 
   const handleOffKind = (e) => {
@@ -30,26 +31,65 @@ const EditAppModal = ({
     }
   };
 
+  const handleOffPlatform = (e) => {
+    const checked = e.target.checked;
+    if (!checked) {
+      setPlatforms((prev) => prev.filter((x) => x !== e.target.value));
+    } else {
+      setPlatforms((prev) => [...prev, e.target.value]);
+    }
+  };
+
   const handleEditSave = async () => {
     const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
     const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
-    if (removedKinds) {
-      const result = await cmn.removeKindsFromApp(
+    const addedPlatforms = platforms.filter(
+      (p) => !selectedApp.platforms.includes(p)
+    );
+    const removedPlatforms = selectedApp.platforms.filter(
+      (p) => !platforms.includes(p)
+    );
+
+    if (removedKinds.length > 0 && removedPlatforms.length > 0) {
+      await cmn.removeKindsAndPlatformsFromApp(
         selectedApp.app,
         removedKinds,
-        []
+        removedPlatforms
+      );
+    } else if (removedKinds.length > 0) {
+      await cmn.removeKindsAndPlatformsFromApp(
+        selectedApp.app,
+        removedKinds,
+        selectedApp.platforms
+      );
+    } else if (removedPlatforms.length > 0) {
+      await cmn.removeKindsAndPlatformsFromApp(
+        selectedApp.app,
+        selectedApp.kinds,
+        removedPlatforms
       );
     }
-    if (addedKinds) {
-      const result = await cmn.publishRecomms(
+
+    if (addedKinds.length > 0 && addedPlatforms.length > 0) {
+      await cmn.publishRecomms(selectedApp.app, addedKinds, addedPlatforms);
+    } else if (addedKinds.length > 0) {
+      await cmn.publishRecomms(
         selectedApp.app,
         addedKinds,
         selectedApp.platforms
       );
+    } else if (addedPlatforms.length > 0) {
+      await cmn.publishRecomms(
+        selectedApp.app,
+        selectedApp.kinds,
+        addedPlatforms
+      );
     }
+
     handleEditClose();
     getRecomnsQuery();
   };
+
   return (
     <Modal show={openModal} onHide={handleEditClose}>
       <Modal.Header closeButton>
@@ -77,10 +117,20 @@ const EditAppModal = ({
         </ListGroup>
         <h4 className="mt-3">Platforms:</h4>
         <ListGroup>
-          {selectedApp?.app?.platforms.map((k) => {
+          {selectedApp?.app?.platforms.map((p) => {
+            {
+              console.log(!platforms?.includes(p), 'CHECKED :', p);
+            }
+
             return (
-              <ListGroup.Item key={k}>
-                <span>{k}</span>
+              <ListGroup.Item key={p}>
+                <Form.Check
+                  type="switch"
+                  value={p}
+                  checked={!platforms?.includes(p) ? '' : 'checked'}
+                  onChange={handleOffPlatform}
+                  label={p}
+                />
               </ListGroup.Item>
             );
           })}

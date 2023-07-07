@@ -934,7 +934,7 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   if (addKinds.length === 0 || addPlatforms.length === 0) {
     return 'Choose kinds and platforms';
   }
-
+  console.log('DDDONNE NEXT');
   if (!isAuthed()) {
     return 'Please login';
   }
@@ -987,9 +987,13 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   return !r || r.error ? r?.error || 'Failed' : '';
 }
 
-export async function removeKindsFromApp(app, removeKinds) {
-  if (removeKinds.length === 0) {
-    return 'No kinds specified for removal';
+export async function removeKindsAndPlatformsFromApp(
+  app,
+  removeKinds,
+  removePlatforms
+) {
+  if (removeKinds.length === 0 && removePlatforms.length === 0) {
+    return 'No kinds or platforms specified for removal';
   }
 
   if (!isAuthed()) {
@@ -1005,7 +1009,12 @@ export async function removeKindsFromApp(app, removeKinds) {
       let changed = false;
       for (let i = list.tags.length - 1; i >= 0; i--) {
         const tag = list.tags[i];
-        if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
+        if (
+          tag.length >= 4 &&
+          tag[0] === 'a' &&
+          tag[1] === a &&
+          (removePlatforms.length === 0 || removePlatforms.includes(tag[3]))
+        ) {
           list.tags.splice(i, 1);
           changed = true;
         }
