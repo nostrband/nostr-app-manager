@@ -28,22 +28,15 @@ const reorganizeData = (recomms, setReorganizesData) => {
       const app = r.apps[id];
       const app_id = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
-      const platforms = app.urls.map((url) => url.platform); // получаем массив платформ для приложения
       if (!(app_id in groupedApps)) {
         groupedApps[app_id] = {
           app_id: app_id,
           kinds: [kind],
-          platforms: platforms,
           apps: [app],
         };
       } else {
         if (!groupedApps[app_id].kinds.includes(kind)) {
           groupedApps[app_id].kinds.push(kind);
-        }
-        for (const platform of platforms) {
-          if (!groupedApps[app_id].platforms.includes(platform)) {
-            groupedApps[app_id].platforms.push(platform);
-          }
         }
         if (!groupedApps[app_id].apps.some((a) => a.id === app.id)) {
           groupedApps[app_id].apps.push(app);
@@ -75,14 +68,13 @@ const ProfileView = () => {
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-
   const getRecomnsQuery = () => {
     init(npub, setPubkey, setApps, setRecomms).catch(console.error);
   };
-
   useEffect(() => {
     getRecomnsQuery();
   }, [npub]);
+  console.log(recomms, 'RECOMMS');
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
@@ -91,8 +83,8 @@ const ProfileView = () => {
   const handleCloseModal = () => {
     setShowEditModal(null);
   };
-  if (!npub) return null;
 
+  if (!npub) return null;
   return (
     <>
       {apps && (
@@ -130,7 +122,6 @@ const ProfileView = () => {
                               setSelectedApp({
                                 app: { ...app },
                                 kinds: group.kinds,
-                                platforms: group.platforms,
                               });
                               setShowEditModal(app.id);
                             }}

@@ -5,7 +5,6 @@ import Form from 'react-bootstrap/Form';
 import { ListGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import AppSelectItem from '../elements/AppSelectItem';
-import { removeKindsFromApp } from '../common';
 
 const EditAppModal = ({
   selectedApp,
@@ -13,12 +12,17 @@ const EditAppModal = ({
   handleEditClose,
   getRecomnsQuery,
 }) => {
+  // const params = useParams();
+  // const npub = (params.npub ?? '').toLowerCase();
+
   const [kinds, setKinds] = useState([]);
   const [platforms, setPlatforms] = useState([]);
+  // console.log(JSON.stringify(selectedApp), 'SELECTED APP');
+  console.log(selectedApp, 'SELECTED APP');
 
   useEffect(() => {
     setKinds(selectedApp.kinds);
-    setPlatforms(selectedApp.platforms);
+    setPlatforms(selectedApp.app.platforms);
   }, [selectedApp]);
 
   const handleOffKind = (e) => {
@@ -43,53 +47,35 @@ const EditAppModal = ({
   const handleEditSave = async () => {
     const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
     const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
-    const addedPlatforms = platforms.filter(
-      (p) => !selectedApp.platforms.includes(p)
-    );
-    const removedPlatforms = selectedApp.platforms.filter(
+    const removedPlatforms = selectedApp.app.platforms.filter(
       (p) => !platforms.includes(p)
     );
 
-    if (removedKinds.length > 0 && removedPlatforms.length > 0) {
-      await cmn.removeKindsAndPlatformsFromApp(
+    if (removedPlatforms) {
+      const result = await cmn.removePlatformsFromUserEvents(
         selectedApp.app,
-        removedKinds,
-        removedPlatforms
-      );
-    } else if (removedKinds.length > 0) {
-      await cmn.removeKindsAndPlatformsFromApp(
-        selectedApp.app,
-        removedKinds,
-        selectedApp.platforms
-      );
-    } else if (removedPlatforms.length > 0) {
-      await cmn.removeKindsAndPlatformsFromApp(
-        selectedApp.app,
-        selectedApp.kinds,
         removedPlatforms
       );
     }
 
-    if (addedKinds.length > 0 && addedPlatforms.length > 0) {
-      await cmn.publishRecomms(selectedApp.app, addedKinds, addedPlatforms);
-    } else if (addedKinds.length > 0) {
-      await cmn.publishRecomms(
+    if (addedKinds) {
+      const result = await cmn.publishRecomms(
         selectedApp.app,
         addedKinds,
-        selectedApp.platforms
+        selectedApp.app.platforms
       );
-    } else if (addedPlatforms.length > 0) {
-      await cmn.publishRecomms(
+    }
+    if (removedKinds) {
+      const result = await cmn.removeKindsFromApp(
         selectedApp.app,
-        selectedApp.kinds,
-        addedPlatforms
+        removedKinds
       );
     }
 
     handleEditClose();
     getRecomnsQuery();
   };
-
+  console.log(selectedApp?.app?.platforms, 'something');
   return (
     <Modal show={openModal} onHide={handleEditClose}>
       <Modal.Header closeButton>
@@ -117,19 +103,16 @@ const EditAppModal = ({
         </ListGroup>
         <h4 className="mt-3">Platforms:</h4>
         <ListGroup>
-          {selectedApp?.app?.platforms.map((p) => {
-            {
-              console.log(!platforms?.includes(p), 'CHECKED :', p);
-            }
-
+          {selectedApp?.app?.platforms.map((platform) => {
             return (
-              <ListGroup.Item key={p}>
+              <ListGroup.Item key={platform}>
                 <Form.Check
                   type="switch"
-                  value={p}
-                  checked={!platforms?.includes(p) ? '' : 'checked'}
+                  value={platform}
+                  checked={platforms?.includes(platform) ? 'checked' : ''}
                   onChange={handleOffPlatform}
-                  label={p}
+                  data-type="platform"
+                  label={platform}
                 />
               </ListGroup.Item>
             );

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from "react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ThemeProvider from 'react-bootstrap/ThemeProvider'
-import { IntlProvider } from "./IntlProvider";
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import ThemeProvider from 'react-bootstrap/ThemeProvider';
+import { IntlProvider } from './IntlProvider';
 
 import './index.scss';
 import Root from './Root';
@@ -18,28 +18,28 @@ const HTTP = new QueryClient();
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />
+    path: '/',
+    element: <Root />,
   },
   {
-    path: "/about",
-    element: <About />
+    path: '/about',
+    element: <About />,
   },
   {
-    path: "/recommendations",
-    element: <Recommendations />
+    path: '/recommendations',
+    element: <Recommendations />,
   },
   {
-    path: "/p/:npub",
-    element: <Profile />
+    path: '/p/:npub',
+    element: <Profile />,
   },
   {
-    path: "/a/:naddr",
-    element: <AppInfo />
+    path: '/a/:naddr',
+    element: <AppInfo />,
   },
   {
-    path: "/edit/:naddr?",
-    element: <AppEdit />
+    path: '/edit/:naddr?',
+    element: <AppEdit />,
   },
 ]);
 
@@ -48,9 +48,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={HTTP}>
       <IntlProvider>
-	<ThemeProvider>
+        <ThemeProvider>
           <RouterProvider router={router} />
-	</ThemeProvider>
+        </ThemeProvider>
       </IntlProvider>
     </QueryClientProvider>
   </React.StrictMode>

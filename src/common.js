@@ -5,7 +5,7 @@ import NDK, {
   NDKNip07Signer,
   NDKRelaySet,
 } from '@nostr-dev-kit/ndk';
-import { nip19 } from 'nostr-tools';
+import { getPublicKey, nip19 } from 'nostr-tools';
 
 import * as cs from './const';
 
@@ -246,7 +246,6 @@ export function getCachedApp(platform, app_id) {
 }
 
 export function getPlatform() {
-  console.log('platform', platform);
   if (platform.android) return 'android';
   else if (platform.ios) return 'ios';
   else if (platform.macos) return 'macos';
@@ -303,6 +302,8 @@ export function getKinds() {
 }
 
 export function getTags(e, name) {
+  // console.log(e, 'EVENT');
+  // console.log(name, 'NAME');
   return e.tags.filter((t) => t.length > 0 && t[0] === name);
 }
 
@@ -714,10 +715,7 @@ export async function fetchUserRecomms(pubkey, kinds) {
     authors: [pubkey],
   };
   if (kinds) filter['#d'] = kinds.map((k) => '' + k);
-
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log('user recomms', events);
-
   return events;
 }
 
@@ -729,9 +727,7 @@ export async function fetchUserRecommsApps(pubkey, kinds) {
     authors: [pubkey],
   };
   if (kinds) filter['#d'] = kinds.map((k) => '' + k);
-
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log('user recomms', events);
 
   const addrEvents = {};
   for (const e of events) {
@@ -923,10 +919,8 @@ export async function publishEvent(event) {
   ndkEvent.content = event.content;
   ndkEvent.tags = event.tags;
   ndkEvent.created_at = Math.floor(Date.now() / 1000);
-
   const relaySet = NDKRelaySet.fromRelayUrls(writeRelays, ndk);
   const r = await ndkEvent.publish(relaySet);
-  console.log('r', r);
   return true;
 }
 
@@ -934,7 +928,6 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   if (addKinds.length === 0 || addPlatforms.length === 0) {
     return 'Choose kinds and platforms';
   }
-  console.log('DDDONNE NEXT');
   if (!isAuthed()) {
     return 'Please login';
   }
@@ -973,7 +966,6 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
     }
   }
 
-  console.log('events', events);
   if (events.length === 0) {
     return '';
   }
@@ -987,12 +979,8 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
   return !r || r.error ? r?.error || 'Failed' : '';
 }
 
-export async function removeKindsAndPlatformsFromApp(
-  app,
-  removeKinds,
-  removePlatforms
-) {
-  if (removeKinds.length === 0 && removePlatforms.length === 0) {
+export async function removeKindsFromApp(app, removeKinds) {
+  if (removeKinds.length === 0) {
     return 'No kinds or platforms specified for removal';
   }
 
@@ -1001,20 +989,18 @@ export async function removeKindsAndPlatformsFromApp(
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
+  console.log(lists, 'LISTS');
   const events = [];
   for (const k of removeKinds) {
     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+    console.log();
     if (list) {
       const a = getEventTagA(app);
       let changed = false;
       for (let i = list.tags.length - 1; i >= 0; i--) {
+        console.log(i, 'I');
         const tag = list.tags[i];
-        if (
-          tag.length >= 4 &&
-          tag[0] === 'a' &&
-          tag[1] === a &&
-          (removePlatforms.length === 0 || removePlatforms.includes(tag[3]))
-        ) {
+        if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
           list.tags.splice(i, 1);
           changed = true;
         }
@@ -1035,6 +1021,7 @@ export async function removeKindsAndPlatformsFromApp(
   }
 
   let r = null;
+  console.log(events, 'EVENTS');
   for (const e of events) {
     r = await publishEvent(e);
     if (!r || r.error) break;
@@ -1061,3 +1048,40 @@ addOnNostr(async () => {
   const pubkey = getLoginPubkey();
   authed = pubkey && (await window.nostr.getPublicKey()) === pubkey;
 });
+
+export async function fetchUserRecommsForPlatform(pubkey, platforms) {
+  const ndk = await getNDK();
+
+  const filter = {
+    kinds: [cs.KIND_RECOMM],
+    authors: [pubkey],
+  };
+  if (platforms) filter['#a'] = platforms.map((p) => ['a', '', '', p]);
+
+  const events = await fetchAllEvents([startFetch(ndk, filter)]);
+  return events;
+}
+
+export async function removePlatformsFromUserEvents(app, removedPlatforms) {
+  if (!isAuthed()) {
+    return 'Please login';
+  }
+  const userEvents = await fetchUserRecomms(getLoginPubkey());
+  const a = getEventTagA(app);
+  for (const event of userEvents) {
+    const filteredTags = event.tags.filter((tag) => {
+      if (
+        tag[0] === 'a' &&
+        tag[1] === a &&
+        removedPlatforms.some((rmP) => rmP === tag[3])
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    console.log('filteredTags', { filteredTags, removedPlatforms });
+    await publishEvent({ ...event, tags: filteredTags });
+  }
+  return '';
+}
