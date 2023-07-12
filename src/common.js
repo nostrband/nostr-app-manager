@@ -302,8 +302,6 @@ export function getKinds() {
 }
 
 export function getTags(e, name) {
-  // console.log(e, 'EVENT');
-  // console.log(name, 'NAME');
   return e.tags.filter((t) => t.length > 0 && t[0] === name);
 }
 
@@ -989,16 +987,14 @@ export async function removeKindsFromApp(app, removeKinds) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
-  console.log(lists, 'LISTS');
   const events = [];
   for (const k of removeKinds) {
     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
-    console.log();
+    console.log(list, 'LIST');
     if (list) {
       const a = getEventTagA(app);
       let changed = false;
       for (let i = list.tags.length - 1; i >= 0; i--) {
-        console.log(i, 'I');
         const tag = list.tags[i];
         if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
           list.tags.splice(i, 1);
@@ -1062,14 +1058,26 @@ export async function fetchUserRecommsForPlatform(pubkey, platforms) {
   return events;
 }
 
+export const getPlatformValue = (e, name, removedPlatform) => {
+  const filtered = e.tags.filter((t) => t.length > 0 && t[0] === name);
+  const filteredPlatform = filtered[0];
+  return filteredPlatform ? filteredPlatform[3] : null;
+};
+
 export async function removePlatformsFromUserEvents(app, removedPlatforms) {
   if (!isAuthed()) {
     return 'Please login';
   }
   const userEvents = await fetchUserRecomms(getLoginPubkey());
-  const a = getEventTagA(app);
+  let a = getEventTagA(app);
   for (const event of userEvents) {
-    const filteredTags = event.tags.filter((tag) => {
+    console.log(event, 'EVENT BEFORE');
+    let filteredTags = event.tags.filter((tag) => {
+      console.log({
+        isPlatform: tag[0] === 'a',
+        isSecond: tag[1] === a,
+        isThird: removedPlatforms.some((rmP) => rmP === tag[3]),
+      });
       if (
         tag[0] === 'a' &&
         tag[1] === a &&
@@ -1080,7 +1088,7 @@ export async function removePlatformsFromUserEvents(app, removedPlatforms) {
         return true;
       }
     });
-    console.log('filteredTags', { filteredTags, removedPlatforms });
+    console.log('AFTERED FILTERED', { filteredTags, removedPlatforms });
     await publishEvent({ ...event, tags: filteredTags });
   }
   return '';

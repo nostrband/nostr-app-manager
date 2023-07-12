@@ -12,13 +12,8 @@ const EditAppModal = ({
   handleEditClose,
   getRecomnsQuery,
 }) => {
-  // const params = useParams();
-  // const npub = (params.npub ?? '').toLowerCase();
-
   const [kinds, setKinds] = useState([]);
   const [platforms, setPlatforms] = useState([]);
-  // console.log(JSON.stringify(selectedApp), 'SELECTED APP');
-  console.log(selectedApp, 'SELECTED APP');
 
   useEffect(() => {
     setKinds(selectedApp.kinds);
@@ -50,7 +45,6 @@ const EditAppModal = ({
     const removedPlatforms = selectedApp.app.platforms.filter(
       (p) => !platforms.includes(p)
     );
-
     if (removedPlatforms) {
       const result = await cmn.removePlatformsFromUserEvents(
         selectedApp.app,
@@ -71,11 +65,10 @@ const EditAppModal = ({
         removedKinds
       );
     }
-
     handleEditClose();
     getRecomnsQuery();
   };
-  console.log(selectedApp?.app?.platforms, 'something');
+
   return (
     <Modal show={openModal} onHide={handleEditClose}>
       <Modal.Header closeButton>

@@ -74,7 +74,6 @@ const ProfileView = () => {
   useEffect(() => {
     getRecomnsQuery();
   }, [npub]);
-  console.log(recomms, 'RECOMMS');
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
