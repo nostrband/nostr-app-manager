@@ -15,9 +15,21 @@ const EditAppModal = ({
   const [kinds, setKinds] = useState([]);
   const [platforms, setPlatforms] = useState([]);
 
+  const getPlatforms = async () => {
+    const lists = await cmn.fetchUserRecomms(cmn.getLoginPubkey());
+    const a = cmn.getEventTagA(selectedApp.app);
+    const list = lists.find((l) =>
+      l.tags.some((tag) => tag.length >= 4 && tag[1] === a)
+    );
+    console.log(list, 'LIST');
+    const tags = list.tags;
+    const platforms = tags.filter((tag) => tag[0] === 'a').map((tag) => tag[3]);
+    setPlatforms(platforms);
+  };
+
   useEffect(() => {
     setKinds(selectedApp.kinds);
-    setPlatforms(selectedApp.app.platforms);
+    getPlatforms();
   }, [selectedApp]);
 
   const handleOffKind = (e) => {
@@ -46,7 +58,7 @@ const EditAppModal = ({
       (p) => !platforms.includes(p)
     );
     if (removedPlatforms) {
-      const result = await cmn.removePlatformsFromUserEvents(
+      const result = await cmn.removePlatformsFromApp(
         selectedApp.app,
         removedPlatforms
       );
@@ -59,6 +71,7 @@ const EditAppModal = ({
         selectedApp.app.platforms
       );
     }
+
     if (removedKinds) {
       const result = await cmn.removeKindsFromApp(
         selectedApp.app,

@@ -907,12 +907,14 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
+  console.log('DONE EVENT ЙУУУУУ');
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
 
   const ndk = await getNDK();
   const ndkEvent = new NDKEvent(ndk);
+
   ndkEvent.kind = event.kind;
   ndkEvent.content = event.content;
   ndkEvent.tags = event.tags;
@@ -923,7 +925,7 @@ export async function publishEvent(event) {
 }
 
 export async function publishRecomms(app, addKinds, addPlatforms) {
-  if (addKinds.length === 0 || addPlatforms.length === 0) {
+  if (addKinds.length === 0) {
     return 'Choose kinds and platforms';
   }
   if (!isAuthed()) {
@@ -1058,38 +1060,59 @@ export async function fetchUserRecommsForPlatform(pubkey, platforms) {
   return events;
 }
 
-export const getPlatformValue = (e, name, removedPlatform) => {
-  const filtered = e.tags.filter((t) => t.length > 0 && t[0] === name);
-  const filteredPlatform = filtered[0];
-  return filteredPlatform ? filteredPlatform[3] : null;
-};
+export async function removePlatformsFromApp(app, removePlatforms) {
+  if (removePlatforms.length === 0) {
+    return 'No platforms specified for removal';
+  }
 
-export async function removePlatformsFromUserEvents(app, removedPlatforms) {
   if (!isAuthed()) {
     return 'Please login';
   }
-  const userEvents = await fetchUserRecomms(getLoginPubkey());
-  let a = getEventTagA(app);
-  for (const event of userEvents) {
-    console.log(event, 'EVENT BEFORE');
-    let filteredTags = event.tags.filter((tag) => {
-      console.log({
-        isPlatform: tag[0] === 'a',
-        isSecond: tag[1] === a,
-        isThird: removedPlatforms.some((rmP) => rmP === tag[3]),
-      });
-      if (
-        tag[0] === 'a' &&
-        tag[1] === a &&
-        removedPlatforms.some((rmP) => rmP === tag[3])
-      ) {
-        return false;
-      } else {
-        return true;
+
+  const lists = await fetchUserRecomms(getLoginPubkey());
+  const events = [];
+  for (const platform of removePlatforms) {
+    const list = lists.find((l) =>
+      l.tags.some((tag) => tag.length >= 4 && tag[3] === platform)
+    );
+    console.log(list, 'LIST');
+    if (list) {
+      const a = getEventTagA(app);
+      console.log(a, 'AAA');
+      let changed = false;
+      for (let i = list.tags.length - 1; i >= 0; i--) {
+        const tag = list.tags[i];
+        if (
+          tag.length >= 4 &&
+          tag[0] === 'a' &&
+          tag[1] === a &&
+          tag[3] === platform
+        ) {
+          list.tags.splice(i, 1);
+          changed = true;
+        }
       }
-    });
-    console.log('AFTERED FILTERED', { filteredTags, removedPlatforms });
-    await publishEvent({ ...event, tags: filteredTags });
+      if (changed) {
+        events.push(list);
+      } else {
+        console.log('not found on the list for platform', platform);
+      }
+    } else {
+      console.log('not found in user recomms for platform', platform);
+    }
   }
-  return '';
+
+  console.log('events to be updated', events);
+  if (events.length === 0) {
+    return 'No events to update';
+  }
+
+  let r = null;
+  console.log(events, 'EVENTS');
+  for (const e of events) {
+    r = await publishEvent(e);
+    if (!r || r.error) break;
+  }
+
+  return !r || r.error ? r?.error || 'Failed' : '';
 }
