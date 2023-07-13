@@ -15,17 +15,9 @@ const EditAppModal = ({
   const [kinds, setKinds] = useState([]);
   const [platforms, setPlatforms] = useState([]);
 
-  const getPlatforms = async () => {
-    const lists = await cmn.fetchUserRecomms(cmn.getLoginPubkey());
-    const list = lists.find((l) => l.tags.some((tag) => tag.length >= 4));
-    const tags = list.tags;
-    const platforms = tags.filter((tag) => tag[0] === 'a').map((tag) => tag[3]);
-    setPlatforms(platforms);
-  };
-
   useEffect(() => {
     setKinds(selectedApp.kinds);
-    getPlatforms();
+    setPlatforms(selectedApp.app.platforms);
   }, [selectedApp]);
 
   const handleOffKind = (e) => {
@@ -59,7 +51,6 @@ const EditAppModal = ({
         removedPlatforms
       );
     }
-
     if (addedKinds) {
       const result = await cmn.publishRecomms(
         selectedApp.app,

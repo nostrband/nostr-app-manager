@@ -1078,7 +1078,6 @@ export async function removePlatformsFromApp(app, removePlatforms) {
     console.log(list, 'LIST');
     if (list) {
       const a = getEventTagA(app);
-      console.log(a, 'AAA');
       let changed = false;
       for (let i = list.tags.length - 1; i >= 0; i--) {
         const tag = list.tags[i];
