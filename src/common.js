@@ -5,7 +5,7 @@ import NDK, {
   NDKNip07Signer,
   NDKRelaySet,
 } from '@nostr-dev-kit/ndk';
-import { nip19 } from 'nostr-tools';
+import { getPublicKey, nip19 } from 'nostr-tools';
 
 import * as cs from './const';
 
@@ -246,7 +246,6 @@ export function getCachedApp(platform, app_id) {
 }
 
 export function getPlatform() {
-  console.log('platform', platform);
   if (platform.android) return 'android';
   else if (platform.ios) return 'ios';
   else if (platform.macos) return 'macos';
@@ -714,10 +713,7 @@ export async function fetchUserRecomms(pubkey, kinds) {
     authors: [pubkey],
   };
   if (kinds) filter['#d'] = kinds.map((k) => '' + k);
-
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log('user recomms', events);
-
   return events;
 }
 
@@ -729,9 +725,7 @@ export async function fetchUserRecommsApps(pubkey, kinds) {
     authors: [pubkey],
   };
   if (kinds) filter['#d'] = kinds.map((k) => '' + k);
-
   const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log('user recomms', events);
 
   const addrEvents = {};
   for (const e of events) {
@@ -913,28 +907,27 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
+  console.log('DONE EVENT ЙУУУУУ');
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
 
   const ndk = await getNDK();
   const ndkEvent = new NDKEvent(ndk);
+
   ndkEvent.kind = event.kind;
   ndkEvent.content = event.content;
   ndkEvent.tags = event.tags;
   ndkEvent.created_at = Math.floor(Date.now() / 1000);
-
   const relaySet = NDKRelaySet.fromRelayUrls(writeRelays, ndk);
   const r = await ndkEvent.publish(relaySet);
-  console.log('r', r);
   return true;
 }
 
 export async function publishRecomms(app, addKinds, addPlatforms) {
-  if (addKinds.length === 0 || addPlatforms.length === 0) {
+  if (addKinds.length === 0) {
     return 'Choose kinds and platforms';
   }
-
   if (!isAuthed()) {
     return 'Please login';
   }
@@ -973,7 +966,6 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
     }
   }
 
-  console.log('events', events);
   if (events.length === 0) {
     return '';
   }
@@ -989,7 +981,7 @@ export async function publishRecomms(app, addKinds, addPlatforms) {
 
 export async function removeKindsFromApp(app, removeKinds) {
   if (removeKinds.length === 0) {
-    return 'No kinds specified for removal';
+    return 'No kinds or platforms specified for removal';
   }
 
   if (!isAuthed()) {
@@ -1000,6 +992,7 @@ export async function removeKindsFromApp(app, removeKinds) {
   const events = [];
   for (const k of removeKinds) {
     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+    console.log(list, 'LIST');
     if (list) {
       const a = getEventTagA(app);
       let changed = false;
@@ -1026,6 +1019,7 @@ export async function removeKindsFromApp(app, removeKinds) {
   }
 
   let r = null;
+  console.log(events, 'EVENTS');
   for (const e of events) {
     r = await publishEvent(e);
     if (!r || r.error) break;
@@ -1052,3 +1046,68 @@ addOnNostr(async () => {
   const pubkey = getLoginPubkey();
   authed = pubkey && (await window.nostr.getPublicKey()) === pubkey;
 });
+
+export async function fetchUserRecommsForPlatform(pubkey, platforms) {
+  const ndk = await getNDK();
+
+  const filter = {
+    kinds: [cs.KIND_RECOMM],
+    authors: [pubkey],
+  };
+  if (platforms) filter['#a'] = platforms.map((p) => ['a', '', '', p]);
+
+  const events = await fetchAllEvents([startFetch(ndk, filter)]);
+  return events;
+}
+
+export async function removePlatformsFromApp(app, removePlatforms) {
+  if (removePlatforms.length === 0) {
+    return 'No platforms specified for removal';
+  }
+
+  if (!isAuthed()) {
+    return 'Please login';
+  }
+
+  const lists = await fetchUserRecomms(getLoginPubkey());
+  const events = [];
+  for (const platform of removePlatforms) {
+    const list = lists.find((l) =>
+      l.tags.some((tag) => tag.length >= 4 && tag[3] === platform)
+    );
+    ///Вот здесь приходит приложение с удалением, то есть мой запрос отправляется и работает.
+    console.log(list, 'LIST');
+    if (list) {
+      const a = getEventTagA(app);
+      let changed = false;
+      for (let i = list.tags.length - 1; i >= 0; i--) {
+        const tag = list.tags[i];
+        if (tag.length >= 4 && tag[0] === 'a' && tag[3] === platform) {
+          list.tags.splice(i, 1);
+          changed = true;
+        }
+      }
+      if (changed) {
+        events.push(list);
+      } else {
+        console.log('not found on the list for platform', platform);
+      }
+    } else {
+      console.log('not found in user recomms for platform', platform);
+    }
+  }
+
+  console.log('events to be updated', events);
+  if (events.length === 0) {
+    return 'No events to update';
+  }
+
+  let r = null;
+  console.log(events, 'EVENTS');
+  for (const e of events) {
+    r = await publishEvent(e);
+    if (!r || r.error) break;
+  }
+
+  return !r || r.error ? r?.error || 'Failed' : '';
+}
