@@ -1075,6 +1075,7 @@ export async function removePlatformsFromApp(app, removePlatforms) {
     const list = lists.find((l) =>
       l.tags.some((tag) => tag.length >= 4 && tag[3] === platform)
     );
+    ///Вот здесь приходит приложение с удалением, то есть мой запрос отправляется и работает.
     console.log(list, 'LIST');
     if (list) {
       const a = getEventTagA(app);
