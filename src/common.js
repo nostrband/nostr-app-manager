@@ -1082,12 +1082,7 @@ export async function removePlatformsFromApp(app, removePlatforms) {
       let changed = false;
       for (let i = list.tags.length - 1; i >= 0; i--) {
         const tag = list.tags[i];
-        if (
-          tag.length >= 4 &&
-          tag[0] === 'a' &&
-          tag[1] === a &&
-          tag[3] === platform
-        ) {
+        if (tag.length >= 4 && tag[0] === 'a' && tag[3] === platform) {
           list.tags.splice(i, 1);
           changed = true;
         }

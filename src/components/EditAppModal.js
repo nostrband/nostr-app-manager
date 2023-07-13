@@ -17,11 +17,7 @@ const EditAppModal = ({
 
   const getPlatforms = async () => {
     const lists = await cmn.fetchUserRecomms(cmn.getLoginPubkey());
-    const a = cmn.getEventTagA(selectedApp.app);
-    const list = lists.find((l) =>
-      l.tags.some((tag) => tag.length >= 4 && tag[1] === a)
-    );
-    console.log(list, 'LIST');
+    const list = lists.find((l) => l.tags.some((tag) => tag.length >= 4));
     const tags = list.tags;
     const platforms = tags.filter((tag) => tag[0] === 'a').map((tag) => tag[3]);
     setPlatforms(platforms);
@@ -71,7 +67,6 @@ const EditAppModal = ({
         selectedApp.app.platforms
       );
     }
-
     if (removedKinds) {
       const result = await cmn.removeKindsFromApp(
         selectedApp.app,
