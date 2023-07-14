@@ -40,34 +40,35 @@ const EditAppModal = ({
   };
 
   const handleEditSave = async () => {
-    const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
-    const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
-    const removedPlatforms = selectedApp.app.platforms.filter(
-      (p) => !platforms.includes(p)
-    );
+    const result = await cmn.publishRecomms(selectedApp.app, kinds, platforms);
+    // const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
+    // const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
+    // const removedPlatforms = selectedApp.app.platforms.filter(
+    //   (p) => !platforms.includes(p)
+    // );
 
-    // УДАЛЕНИЕ ПЛАТФОРМЫ
-    if (removedPlatforms) {
-      const result = await cmn.removePlatformsFromApp(
-        selectedApp.app,
-        removedPlatforms
-      );
-    }
+    // // УДАЛЕНИЕ ПЛАТФОРМЫ
+    // if (removedPlatforms) {
+    //   const result = await cmn.removePlatformsFromApp(
+    //     selectedApp.app,
+    //     removedPlatforms
+    //   );
+    // }
 
-    // ТУТ ВСЕ РАБОТАЕТ
-    if (removedKinds) {
-      const result = await cmn.removeKindsFromApp(
-        selectedApp.app,
-        removedKinds
-      );
-    }
-    if (addedKinds) {
-      const result = await cmn.publishRecomms(
-        selectedApp.app,
-        addedKinds,
-        selectedApp.app.platforms
-      );
-    }
+    // // ТУТ ВСЕ РАБОТАЕТ
+    // if (removedKinds) {
+    //   const result = await cmn.removeKindsFromApp(
+    //     selectedApp.app,
+    //     removedKinds
+    //   );
+    // }
+    // if (addedKinds) {
+    //   const result = await cmn.publishRecomms(
+    //     selectedApp.app,
+    //     addedKinds,
+    //     selectedApp.app.platforms
+    //   );
+    // }
     handleEditClose();
     getRecomnsQuery();
   };

@@ -924,108 +924,108 @@ export async function publishEvent(event) {
   return true;
 }
 
-export async function publishRecomms(app, addKinds, addPlatforms) {
-  if (addKinds.length === 0) {
-    return 'Choose kinds and platforms';
-  }
-  if (!isAuthed()) {
-    return 'Please login';
-  }
-  const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
-  const events = [];
-  for (const k of addKinds) {
-    // template
-    const event = {
-      kind: cs.KIND_RECOMM,
-      content: '',
-    };
+// export async function publishRecomms(app, addKinds, addPlatforms) {
+//   if (addKinds.length === 0) {
+//     return 'Choose kinds and platforms';
+//   }
+//   if (!isAuthed()) {
+//     return 'Please login';
+//   }
+//   const lists = await fetchUserRecomms(getLoginPubkey(), addKinds);
+//   const events = [];
+//   for (const k of addKinds) {
+//     // template
+//     const event = {
+//       kind: cs.KIND_RECOMM,
+//       content: '',
+//     };
 
-    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
-    if (list) {
-      event.tags = list.tags;
-    } else {
-      event.tags = [['d', '' + k]];
-    }
+//     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+//     if (list) {
+//       event.tags = list.tags;
+//     } else {
+//       event.tags = [['d', '' + k]];
+//     }
 
-    const a = getEventTagA(app);
-    let changed = false;
-    for (const p of addPlatforms) {
-      if (
-        event.tags.find(
-          (t) => t.length >= 4 && t[0] === 'a' && t[1] === a && t[3] === p
-        ) === undefined
-      ) {
-        event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
-        changed = true;
-      }
-    }
-    if (changed) {
-      events.push(event);
-    } else {
-      console.log('already on the list', k);
-    }
-  }
+//     const a = getEventTagA(app);
+//     let changed = false;
+//     for (const p of addPlatforms) {
+//       if (
+//         event.tags.find(
+//           (t) => t.length >= 4 && t[0] === 'a' && t[1] === a && t[3] === p
+//         ) === undefined
+//       ) {
+//         event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
+//         changed = true;
+//       }
+//     }
+//     if (changed) {
+//       events.push(event);
+//     } else {
+//       console.log('already on the list', k);
+//     }
+//   }
 
-  if (events.length === 0) {
-    return '';
-  }
+//   if (events.length === 0) {
+//     return '';
+//   }
 
-  let r = null;
-  for (const e of events) {
-    r = await publishEvent(e);
-    if (!r || r.error) break;
-  }
+//   let r = null;
+//   for (const e of events) {
+//     r = await publishEvent(e);
+//     if (!r || r.error) break;
+//   }
 
-  return !r || r.error ? r?.error || 'Failed' : '';
-}
+//   return !r || r.error ? r?.error || 'Failed' : '';
+// }
 
-export async function removeKindsFromApp(app, removeKinds) {
-  if (removeKinds.length === 0) {
-    return 'No kinds or platforms specified for removal';
-  }
+// export async function removeKindsFromApp(app, removeKinds) {
+//   if (removeKinds.length === 0) {
+//     return 'No kinds or platforms specified for removal';
+//   }
 
-  if (!isAuthed()) {
-    return 'Please login';
-  }
+//   if (!isAuthed()) {
+//     return 'Please login';
+//   }
 
-  const lists = await fetchUserRecomms(getLoginPubkey());
-  const events = [];
-  for (const k of removeKinds) {
-    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
-    if (list) {
-      const a = getEventTagA(app);
-      let changed = false;
-      for (let i = list.tags.length - 1; i >= 0; i--) {
-        const tag = list.tags[i];
-        if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
-          list.tags.splice(i, 1);
-          changed = true;
-        }
-      }
-      if (changed) {
-        events.push(list);
-      } else {
-        console.log('not found on the list', k);
-      }
-    } else {
-      console.log('not found in user recomms', k);
-    }
-  }
+//   const lists = await fetchUserRecomms(getLoginPubkey());
+//   const events = [];
+//   for (const k of removeKinds) {
+//     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+//     if (list) {
+//       const a = getEventTagA(app);
+//       let changed = false;
+//       for (let i = list.tags.length - 1; i >= 0; i--) {
+//         const tag = list.tags[i];
+//         if (tag.length >= 4 && tag[0] === 'a' && tag[1] === a) {
+//           list.tags.splice(i, 1);
+//           changed = true;
+//         }
+//       }
+//       if (changed) {
+//         events.push(list);
+//       } else {
+//         console.log('not found on the list', k);
+//       }
+//     } else {
+//       console.log('not found in user recomms', k);
+//     }
+//   }
 
-  console.log('events to be updated', events);
-  if (events.length === 0) {
-    return 'No events to update';
-  }
+//   console.log('events to be updated', events);
+//   if (events.length === 0) {
+//     return 'No events to update';
+//   }
 
-  let r = null;
-  console.log(events, 'EVENTS');
-  for (const e of events) {
-    r = await publishEvent(e);
-    if (!r || r.error) break;
-  }
+//   let r = null;
+//   console.log(events, 'EVENTS');
+//   for (const e of events) {
+//     r = await publishEvent(e);
+//     if (!r || r.error) break;
+//   }
 
-  return !r || r.error ? r?.error || 'Failed' : '';
-}
+//   return !r || r.error ? r?.error || 'Failed' : '';
+// }
 
 export function formatAppUrl(naddr) {
   return '/a/' + naddr;
@@ -1046,62 +1046,161 @@ addOnNostr(async () => {
   authed = pubkey && (await window.nostr.getPublicKey()) === pubkey;
 });
 
-export async function removePlatformsFromApp(app, removePlatforms) {
-  if (removePlatforms.length === 0) {
-    return 'No platforms specified for removal';
-  }
+// export async function removePlatformsFromApp(app, removePlatforms) {
+//   if (removePlatforms.length === 0) {
+//     return 'No platforms specified for removal';
+//   }
 
+//   if (!isAuthed()) {
+//     return 'Please login';
+//   }
+
+//   const userEvents = await fetchUserRecomms(getLoginPubkey());
+//   const events = [];
+
+//   // Перебираем события пользователя
+//   for (const event of userEvents) {
+//     const filteredTags = [];
+//     let removedPlatform = false;
+
+//     // Перебираем теги каждого события
+//     for (const tag of event.tags) {
+//       if (tag[0] === 'd') {
+//         filteredTags.push(tag);
+//       } else if (tag[0] === 'a') {
+//         const appAddress = tag[1];
+//         const platform = tag[3];
+
+//         // Проверяем, соответствует ли адрес приложения и включена ли платформа в массиве removePlatforms
+//         if (
+//           appAddress === getEventTagA(app) &&
+//           removePlatforms.includes(platform)
+//         ) {
+//           removedPlatform = true;
+//         } else {
+//           filteredTags.push(tag);
+//         }
+//       }
+//     }
+
+//     // Если платформа была удалена, обновляем теги события
+//     if (removedPlatform) {
+//       event.tags = filteredTags;
+//       events.push(event);
+//     }
+//   }
+
+//   if (events.length === 0) {
+//     return 'Нет событий для обновления';
+//   }
+//   console.log(events, 'EVENTS');
+//   let error = '';
+//   for (const event of events) {
+//     // const result = await publishEvent(event);
+//     // if (result && result.error) {
+//     //   error = result.error;
+//     //   break;
+//     // }
+//   }
+
+//   return error ? error : '';
+// }
+
+export async function publishRecomms(app, kinds, platforms) {
   if (!isAuthed()) {
     return 'Please login';
   }
-
-  const userEvents = await fetchUserRecomms(getLoginPubkey());
+  const lists = await fetchUserRecomms(getLoginPubkey());
   const events = [];
 
-  // Перебираем события пользователя
-  for (const event of userEvents) {
-    const filteredTags = [];
-    let removedPlatform = false;
+  // add new kinds
+  for (const k of kinds) {
+    // template
+    const event = {
+      kind: cs.KIND_RECOMM,
+      content: '',
+    };
 
-    // Перебираем теги каждого события
-    for (const tag of event.tags) {
-      if (tag[0] === 'd') {
-        filteredTags.push(tag);
-      } else if (tag[0] === 'a') {
-        const appAddress = tag[1];
-        const platform = tag[3];
+    const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
+    if (list) {
+      event.tags = list.tags;
+    } else {
+      event.tags = [['d', '' + k]];
+    }
 
-        // Проверяем, соответствует ли адрес приложения и включена ли платформа в массиве removePlatforms
-        if (
-          appAddress === getEventTagA(app) &&
-          removePlatforms.includes(platform)
-        ) {
-          removedPlatform = true;
-        } else {
-          filteredTags.push(tag);
-        }
+    const a = getEventTagA(app);
+    let changed = false;
+
+    // add platforms
+    for (const p of platforms) {
+      if (
+        event.tags.find(
+          (t) => t.length >= 4 && t[0] === 'a' && t[1] === a && t[3] === p
+        ) === undefined
+      ) {
+        event.tags.push(['a', a, 'wss://relay.nostr.band', p]);
+        changed = true;
       }
     }
 
-    // Если платформа была удалена, обновляем теги события
-    if (removedPlatform) {
-      event.tags = filteredTags;
+    // remove platforms
+    event.tags.filter((t) => {
+      if (
+        t.length >= 4 &&
+        t[0] === 'a' &&
+        t[1] === a &&
+        !platforms.includes(t[3])
+      ) {
+        changed = true;
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    if (changed) {
       events.push(event);
+    } else {
+      console.log('already on the list', k);
     }
   }
 
-  if (events.length === 0) {
-    return 'Нет событий для обновления';
-  }
-  console.log(events, 'EVENTS');
-  let error = '';
-  for (const event of events) {
-    // const result = await publishEvent(event);
-    // if (result && result.error) {
-    //   error = result.error;
-    //   break;
-    // }
+  // check removed kinds
+  for (const event of lists) {
+    console.log(event, 'EVENT');
+    const k = +getTagValue(event, 'd', 0, ''); // to int
+    console.log(k, 'K');
+    // already processed
+    if (kinds.includes(k)) continue;
+    const a = getEventTagA(app);
+    let changed = false;
+
+    // emove all mentions of our app since this kind is no longer selectedr
+    event.tags.filter((t) => {
+      if (t.length >= 4 && t[0] === 'a' && t[1] === a) {
+        changed = true;
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    if (changed) {
+      events.push(event);
+    } else {
+      console.log('not on the list', k);
+    }
   }
 
-  return error ? error : '';
+  console.log('EVENTS', JSON.stringify(events));
+  if (events.length === 0) {
+    return '';
+  }
+  let r = null;
+  // for (const e of events) {
+  //   r = await publishEvent(e);
+  //   if (!r || r.error) break;
+  // }
+
+  return !r || r.error ? r?.error || 'Failed' : '';
 }
