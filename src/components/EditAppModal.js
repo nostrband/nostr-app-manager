@@ -45,12 +45,16 @@ const EditAppModal = ({
     const removedPlatforms = selectedApp.app.platforms.filter(
       (p) => !platforms.includes(p)
     );
+
+    // УДАЛЕНИЕ ПЛАТФОРМЫ
     if (removedPlatforms) {
       const result = await cmn.removePlatformsFromApp(
         selectedApp.app,
         removedPlatforms
       );
     }
+
+    // ТУТ ВСЕ РАБОТАЕТ
     if (removedKinds) {
       const result = await cmn.removeKindsFromApp(
         selectedApp.app,

@@ -992,7 +992,6 @@ export async function removeKindsFromApp(app, removeKinds) {
   const events = [];
   for (const k of removeKinds) {
     const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);
-    console.log(list, 'LIST');
     if (list) {
       const a = getEventTagA(app);
       let changed = false;
@@ -1047,19 +1046,6 @@ addOnNostr(async () => {
   authed = pubkey && (await window.nostr.getPublicKey()) === pubkey;
 });
 
-export async function fetchUserRecommsForPlatform(pubkey, platforms) {
-  const ndk = await getNDK();
-
-  const filter = {
-    kinds: [cs.KIND_RECOMM],
-    authors: [pubkey],
-  };
-  if (platforms) filter['#a'] = platforms.map((p) => ['a', '', '', p]);
-
-  const events = await fetchAllEvents([startFetch(ndk, filter)]);
-  return events;
-}
-
 export async function removePlatformsFromApp(app, removePlatforms) {
   if (removePlatforms.length === 0) {
     return 'No platforms specified for removal';
@@ -1071,44 +1057,43 @@ export async function removePlatformsFromApp(app, removePlatforms) {
 
   const userEvents = await fetchUserRecomms(getLoginPubkey());
   const events = [];
+
+  // Перебираем события пользователя
   for (const event of userEvents) {
-    console.log(JSON.stringify(event), 'EVEEEENETTT');
-    if (event.kind === 31989) {
-      const filteredTags = [];
-      let removedPlatform = false;
+    const filteredTags = [];
+    let removedPlatform = false;
 
-      for (const tag of event.tags) {
-        if (tag[0] === 'd') {
+    // Перебираем теги каждого события
+    for (const tag of event.tags) {
+      if (tag[0] === 'd') {
+        filteredTags.push(tag);
+      } else if (tag[0] === 'a') {
+        const appAddress = tag[1];
+        const platform = tag[3];
+
+        // Проверяем, соответствует ли адрес приложения и включена ли платформа в массиве removePlatforms
+        if (
+          appAddress === getEventTagA(app) &&
+          removePlatforms.includes(platform)
+        ) {
+          removedPlatform = true;
+        } else {
           filteredTags.push(tag);
-        } else if (tag[0] === 'a') {
-          const appAddress = tag[1];
-          const platform = tag[3];
-
-          if (
-            appAddress === getEventTagA(app) &&
-            removePlatforms.includes(platform)
-          ) {
-            removedPlatform = true;
-          } else {
-            filteredTags.push(tag);
-          }
         }
       }
+    }
 
-      if (removedPlatform) {
-        event.tags = filteredTags;
-        events.push(event);
-      }
+    // Если платформа была удалена, обновляем теги события
+    if (removedPlatform) {
+      event.tags = filteredTags;
+      events.push(event);
     }
   }
 
-  console.log('events to be updated', events);
   if (events.length === 0) {
-    return 'No events to update';
+    return 'Нет событий для обновления';
   }
-
   console.log(events, 'EVENTS');
-
   let error = '';
   for (const event of events) {
     // const result = await publishEvent(event);
