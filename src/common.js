@@ -1144,7 +1144,7 @@ export async function publishRecomms(app, kinds, platforms) {
     }
 
     // remove platforms
-    event.tags.filter((t) => {
+    event.tags = event.tags.filter((t) => {
       if (
         t.length >= 4 &&
         t[0] === 'a' &&
@@ -1176,7 +1176,7 @@ export async function publishRecomms(app, kinds, platforms) {
     let changed = false;
 
     // emove all mentions of our app since this kind is no longer selectedr
-    event.tags.filter((t) => {
+    event.tags = event.tags.filter((t) => {
       if (t.length >= 4 && t[0] === 'a' && t[1] === a) {
         changed = true;
         return false;
@@ -1192,7 +1192,7 @@ export async function publishRecomms(app, kinds, platforms) {
     }
   }
 
-  console.log('EVENTS', JSON.stringify(events));
+  console.log('EVENTS', events);
   if (events.length === 0) {
     return '';
   }
