@@ -71,6 +71,7 @@ const ProfileView = () => {
   const getRecomnsQuery = () => {
     init(npub, setPubkey, setApps, setRecomms).catch(console.error);
   };
+
   useEffect(() => {
     getRecomnsQuery();
   }, [npub]);

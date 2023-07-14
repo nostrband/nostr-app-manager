@@ -5,6 +5,8 @@ import Form from 'react-bootstrap/Form';
 import { ListGroup } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import AppSelectItem from '../elements/AppSelectItem';
+import Alert from 'react-bootstrap/Alert';
+import Spinner from 'react-bootstrap/Spinner';
 
 const EditAppModal = ({
   selectedApp,
@@ -14,10 +16,33 @@ const EditAppModal = ({
 }) => {
   const [kinds, setKinds] = useState([]);
   const [platforms, setPlatforms] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const fetchPlatformsFromUserRecomms = async () => {
+    setLoading(true);
+    try {
+      const fetchedRecomms = await cmn.fetchUserRecomms(cmn.getLoginPubkey());
+      const appUrl = cmn.getEventTagA(selectedApp.app);
+
+      const platformsSet = new Set(
+        fetchedRecomms
+          .flatMap((recomm) => recomm.tags)
+          .filter((tag) => tag[0] === 'a' && tag[1] === appUrl)
+          .map((tag) => tag[3])
+      );
+      const platforms = Array.from(platformsSet);
+      setPlatforms(platforms);
+    } catch (error) {
+      console.error('Error fetching platforms:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setKinds(selectedApp.kinds);
-    setPlatforms(selectedApp.app.platforms);
+    fetchPlatformsFromUserRecomms();
   }, [selectedApp]);
 
   const handleOffKind = (e) => {
@@ -40,37 +65,19 @@ const EditAppModal = ({
   };
 
   const handleEditSave = async () => {
-    const result = await cmn.publishRecomms(selectedApp.app, kinds, platforms);
-    // const addedKinds = kinds.filter((k) => !selectedApp.kinds.includes(k));
-    // const removedKinds = selectedApp.kinds.filter((k) => !kinds.includes(k));
-    // const removedPlatforms = selectedApp.app.platforms.filter(
-    //   (p) => !platforms.includes(p)
-    // );
-
-    // // УДАЛЕНИЕ ПЛАТФОРМЫ
-    // if (removedPlatforms) {
-    //   const result = await cmn.removePlatformsFromApp(
-    //     selectedApp.app,
-    //     removedPlatforms
-    //   );
-    // }
-
-    // // ТУТ ВСЕ РАБОТАЕТ
-    // if (removedKinds) {
-    //   const result = await cmn.removeKindsFromApp(
-    //     selectedApp.app,
-    //     removedKinds
-    //   );
-    // }
-    // if (addedKinds) {
-    //   const result = await cmn.publishRecomms(
-    //     selectedApp.app,
-    //     addedKinds,
-    //     selectedApp.app.platforms
-    //   );
-    // }
-    handleEditClose();
-    getRecomnsQuery();
+    console.log({ kinds, platforms });
+    if (kinds.length > 0 && platforms.length > 0) {
+      const result = await cmn.publishRecomms(
+        selectedApp.app,
+        kinds,
+        platforms,
+        selectedApp.kinds
+      );
+      handleEditClose();
+      getRecomnsQuery();
+    } else {
+      setError('There must be at least one kind or platform');
+    }
   };
 
   return (
@@ -82,39 +89,49 @@ const EditAppModal = ({
         <ListGroup>
           {selectedApp?.app && <AppSelectItem app={selectedApp?.app} />}
         </ListGroup>
-        <h4 className="mt-3">Used for:</h4>
-        <ListGroup>
-          {selectedApp?.app?.kinds.map((k) => {
-            return (
-              <ListGroup.Item key={k}>
-                <Form.Check
-                  type="switch"
-                  value={k}
-                  checked={!kinds?.includes(Number(k)) ? '' : 'checked'}
-                  onChange={handleOffKind}
-                  label={cmn.getKindLabel(k)}
-                />
-              </ListGroup.Item>
-            );
-          })}
-        </ListGroup>
-        <h4 className="mt-3">Platforms:</h4>
-        <ListGroup>
-          {selectedApp?.app?.platforms.map((platform) => {
-            return (
-              <ListGroup.Item key={platform}>
-                <Form.Check
-                  type="switch"
-                  value={platform}
-                  checked={platforms?.includes(platform) ? 'checked' : ''}
-                  onChange={handleOffPlatform}
-                  data-type="platform"
-                  label={platform}
-                />
-              </ListGroup.Item>
-            );
-          })}
-        </ListGroup>
+
+        {loading ? (
+          <div className="d-flex justify-content-center mt-3">
+            <Spinner animation="border" className="text-primary" />
+          </div>
+        ) : (
+          <>
+            <h4 className="mt-3">Used for:</h4>
+            <ListGroup>
+              {selectedApp?.app?.kinds.map((k) => {
+                return (
+                  <ListGroup.Item key={k}>
+                    <Form.Check
+                      type="switch"
+                      value={k}
+                      checked={!kinds?.includes(Number(k)) ? '' : 'checked'}
+                      onChange={handleOffKind}
+                      label={cmn.getKindLabel(k)}
+                    />
+                  </ListGroup.Item>
+                );
+              })}
+            </ListGroup>
+            <h4 className="mt-3">Platforms:</h4>
+            <ListGroup className="mb-2">
+              {selectedApp?.app?.platforms.map((platform) => {
+                return (
+                  <ListGroup.Item key={platform}>
+                    <Form.Check
+                      type="switch"
+                      value={platform}
+                      checked={platforms?.includes(platform) ? 'checked' : ''}
+                      onChange={handleOffPlatform}
+                      data-type="platform"
+                      label={platform}
+                    />
+                  </ListGroup.Item>
+                );
+              })}
+            </ListGroup>
+            {error && <Alert variant="danger">{error}</Alert>}
+          </>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleEditClose}>
