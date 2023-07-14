@@ -51,17 +51,17 @@ const EditAppModal = ({
         removedPlatforms
       );
     }
+    if (removedKinds) {
+      const result = await cmn.removeKindsFromApp(
+        selectedApp.app,
+        removedKinds
+      );
+    }
     if (addedKinds) {
       const result = await cmn.publishRecomms(
         selectedApp.app,
         addedKinds,
         selectedApp.app.platforms
-      );
-    }
-    if (removedKinds) {
-      const result = await cmn.removeKindsFromApp(
-        selectedApp.app,
-        removedKinds
       );
     }
     handleEditClose();

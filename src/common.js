@@ -1069,31 +1069,36 @@ export async function removePlatformsFromApp(app, removePlatforms) {
     return 'Please login';
   }
 
-  const lists = await fetchUserRecomms(getLoginPubkey());
+  const userEvents = await fetchUserRecomms(getLoginPubkey());
   const events = [];
-  for (const platform of removePlatforms) {
-    const list = lists.find((l) =>
-      l.tags.some((tag) => tag.length >= 4 && tag[3] === platform)
-    );
-    ///Вот здесь приходит приложение с удалением, то есть мой запрос отправляется и работает.
-    console.log(list, 'LIST');
-    if (list) {
-      const a = getEventTagA(app);
-      let changed = false;
-      for (let i = list.tags.length - 1; i >= 0; i--) {
-        const tag = list.tags[i];
-        if (tag.length >= 4 && tag[0] === 'a' && tag[3] === platform) {
-          list.tags.splice(i, 1);
-          changed = true;
+  for (const event of userEvents) {
+    console.log(JSON.stringify(event), 'EVEEEENETTT');
+    if (event.kind === 31989) {
+      const filteredTags = [];
+      let removedPlatform = false;
+
+      for (const tag of event.tags) {
+        if (tag[0] === 'd') {
+          filteredTags.push(tag);
+        } else if (tag[0] === 'a') {
+          const appAddress = tag[1];
+          const platform = tag[3];
+
+          if (
+            appAddress === getEventTagA(app) &&
+            removePlatforms.includes(platform)
+          ) {
+            removedPlatform = true;
+          } else {
+            filteredTags.push(tag);
+          }
         }
       }
-      if (changed) {
-        events.push(list);
-      } else {
-        console.log('not found on the list for platform', platform);
+
+      if (removedPlatform) {
+        event.tags = filteredTags;
+        events.push(event);
       }
-    } else {
-      console.log('not found in user recomms for platform', platform);
     }
   }
 
@@ -1102,12 +1107,16 @@ export async function removePlatformsFromApp(app, removePlatforms) {
     return 'No events to update';
   }
 
-  let r = null;
   console.log(events, 'EVENTS');
-  for (const e of events) {
-    r = await publishEvent(e);
-    if (!r || r.error) break;
+
+  let error = '';
+  for (const event of events) {
+    // const result = await publishEvent(event);
+    // if (result && result.error) {
+    //   error = result.error;
+    //   break;
+    // }
   }
 
-  return !r || r.error ? r?.error || 'Failed' : '';
+  return error ? error : '';
 }
