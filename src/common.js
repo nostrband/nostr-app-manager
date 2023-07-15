@@ -983,7 +983,7 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
     }
 
     // remove platforms
-    event.tags = event.tags.filter((t) => {
+    event.tags = event?.tags?.filter((t) => {
       if (
         t.length >= 4 &&
         t[0] === 'a' &&
@@ -1005,7 +1005,7 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
   }
 
   // check removed kinds
-  const removedKinds = selectedKinds.filter((k) => !kinds.includes(k));
+  const removedKinds = selectedKinds?.filter((k) => !kinds.includes(k));
   if (removedKinds) {
     for (const k of removedKinds) {
       const list = lists.find((l) => getTagValue(l, 'd', 0, '') === '' + k);

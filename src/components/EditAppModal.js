@@ -65,19 +65,17 @@ const EditAppModal = ({
   };
 
   const handleEditSave = async () => {
-    console.log({ kinds, platforms });
-    if (kinds.length > 0 && platforms.length > 0) {
-      const result = await cmn.publishRecomms(
-        selectedApp.app,
-        kinds,
-        platforms,
-        selectedApp.kinds
-      );
-      handleEditClose();
-      getRecomnsQuery();
-    } else {
-      setError('There must be at least one kind or platform');
+    const result = await cmn.publishRecomms(
+      selectedApp.app,
+      kinds,
+      platforms,
+      selectedApp.kinds
+    );
+    if (result.length > 0) {
+      setError(result);
     }
+    handleEditClose();
+    getRecomnsQuery();
   };
 
   return (
