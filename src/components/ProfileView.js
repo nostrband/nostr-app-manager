@@ -14,11 +14,10 @@ const init = async (npub, setPubkey, setApps, setRecomms) => {
   const pubkey = type === 'npub' ? data : '';
   setPubkey(pubkey);
   if (!pubkey) return;
-
-  const apps = await cmn.fetchApps(pubkey);
-  setApps(apps);
   const recomms = await cmn.fetchUserRecommsApps(pubkey);
   setRecomms(recomms);
+  const apps = await cmn.fetchApps(pubkey);
+  setApps(apps);
 };
 
 const reorganizeData = (recomms, setReorganizesData) => {

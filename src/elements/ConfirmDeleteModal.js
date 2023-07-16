@@ -7,9 +7,11 @@ import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
+import { nip19 } from 'nostr-tools';
 
 const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
   const navigate = useNavigate();
+  const npub = nip19.npubEncode(cmn.getLoginPubkey());
   const [loading, setLoading] = useState(false);
   const deleteAppHandler = async () => {
     const deletionEvent = {
@@ -24,7 +26,7 @@ const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
       if (result) {
         setLoading(false);
         handleCloseModal();
-        navigate('/');
+        navigate(`/p/${npub}`);
       }
     } catch (error) {
       console.error('Failed to delete app:', error);
