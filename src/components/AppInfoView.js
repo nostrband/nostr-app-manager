@@ -78,7 +78,6 @@ const AppInfoView = () => {
   async function addApp() {
     setSending(true);
     const r = await cmn.publishRecomms(appInfo, addKinds, addPlatforms);
-    console.log(r, 'R');
     setSending(false);
     if (r !== '') {
       setError(r);

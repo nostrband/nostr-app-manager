@@ -28,7 +28,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
       const app = r.apps[id];
       const app_id = app.profile.name || app.profile.display_name;
       const kind = Number(cmn.getTagValue(r, 'd'));
-
       if (!(app_id in groupedApps)) {
         groupedApps[app_id] = {
           app_id: app_id,
@@ -45,12 +44,10 @@ const reorganizeData = (recomms, setReorganizesData) => {
       }
     }
   }
-
   const unsortedApps = Object.values(groupedApps);
   const sortedApps = unsortedApps.sort((a, b) =>
     a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })
   );
-
   setReorganizesData(sortedApps);
 };
 
@@ -64,11 +61,13 @@ const ProfileView = () => {
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = nip19.npubEncode(pubKey);
   const [selectedApp, setSelectedApp] = useState({
-    app: {},
+    app: {
+      kinds: [],
+      platforms: [],
+    },
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-
   const getRecomnsQuery = () => {
     init(npub, setPubkey, setApps, setRecomms).catch(console.error);
   };
@@ -86,7 +85,6 @@ const ProfileView = () => {
   };
 
   if (!npub) return null;
-
   return (
     <>
       {apps && (
@@ -115,7 +113,6 @@ const ProfileView = () => {
               {reorganizesData.map((group) => (
                 <>
                   <div key={group.name} className="mb-3">
-                    {console.log(group, 'group')}
                     {group.apps.map((app) => {
                       return (
                         <>
@@ -132,13 +129,15 @@ const ProfileView = () => {
                             key={app.id}
                             app={{ ...app, forKinds: group.kinds }}
                           />
-                          <EditAppModal
-                            getRecomnsQuery={getRecomnsQuery}
-                            handleEditClose={handleCloseModal}
-                            openModal={app.id === showEditModal}
-                            selectedApp={selectedApp}
-                            setSelectedApp={setSelectedApp}
-                          />
+                          {app.id === showEditModal ? (
+                            <EditAppModal
+                              getRecomnsQuery={getRecomnsQuery}
+                              handleEditClose={handleCloseModal}
+                              openModal={app.id === showEditModal}
+                              selectedApp={selectedApp}
+                              setSelectedApp={setSelectedApp}
+                            />
+                          ) : null}
                         </>
                       );
                     })}

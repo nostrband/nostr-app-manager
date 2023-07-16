@@ -8,7 +8,7 @@ const EventProfile = (props) => {
   const author = event.author;
   let profile = author;
   try {
-    profile = JSON.parse (event.content);
+    profile = JSON.parse(event.content);
   } catch (e) {
     console.log(e);
   }
@@ -16,16 +16,20 @@ const EventProfile = (props) => {
     <Container className="ps-0 pe-0">
       <Profile profile={author} pubkey={event.pubkey} />
       <Row>
-	<Col xs={12}>
-	  {profile?.about}
-	</Col>
-	{(profile?.website && ( <Col xs={12}>Website: <a href={profile.website}>{profile.website}</a></Col> ))}
-	<Col xs={12}>
-	  <small className="text-muted">{(new Date(event.created_at * 1000)).toLocaleString()}</small>
-	</Col>
+        <Col xs={12}>{profile?.about}</Col>
+        {profile?.website && (
+          <Col xs={12}>
+            Website: <a href={profile.website}>{profile.website}</a>
+          </Col>
+        )}
+        <Col xs={12}>
+          <small className="text-muted">
+            {new Date(event.created_at * 1000).toLocaleString()}
+          </small>
+        </Col>
       </Row>
     </Container>
-  )
-}
+  );
+};
 
 export default EventProfile;
