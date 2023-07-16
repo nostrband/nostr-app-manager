@@ -943,7 +943,6 @@ addOnNostr(async () => {
 });
 
 export async function publishRecomms(app, kinds, platforms, selectedKinds) {
-  console.log(JSON.stringify(app), 'APP');
   if (!isAuthed()) {
     return 'Please login';
   }

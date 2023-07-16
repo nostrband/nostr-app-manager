@@ -3,12 +3,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
-
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
-
 import * as cmn from '../common';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const AppInfo = (props) => {
+  console.log(props.app, 'PROPS APP');
+  const [showModal, setShowModal] = useState(false);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const isAllowEdit = () => {
@@ -61,16 +62,34 @@ const AppInfo = (props) => {
             />
           )}
           {allowEdit && (
-            <div className="mt-2 d-flex justify-content-center">
-              <Link to={editUrl}>
-                <Button size="sm" variant="outline-secondary">
-                  Edit
-                </Button>
-              </Link>
+            <div>
+              <div className="mt-2 d-flex justify-content-center">
+                <Link className="w-100" to={editUrl}>
+                  <Button
+                    size="sm"
+                    variant="outline-secondary"
+                    className="w-100"
+                  >
+                    Edit
+                  </Button>
+                </Link>
+              </div>
+              <Button
+                onClick={() => setShowModal(true)}
+                size="sm"
+                className="btn-danger w-100 mt-2"
+              >
+                Delete
+              </Button>
             </div>
           )}
         </Col>
       </Row>
+      <ConfirmDeleteModal
+        showModal={showModal}
+        handleCloseModal={() => setShowModal(false)}
+        selectedApp={props.app}
+      />
     </div>
   );
 };

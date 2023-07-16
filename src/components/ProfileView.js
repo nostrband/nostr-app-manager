@@ -60,6 +60,7 @@ const ProfileView = () => {
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = nip19.npubEncode(pubKey);
+
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -74,7 +75,7 @@ const ProfileView = () => {
 
   useEffect(() => {
     getRecomnsQuery();
-  }, [npub]);
+  }, []);
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
