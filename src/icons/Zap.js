@@ -1,10 +1,16 @@
 import React from 'react';
 
-const Zap = () => {
+const Zap = ({ zapRef, dataNpub, dataRelays, onClick }) => {
   return (
     <svg
-      width="24"
-      height="24"
+      style={{ cursor: 'pointer' }}
+      data-npub={dataNpub}
+      ref={zapRef}
+      data-relays={dataRelays}
+      onClick={onClick}
+      className="svg-inline--fa fa-pointer"
+      width="34"
+      height="34"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -7,18 +7,17 @@ import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
-import { ListGroup } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19.decode(npub);
   const pubkey = type === 'npub' ? data : '';
   setPubkey(pubkey);
   if (!pubkey) return;
-
-  const apps = await cmn.fetchApps(pubkey);
-  setApps(apps);
   const recomms = await cmn.fetchUserRecommsApps(pubkey);
   setRecomms(recomms);
+  const apps = await cmn.fetchApps(pubkey);
+  setApps(apps);
 };
 
 const reorganizeData = (recomms, setReorganizesData) => {
@@ -60,6 +59,7 @@ const ProfileView = () => {
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = nip19.npubEncode(pubKey);
+
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -68,13 +68,18 @@ const ProfileView = () => {
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-  const getRecomnsQuery = () => {
-    init(npub, setPubkey, setApps, setRecomms).catch(console.error);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getRecomnsQuery = useCallback(() => {
+    setIsLoading(true); // Set loading state when fetching data
+    init(npub, setPubkey, setApps, setRecomms)
+      .then(() => setIsLoading(false))
+      .catch(console.error);
+  }, [npub]);
 
   useEffect(() => {
     getRecomnsQuery();
-  }, [npub]);
+  }, []);
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
@@ -87,7 +92,11 @@ const ProfileView = () => {
   if (!npub) return null;
   return (
     <>
-      {apps && (
+    {isLoading ? 
+      <div className="d-flex justify-content-center mt-5">
+      <Spinner className="text-primary" />
+    </div> :  <> 
+    {apps && (
         <div className="mt-5">
           <Profile profile={apps.meta} pubkey={pubkey} />
           <h4 className="mt-5">Published apps:</h4>
@@ -148,6 +157,10 @@ const ProfileView = () => {
           )}
         </div>
       )}
+    </>
+  }
+    
+     
     </>
   );
 };

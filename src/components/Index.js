@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
+import { Spinner } from 'react-bootstrap';
 
 const Index = () => {
   const [link, setLink] = useState('');
@@ -28,12 +29,10 @@ const Index = () => {
   const get = (p, s) => {
     const r = new RegExp(p + '[a-z0-9]+');
     const a = r.exec(s);
-    console.log('get', p, s, a);
     if (a === null) return '';
 
     try {
       const { type, data } = nip19.decode(a[0]);
-      console.log('nip19', a[0], type, data);
       if (type + '1' === p) return a[0];
     } catch (e) {
       return '';
@@ -104,7 +103,7 @@ const Index = () => {
       allApps.sort((a, b) => {
         return b.created_at - a.created_at;
       });
-
+      allApps.sort(() => Math.random() - 0.5);
       setAllApps(allApps);
     }
 
@@ -145,7 +144,6 @@ const Index = () => {
     setEditShow(false);
     const platform = cmn.getPlatform();
     const aps = cmn.readAppSettings();
-    console.log(aps, 'APS');
     for (const kind of offForKinds) {
       const ps = aps.kinds[kind].platforms;
       delete ps[platform];
@@ -258,7 +256,11 @@ const Index = () => {
         <Container className="ps-0 pe-0">
           <Row>
             <Col>
-              {allApps === null && 'Loading...'}
+              {allApps === null && (
+                <div className="d-flex justify-content-center">
+                  <Spinner className="text-primary" />
+                </div>
+              )}
               {allApps != null && !allApps.length && 'Nothing found on relays.'}
               {allApps && (
                 <ListGroup>

@@ -16,6 +16,7 @@
     "react-bootstrap": "^2.7.4",
     "react-bootstrap-icons": "^1.10.3",
     "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
     "react-intl": "^6.4.2",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.11.1",
