@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
+import { Spinner } from 'react-bootstrap';
 
 const Index = () => {
   const [link, setLink] = useState('');
@@ -104,7 +105,7 @@ const Index = () => {
       allApps.sort((a, b) => {
         return b.created_at - a.created_at;
       });
-
+      allApps.sort(() => Math.random() - 0.5);
       setAllApps(allApps);
     }
 
@@ -258,7 +259,11 @@ const Index = () => {
         <Container className="ps-0 pe-0">
           <Row>
             <Col>
-              {allApps === null && 'Loading...'}
+              {allApps === null && (
+                <div className="d-flex justify-content-center">
+                  <Spinner className="text-primary" />
+                </div>
+              )}
               {allApps != null && !allApps.length && 'Nothing found on relays.'}
               {allApps && (
                 <ListGroup>

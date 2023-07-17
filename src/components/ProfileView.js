@@ -7,7 +7,7 @@ import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
-import { ListGroup } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19.decode(npub);
@@ -68,9 +68,14 @@ const ProfileView = () => {
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-  const getRecomnsQuery = () => {
-    init(npub, setPubkey, setApps, setRecomms).catch(console.error);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getRecomnsQuery = useCallback(() => {
+    setIsLoading(true); // Set loading state when fetching data
+    init(npub, setPubkey, setApps, setRecomms)
+      .then(() => setIsLoading(false))
+      .catch(console.error);
+  }, [npub]);
 
   useEffect(() => {
     getRecomnsQuery();
@@ -87,7 +92,11 @@ const ProfileView = () => {
   if (!npub) return null;
   return (
     <>
-      {apps && (
+    {isLoading ? 
+      <div className="d-flex justify-content-center mt-5">
+      <Spinner className="text-primary" />
+    </div> :  <> 
+    {apps && (
         <div className="mt-5">
           <Profile profile={apps.meta} pubkey={pubkey} />
           <h4 className="mt-5">Published apps:</h4>
@@ -148,6 +157,10 @@ const ProfileView = () => {
           )}
         </div>
       )}
+    </>
+  }
+    
+     
     </>
   );
 };

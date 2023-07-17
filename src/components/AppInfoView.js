@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
+import { Spinner } from 'react-bootstrap';
 
 import Profile from '../elements/Profile';
 import AppInfo from '../elements/AppInfo';
@@ -93,6 +94,11 @@ const AppInfoView = () => {
 
   return (
     <>
+      {info === null && (
+        <div className="d-flex justify-content-center">
+          <Spinner className="text-primary" />
+        </div>
+      )}
       {info && (
         <div className="mt-5">
           <AppInfo key={appInfo.name} app={appInfo} />
