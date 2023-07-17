@@ -14,11 +14,10 @@ const init = async (npub, setPubkey, setApps, setRecomms) => {
   const pubkey = type === 'npub' ? data : '';
   setPubkey(pubkey);
   if (!pubkey) return;
-
-  const apps = await cmn.fetchApps(pubkey);
-  setApps(apps);
   const recomms = await cmn.fetchUserRecommsApps(pubkey);
   setRecomms(recomms);
+  const apps = await cmn.fetchApps(pubkey);
+  setApps(apps);
 };
 
 const reorganizeData = (recomms, setReorganizesData) => {
@@ -60,6 +59,7 @@ const ProfileView = () => {
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = nip19.npubEncode(pubKey);
+
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -74,7 +74,7 @@ const ProfileView = () => {
 
   useEffect(() => {
     getRecomnsQuery();
-  }, [npub]);
+  }, []);
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
