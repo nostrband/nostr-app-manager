@@ -104,7 +104,7 @@ const Index = () => {
       allApps.sort((a, b) => {
         return b.created_at - a.created_at;
       });
-
+      allApps.sort(() => Math.random() - 0.5);
       setAllApps(allApps);
     }
 
