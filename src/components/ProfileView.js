@@ -7,7 +7,7 @@ import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
-import { ListGroup } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19.decode(npub);
@@ -68,9 +68,14 @@ const ProfileView = () => {
     kinds: [],
   });
   const [showEditModal, setShowEditModal] = useState(null);
-  const getRecomnsQuery = () => {
-    init(npub, setPubkey, setApps, setRecomms).catch(console.error);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getRecomnsQuery = useCallback(() => {
+    setIsLoading(true); // Set loading state when fetching data
+    init(npub, setPubkey, setApps, setRecomms)
+      .then(() => setIsLoading(false))
+      .catch(console.error);
+  }, [npub]);
 
   useEffect(() => {
     getRecomnsQuery();
@@ -87,66 +92,74 @@ const ProfileView = () => {
   if (!npub) return null;
   return (
     <>
-      {apps && (
-        <div className="mt-5">
-          <Profile profile={apps.meta} pubkey={pubkey} />
-          <h4 className="mt-5">Published apps:</h4>
-          {!Object.keys(apps.apps).length && 'Nothing yet.'}
-          {apps.apps && (
-            <ListGroup>
-              {Object.keys(apps.apps).map((name) => {
-                const app = apps.apps[name];
-                const h = app.handlers[0];
-                return <AppSelectItem key={h.name} app={h} />;
-              })}
-            </ListGroup>
-          )}
-          <div className="mt-2">
-            <Link to={cmn.formatAppEditUrl('')}>
-              <Button variant="primary">Add app</Button>
-            </Link>
-          </div>
-          <h4 className="mt-5">Used apps:</h4>
-          {!recomms.length && 'Nothing yet.'}
-          {recomms.length > 0 && (
-            <ListGroup>
-              {reorganizesData.map((group) => (
-                <>
-                  <div key={group.name} className="mb-3">
-                    {group.apps.map((app) => {
-                      return (
-                        <>
-                          <AppSelectItem
-                            showKinds
-                            selecteAppForEdit={() => {
-                              setSelectedApp({
-                                app: { ...app },
-                                kinds: group.kinds,
-                              });
-                              setShowEditModal(app.id);
-                            }}
-                            myApp={myNpubKey === npub}
-                            key={app.id}
-                            app={{ ...app, forKinds: group.kinds }}
-                          />
-                          {app.id === showEditModal ? (
-                            <EditAppModal
-                              getRecomnsQuery={getRecomnsQuery}
-                              handleEditClose={handleCloseModal}
-                              openModal={app.id === showEditModal}
-                              selectedApp={selectedApp}
-                              setSelectedApp={setSelectedApp}
-                            />
-                          ) : null}
-                        </>
-                      );
-                    })}
-                  </div>
-                </>
-              ))}
-            </ListGroup>
-          )}
+      {isLoading ? (
+        <div className="d-flex justify-content-center mt-5">
+          <Spinner className="text-primary" />
         </div>
+      ) : (
+        <>
+          {apps && (
+            <div className="mt-5">
+              <Profile profile={apps.meta} pubkey={pubkey} />
+              <h4 className="mt-5">Published apps:</h4>
+              {!Object.keys(apps.apps).length && 'Nothing yet.'}
+              {apps.apps && (
+                <ListGroup>
+                  {Object.keys(apps.apps).map((name) => {
+                    const app = apps.apps[name];
+                    const h = app.handlers[0];
+                    return <AppSelectItem key={h.name} app={h} />;
+                  })}
+                </ListGroup>
+              )}
+              <div className="mt-2">
+                <Link to={cmn.formatAppEditUrl('')}>
+                  <Button variant="primary">Add app</Button>
+                </Link>
+              </div>
+              <h4 className="mt-5">Used apps:</h4>
+              {!recomms.length && 'Nothing yet.'}
+              {recomms.length > 0 && (
+                <ListGroup>
+                  {reorganizesData.map((group) => (
+                    <>
+                      <div key={group.name} className="mb-3">
+                        {group.apps.map((app) => {
+                          return (
+                            <>
+                              <AppSelectItem
+                                showKinds
+                                selecteAppForEdit={() => {
+                                  setSelectedApp({
+                                    app: { ...app },
+                                    kinds: group.kinds,
+                                  });
+                                  setShowEditModal(app.id);
+                                }}
+                                myApp={myNpubKey === npub}
+                                key={app.id}
+                                app={{ ...app, forKinds: group.kinds }}
+                              />
+                              {app.id === showEditModal ? (
+                                <EditAppModal
+                                  getRecomnsQuery={getRecomnsQuery}
+                                  handleEditClose={handleCloseModal}
+                                  openModal={app.id === showEditModal}
+                                  selectedApp={selectedApp}
+                                  setSelectedApp={setSelectedApp}
+                                />
+                              ) : null}
+                            </>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ))}
+                </ListGroup>
+              )}
+            </div>
+          )}
+        </>
       )}
     </>
   );
