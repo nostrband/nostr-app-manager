@@ -11,13 +11,15 @@ import { nip19 } from 'nostr-tools';
 
 const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
   const navigate = useNavigate();
-  const npub = nip19.npubEncode(cmn.getLoginPubkey());
+  const npub = nip19?.npubEncode(cmn?.getLoginPubkey());
+  console.log(npub, 'NPUB');
   const [loading, setLoading] = useState(false);
+
   const deleteAppHandler = async () => {
     const deletionEvent = {
       kind: 5,
-      pubkey: selectedApp.pubkey,
-      tags: [['e', selectedApp.id]],
+      pubkey: selectedApp?.pubkey,
+      tags: [['e', selectedApp?.id]],
       content: 'Deleting the app',
     };
     try {

@@ -8,7 +8,6 @@ import * as cmn from '../common';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 const AppInfo = (props) => {
-  console.log(props.app, 'PROPS APP');
   const [showModal, setShowModal] = useState(false);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
@@ -85,11 +84,13 @@ const AppInfo = (props) => {
           )}
         </Col>
       </Row>
-      <ConfirmDeleteModal
-        showModal={showModal}
-        handleCloseModal={() => setShowModal(false)}
-        selectedApp={props.app}
-      />
+      {allowEdit ? (
+        <ConfirmDeleteModal
+          showModal={showModal}
+          handleCloseModal={() => setShowModal(false)}
+          selectedApp={props.app}
+        />
+      ) : null}
     </div>
   );
 };
