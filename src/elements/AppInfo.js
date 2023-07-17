@@ -15,8 +15,7 @@ const AppInfo = (props) => {
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const zapButtonRef = useRef(null);
-  const [showZapDialog, setShowZapDialog] = useState(true);
-
+  const zapButtonRefByEmail = useRef(null);
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
@@ -26,12 +25,14 @@ const AppInfo = (props) => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
   }, [props.app]);
 
-  const handleZapClick = () => {
-    if (showZapDialog) {
+  useEffect(() => {
+    if (zapButtonRef.current) {
       window.nostrZap.initTarget(zapButtonRef.current);
     }
-    setShowZapDialog(false);
-  };
+    if (zapButtonRefByEmail.current) {
+      window.nostrZap.initTarget(zapButtonRefByEmail.current);
+    }
+  }, []);
 
   return (
     <div className="AppInfo">
@@ -48,7 +49,11 @@ const AppInfo = (props) => {
               </div>
             )}
             {app.lud16 && (
-              <div className="text-muted">
+              <div
+                data-npub={npub}
+                ref={zapButtonRefByEmail}
+                className="text-muted pointer"
+              >
                 <Lightning className="me-2" />
                 <span>{app.lud16}</span>
               </div>
@@ -74,14 +79,7 @@ const AppInfo = (props) => {
                 src={app.picture}
               />
             )}
-            {app.lud16 ? (
-              <Zap
-                zapRef={zapButtonRef}
-                dataNpub={npub}
-                dataRelays="wss://relay.damus.io,wss://relay.snort.social,wss://nostr.wine,wss://relay.nostr.band"
-                onClick={() => handleZapClick(app.lud16)}
-              />
-            ) : null}
+            {app.lud16 ? <Zap zapRef={zapButtonRef} dataNpub={npub} /> : null}
           </div>
 
           {allowEdit && (
