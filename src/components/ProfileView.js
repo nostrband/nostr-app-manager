@@ -10,7 +10,7 @@ import EditAppModal from './EditAppModal';
 import { ListGroup, Spinner } from 'react-bootstrap';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
-  const { type, data } = nip19.decode(npub);
+  const { type, data } = nip19?.decode(npub);
   const pubkey = type === 'npub' ? data : '';
   setPubkey(pubkey);
   if (!pubkey) return;
@@ -58,7 +58,7 @@ const ProfileView = () => {
   const [pubkey, setPubkey] = useState('');
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
-  const myNpubKey = nip19.npubEncode(pubKey);
+  const myNpubKey = pubKey ? nip19.npubEncode(pubKey) : '';
 
   const [selectedApp, setSelectedApp] = useState({
     app: {
@@ -92,75 +92,75 @@ const ProfileView = () => {
   if (!npub) return null;
   return (
     <>
-    {isLoading ? 
-      <div className="d-flex justify-content-center mt-5">
-      <Spinner className="text-primary" />
-    </div> :  <> 
-    {apps && (
-        <div className="mt-5">
-          <Profile profile={apps.meta} pubkey={pubkey} />
-          <h4 className="mt-5">Published apps:</h4>
-          {!Object.keys(apps.apps).length && 'Nothing yet.'}
-          {apps.apps && (
-            <ListGroup>
-              {Object.keys(apps.apps).map((name) => {
-                const app = apps.apps[name];
-                const h = app.handlers[0];
-                return <AppSelectItem key={h.name} app={h} />;
-              })}
-            </ListGroup>
-          )}
-          <div className="mt-2">
-            <Link to={cmn.formatAppEditUrl('')}>
-              <Button variant="primary">Add app</Button>
-            </Link>
-          </div>
-          <h4 className="mt-5">Used apps:</h4>
-          {!recomms.length && 'Nothing yet.'}
-          {recomms.length > 0 && (
-            <ListGroup>
-              {reorganizesData.map((group) => (
-                <>
-                  <div key={group.name} className="mb-3">
-                    {group.apps.map((app) => {
-                      return (
-                        <>
-                          <AppSelectItem
-                            showKinds
-                            selecteAppForEdit={() => {
-                              setSelectedApp({
-                                app: { ...app },
-                                kinds: group.kinds,
-                              });
-                              setShowEditModal(app.id);
-                            }}
-                            myApp={myNpubKey === npub}
-                            key={app.id}
-                            app={{ ...app, forKinds: group.kinds }}
-                          />
-                          {app.id === showEditModal ? (
-                            <EditAppModal
-                              getRecomnsQuery={getRecomnsQuery}
-                              handleEditClose={handleCloseModal}
-                              openModal={app.id === showEditModal}
-                              selectedApp={selectedApp}
-                              setSelectedApp={setSelectedApp}
-                            />
-                          ) : null}
-                        </>
-                      );
-                    })}
-                  </div>
-                </>
-              ))}
-            </ListGroup>
-          )}
+      {isLoading ? (
+        <div className="d-flex justify-content-center mt-5">
+          <Spinner className="text-primary" />
         </div>
+      ) : (
+        <>
+          {apps && (
+            <div className="mt-5">
+              <Profile profile={apps.meta} pubkey={pubkey} />
+              <h4 className="mt-5">Published apps:</h4>
+              {!Object.keys(apps.apps).length && 'Nothing yet.'}
+              {apps.apps && (
+                <ListGroup>
+                  {Object.keys(apps.apps).map((name) => {
+                    const app = apps.apps[name];
+                    const h = app.handlers[0];
+                    return <AppSelectItem key={h.name} app={h} />;
+                  })}
+                </ListGroup>
+              )}
+              <div className="mt-2">
+                <Link to={cmn.formatAppEditUrl('')}>
+                  <Button variant="primary">Add app</Button>
+                </Link>
+              </div>
+              <h4 className="mt-5">Used apps:</h4>
+              {!recomms.length && 'Nothing yet.'}
+              {recomms.length > 0 && (
+                <ListGroup>
+                  {reorganizesData.map((group) => (
+                    <>
+                      <div key={group.name} className="mb-3">
+                        {group.apps.map((app) => {
+                          return (
+                            <>
+                              <AppSelectItem
+                                showKinds
+                                selecteAppForEdit={() => {
+                                  setSelectedApp({
+                                    app: { ...app },
+                                    kinds: group.kinds,
+                                  });
+                                  setShowEditModal(app.id);
+                                }}
+                                myApp={myNpubKey === npub}
+                                key={app.id}
+                                app={{ ...app, forKinds: group.kinds }}
+                              />
+                              {app.id === showEditModal ? (
+                                <EditAppModal
+                                  getRecomnsQuery={getRecomnsQuery}
+                                  handleEditClose={handleCloseModal}
+                                  openModal={app.id === showEditModal}
+                                  selectedApp={selectedApp}
+                                  setSelectedApp={setSelectedApp}
+                                />
+                              ) : null}
+                            </>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ))}
+                </ListGroup>
+              )}
+            </div>
+          )}
+        </>
       )}
-    </>
-  }
-    
-     
     </>
   );
 };

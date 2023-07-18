@@ -88,7 +88,7 @@ const AppInfo = (props) => {
         <ConfirmDeleteModal
           showModal={showModal}
           handleCloseModal={() => setShowModal(false)}
-          selectedApp={props.app}
+          selectedApp={props?.app}
         />
       ) : null}
     </div>
