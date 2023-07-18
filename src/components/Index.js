@@ -29,12 +29,10 @@ const Index = () => {
   const get = (p, s) => {
     const r = new RegExp(p + '[a-z0-9]+');
     const a = r.exec(s);
-    console.log('get', p, s, a);
     if (a === null) return '';
 
     try {
       const { type, data } = nip19.decode(a[0]);
-      console.log('nip19', a[0], type, data);
       if (type + '1' === p) return a[0];
     } catch (e) {
       return '';
@@ -146,7 +144,6 @@ const Index = () => {
     setEditShow(false);
     const platform = cmn.getPlatform();
     const aps = cmn.readAppSettings();
-    console.log(aps, 'APS');
     for (const kind of offForKinds) {
       const ps = aps.kinds[kind].platforms;
       delete ps[platform];

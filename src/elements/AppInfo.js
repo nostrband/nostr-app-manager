@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -6,11 +6,16 @@ import { Link } from 'react-router-dom';
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../common';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import Zap from '../icons/Zap';
+import { nip19 } from 'nostr-tools';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const npub = nip19?.npubEncode(props.app.pubkey);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
+  const zapButtonRef = useRef(null);
+  const zapButtonRefByEmail = useRef(null);
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
@@ -19,6 +24,15 @@ const AppInfo = (props) => {
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
   }, [props.app]);
+
+  useEffect(() => {
+    if (zapButtonRef.current) {
+      window.nostrZap.initTarget(zapButtonRef.current);
+    }
+    if (zapButtonRefByEmail.current) {
+      window.nostrZap.initTarget(zapButtonRefByEmail.current);
+    }
+  }, []);
 
   return (
     <div className="AppInfo">
@@ -29,13 +43,17 @@ const AppInfo = (props) => {
             {app.website && (
               <div className="text-muted">
                 <BoxArrowUpRight className="me-2" />
-                <Link to={app.website} target="_blank">
+                <a href={app.website} target="_blank" rel="noopener noreferrer">
                   {app.website}
-                </Link>
+                </a>
               </div>
             )}
             {app.lud16 && (
-              <div className="text-muted">
+              <div
+                data-npub={npub}
+                ref={zapButtonRefByEmail}
+                className="text-muted pointer"
+              >
                 <Lightning className="me-2" />
                 <span>{app.lud16}</span>
               </div>
@@ -43,23 +61,27 @@ const AppInfo = (props) => {
             <div className="mt-2">{app.about}</div>
             {app.banner && (
               <div className="mt-2">
-                <Link to={app.banner} target="_blank">
+                <a href={app.banner} target="_blank" rel="noopener noreferrer">
                   <img alt="" src={app.banner} className="banner w-100" />
-                </Link>
+                </a>
               </div>
             )}
           </div>
         </Col>
         <Col xs="auto">
-          {app.picture && (
-            <img
-              alt=""
-              className="profile"
-              width="64"
-              height="64"
-              src={app.picture}
-            />
-          )}
+          <div className="d-flex flex-column align-items-center">
+            {app.picture && (
+              <img
+                alt=""
+                className="profile mb-3"
+                width="64"
+                height="64"
+                src={app.picture}
+              />
+            )}
+            {app.lud16 ? <Zap zapRef={zapButtonRef} dataNpub={npub} /> : null}
+          </div>
+
           {allowEdit && (
             <div>
               <div className="mt-2 d-flex justify-content-center">
