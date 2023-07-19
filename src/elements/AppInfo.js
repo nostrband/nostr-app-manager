@@ -8,6 +8,7 @@ import * as cmn from '../common';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Zap from '../icons/Zap';
 import { nip19 } from 'nostr-tools';
+import Heart from '../icons/Heart';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -16,6 +17,7 @@ const AppInfo = (props) => {
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const zapButtonRef = useRef(null);
   const zapButtonRefByEmail = useRef(null);
+
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
@@ -33,6 +35,18 @@ const AppInfo = (props) => {
       window.nostrZap.initTarget(zapButtonRefByEmail.current);
     }
   }, []);
+
+  const handleLike = async () => {
+    const event = {
+      kind: 7,
+      tags: [
+        ['p', props.app.pubkey],
+        ['a', cmn.naddrToAddr(cmn.getNaddr(props.app))],
+      ],
+      content: '+',
+    };
+    const result = await cmn.publishEvent(event);
+  };
 
   return (
     <div className="AppInfo">
@@ -80,6 +94,7 @@ const AppInfo = (props) => {
               />
             )}
             {app.lud16 ? <Zap zapRef={zapButtonRef} dataNpub={npub} /> : null}
+            <Heart onClick={handleLike} />
           </div>
 
           {allowEdit && (
