@@ -794,7 +794,6 @@ export async function fetchAppsByAs(aTags) {
   // find meta first
   const info = prepareHandlers(appEvents);
   console.log('info', info);
-
   return info;
 }
 
@@ -948,6 +947,7 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
+  console.log(lists, 'LISTS');
   const events = [];
   // add new kinds
   for (const k of kinds) {
@@ -1041,4 +1041,3 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
 
   return !r || r.error ? r?.error || 'Failed' : '';
 }
-
