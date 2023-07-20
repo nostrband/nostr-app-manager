@@ -1,55 +1,18 @@
 const LikedHeart = ({ props, onClick }) => {
   return (
     <svg
-      width="28"
-      height="30"
-      viewBox="0 0 28 30"
+      className="pointer"
+      onClick={onClick}
+      width="34"
+      height="34"
+      viewBox="0 0 256 256"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g filter="url(#filter0_d_23_3)">
-        <path
-          d="M14 21.35L12.55 20.03C7.4 15.36 4 12.27 4 8.5C4 5.41 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.41 24 8.5C24 12.27 20.6 15.36 15.45 20.03L14 21.35Z"
-          fill="#B22222"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_d_23_3"
-          x="-2"
-          y="0"
-          width="32"
-          height="32"
-          filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
-        >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-            result="hardAlpha"
-          />
-          <feOffset dy="4" />
-          <feGaussianBlur stdDeviation="2" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_23_3"
-          />
-          <feBlend
-            mode="normal"
-            in="SourceGraphic"
-            in2="effect1_dropShadow_23_3"
-            result="shape"
-          />
-        </filter>
-      </defs>
+      <path
+        d="M240 94C240 164 136.21 220.66 131.79 223C130.625 223.627 129.323 223.955 128 223.955C126.677 223.955 125.375 223.627 124.21 223C119.79 220.66 16 164 16 94C16.0185 77.5623 22.5566 61.8031 34.1798 50.1798C45.8031 38.5566 61.5623 32.0185 78 32C98.65 32 116.73 40.88 128 55.89C139.27 40.88 157.35 32 178 32C194.438 32.0185 210.197 38.5566 221.82 50.1798C233.443 61.8031 239.981 77.5623 240 94Z"
+        fill="#B22222"
+      />
     </svg>
   );
 };

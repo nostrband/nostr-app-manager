@@ -340,7 +340,7 @@ export function dedupEvents(events) {
       map[addr] = e;
     }
   }
-
+  console.log(map, 'MAPP');
   return Object.values(map);
 }
 
@@ -396,7 +396,6 @@ export async function fetchAllEvents(reqs) {
       }
     }
   }
-
   return dedupEvents(events);
 }
 
@@ -479,7 +478,7 @@ function prepareHandlers(events, metaPubkey) {
   return info;
 }
 
-function startFetch(ndk, filter) {
+export function startFetch(ndk, filter) {
   const relaySet = NDKRelaySet.fromRelayUrls(readRelays, ndk);
 
   // have to reimplement the ndk's fetchEvents method to allow:
@@ -664,7 +663,6 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
   ); // {cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
 
   const events = await fetchAllEvents(reqs);
-  console.log('recomms', events);
 
   for (const e of events) {
     e.isFriend = friendPubkeys && friendPubkeys.includes(e.pubkey);

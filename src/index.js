@@ -13,6 +13,7 @@ import Profile from './Profile';
 import AppInfo from './AppInfo';
 import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
+import { AuthProvider } from './context/ShowModalContext';
 
 const HTTP = new QueryClient();
 
@@ -46,11 +47,13 @@ export const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <QueryClientProvider client={HTTP}>
-    <IntlProvider>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </IntlProvider>
+    <AuthProvider>
+      <IntlProvider>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </IntlProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
