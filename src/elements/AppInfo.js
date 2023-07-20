@@ -12,6 +12,7 @@ import Heart from '../icons/Heart';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
@@ -27,15 +28,6 @@ const AppInfo = (props) => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
   }, [props.app]);
 
-  useEffect(() => {
-    if (zapButtonRef.current) {
-      window.nostrZap.initTarget(zapButtonRef.current);
-    }
-    if (zapButtonRefByEmail.current) {
-      window.nostrZap.initTarget(zapButtonRefByEmail.current);
-    }
-  }, []);
-
   const handleLike = async () => {
     const event = {
       kind: 7,
@@ -45,8 +37,41 @@ const AppInfo = (props) => {
       ],
       content: '+',
     };
+
     const result = await cmn.publishEvent(event);
   };
+
+  const checkIfLiked = async () => {
+    if (cmn.isAuthed()) {
+      const addr = cmn.naddrToAddr(cmn.getNaddr(props.app));
+      const addrForFilter = {
+        kinds: [7],
+        '#a': [addr],
+        authors: cmn.getLoginPubkey(),
+      };
+      try {
+        const result = await cmn.fetchAllEvents(addrForFilter);
+        console.log(result, 'RESULT');
+        const isLiked = result.events && result.events.length > 0;
+        setIsLiked(isLiked);
+      } catch (error) {
+        console.error('Error fetching liked status:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkIfLiked();
+  }, [props.app]);
+
+  useEffect(() => {
+    if (zapButtonRef.current) {
+      window.nostrZap.initTarget(zapButtonRef.current);
+    }
+    if (zapButtonRefByEmail.current) {
+      window.nostrZap.initTarget(zapButtonRefByEmail.current);
+    }
+  }, []);
 
   return (
     <div className="AppInfo">

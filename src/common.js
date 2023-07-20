@@ -336,7 +336,6 @@ export function dedupEvents(events) {
     ) {
       addr = getEventTagA(e);
     }
-
     if (!(addr in map) || map[addr].created_at < e.created_at) {
       map[addr] = e;
     }
@@ -385,10 +384,8 @@ export function naddrToAddr(naddr) {
   return data.kind + ':' + data.pubkey + ':' + data.identifier;
 }
 
-async function fetchAllEvents(reqs) {
+export async function fetchAllEvents(reqs) {
   const results = await Promise.allSettled(reqs);
-  console.log('results', results);
-
   let events = [];
   for (const r of results) {
     if (r.status === 'fulfilled') {
