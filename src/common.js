@@ -336,12 +336,11 @@ export function dedupEvents(events) {
     ) {
       addr = getEventTagA(e);
     }
-
     if (!(addr in map) || map[addr].created_at < e.created_at) {
       map[addr] = e;
     }
   }
-
+  console.log(map, 'MAPP');
   return Object.values(map);
 }
 
@@ -385,10 +384,8 @@ export function naddrToAddr(naddr) {
   return data.kind + ':' + data.pubkey + ':' + data.identifier;
 }
 
-async function fetchAllEvents(reqs) {
+export async function fetchAllEvents(reqs) {
   const results = await Promise.allSettled(reqs);
-  console.log('results', results);
-
   let events = [];
   for (const r of results) {
     if (r.status === 'fulfilled') {
@@ -399,7 +396,6 @@ async function fetchAllEvents(reqs) {
       }
     }
   }
-
   return dedupEvents(events);
 }
 
@@ -482,7 +478,7 @@ function prepareHandlers(events, metaPubkey) {
   return info;
 }
 
-function startFetch(ndk, filter) {
+export function startFetch(ndk, filter) {
   const relaySet = NDKRelaySet.fromRelayUrls(readRelays, ndk);
 
   // have to reimplement the ndk's fetchEvents method to allow:
@@ -667,7 +663,6 @@ export async function fetchRecomms(addr, count, friendPubkeys) {
   ); // {cacheUsage: NDKSubscriptionCacheUsage.ONLY_RELAY}
 
   const events = await fetchAllEvents(reqs);
-  console.log('recomms', events);
 
   for (const e of events) {
     e.isFriend = friendPubkeys && friendPubkeys.includes(e.pubkey);
@@ -794,7 +789,6 @@ export async function fetchAppsByAs(aTags) {
   // find meta first
   const info = prepareHandlers(appEvents);
   console.log('info', info);
-
   return info;
 }
 
@@ -948,6 +942,7 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
+  console.log(lists, 'LISTS');
   const events = [];
   // add new kinds
   for (const k of kinds) {
@@ -1041,4 +1036,3 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
 
   return !r || r.error ? r?.error || 'Failed' : '';
 }
-

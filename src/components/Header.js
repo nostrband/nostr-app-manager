@@ -10,13 +10,14 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useNavigate } from 'react-router-dom';
 
 import * as cmn from '../common';
+import { useAuth } from '../context/ShowModalContext';
 
 const Header = () => {
   const navigate = useNavigate();
 
   const [pubkey, setPubkey] = useState('');
   const [profile, setProfile] = useState(null);
-  const [showLogin, setShowLogin] = useState(false);
+  const { showLogin, setShowLogin } = useAuth();
   const [error, setError] = useState('');
 
   useEffect(() => {

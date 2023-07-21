@@ -9,9 +9,13 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Zap from '../icons/Zap';
 import { nip19 } from 'nostr-tools';
 import Heart from '../icons/Heart';
+import LikedHeart from '../icons/LikedHeart';
+import { useAuth } from '../context/ShowModalContext';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const { showLogin, setShowLogin } = useAuth();
+  const [liked, setLiked] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
@@ -21,11 +25,79 @@ const AppInfo = (props) => {
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
-
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
   }, [props.app]);
+
+  const handleLike = async () => {
+    const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+    if (login) {
+      if (liked.length === 0) {
+        const event = {
+          kind: 7,
+          tags: [
+            ['p', props.app.pubkey],
+            ['a', cmn.naddrToAddr(cmn.getNaddr(props.app))],
+          ],
+          content: '+',
+        };
+        try {
+          await cmn.publishEvent(event);
+          checkIfLiked();
+        } catch (error) {
+          console.error('Error publishing like:', error);
+        }
+      } else {
+        const deletedEventWithLike = {
+          kind: 5,
+          pubkey: liked[0]?.pubkey,
+          tags: [['e', liked[0]?.id]],
+          content: 'Deleting the app',
+        };
+        try {
+          const result = await cmn.publishEvent(deletedEventWithLike);
+          if (result) {
+            setLiked([]);
+          }
+        } catch (error) {
+          console.error('Error publishing like:', error);
+        }
+      }
+    } else {
+      setShowLogin(true);
+    }
+  };
+
+  const checkIfLiked = async () => {
+    const ndk = await cmn.getNDK();
+    if (cmn.isAuthed()) {
+      const addr = cmn.naddrToAddr(cmn.getNaddr(props.app));
+      const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+      const addrForFilter = {
+        kinds: [7],
+        '#a': [addr],
+        authors: [loginPubkey],
+      };
+
+      try {
+        const result = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, addrForFilter),
+        ]);
+        if (result.length > 0) {
+          setLiked(result);
+        } else {
+          setLiked([]);
+        }
+      } catch (error) {
+        console.error('Error fetching liked status:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    checkIfLiked();
+  }, []);
 
   useEffect(() => {
     if (zapButtonRef.current) {
@@ -35,18 +107,6 @@ const AppInfo = (props) => {
       window.nostrZap.initTarget(zapButtonRefByEmail.current);
     }
   }, []);
-
-  const handleLike = async () => {
-    const event = {
-      kind: 7,
-      tags: [
-        ['p', props.app.pubkey],
-        ['a', cmn.naddrToAddr(cmn.getNaddr(props.app))],
-      ],
-      content: '+',
-    };
-    const result = await cmn.publishEvent(event);
-  };
 
   return (
     <div className="AppInfo">
@@ -94,7 +154,11 @@ const AppInfo = (props) => {
               />
             )}
             {app.lud16 ? <Zap zapRef={zapButtonRef} dataNpub={npub} /> : null}
-            <Heart onClick={handleLike} />
+            {liked.length > 0 ? (
+              <LikedHeart onClick={handleLike} />
+            ) : (
+              <Heart onClick={handleLike} />
+            )}
           </div>
 
           {allowEdit && (
