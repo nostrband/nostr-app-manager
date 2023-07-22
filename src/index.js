@@ -14,6 +14,7 @@ import AppInfo from './AppInfo';
 import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/ShowModalContext';
+import { ToastContainer } from 'react-toastify';
 
 const HTTP = new QueryClient();
 
@@ -51,6 +52,7 @@ root.render(
       <IntlProvider>
         <ThemeProvider>
           <RouterProvider router={router} />
+          <ToastContainer />
         </ThemeProvider>
       </IntlProvider>
     </AuthProvider>

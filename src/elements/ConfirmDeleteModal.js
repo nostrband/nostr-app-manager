@@ -12,7 +12,6 @@ import { nip19 } from 'nostr-tools';
 const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
   const navigate = useNavigate();
   const npub = nip19?.npubEncode(cmn?.getLoginPubkey());
-  console.log(npub, 'NPUB');
   const [loading, setLoading] = useState(false);
 
   const deleteAppHandler = async () => {

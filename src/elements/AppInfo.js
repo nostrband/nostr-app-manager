@@ -10,17 +10,23 @@ import Zap from '../icons/Zap';
 import { nip19 } from 'nostr-tools';
 import Heart from '../icons/Heart';
 import LikedHeart from '../icons/LikedHeart';
+import Share from '../icons/Share';
 import { useAuth } from '../context/ShowModalContext';
+import ShareAppModal from './ShareAppModal';
+import Toast from './Toast';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
-  const { showLogin, setShowLogin } = useAuth();
+  const { setShowLogin } = useAuth();
   const [liked, setLiked] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const zapButtonRef = useRef(null);
   const zapButtonRefByEmail = useRef(null);
+  const [textForShare, setTextForShare] = useState('');
+  const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
@@ -31,7 +37,6 @@ const AppInfo = (props) => {
   }, [props.app]);
 
   const handleLike = async () => {
-    const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
     if (login) {
       if (liked.length === 0) {
         const event = {
@@ -108,6 +113,19 @@ const AppInfo = (props) => {
     }
   }, []);
 
+  const openShareAppModalAndSetText = () => {
+    if (login) {
+      const naddr = cmn.getNaddr(props.app);
+      setShowShareModal(true);
+      setTextForShare(
+        `Check out ${props.app.profile.display_name} - ${props.app.profile.about}
+  https://nostrapp.link/a/${naddr}`
+      );
+    } else {
+      setShowLogin(true);
+    }
+  };
+
   return (
     <div className="AppInfo">
       <Row>
@@ -159,6 +177,7 @@ const AppInfo = (props) => {
             ) : (
               <Heart onClick={handleLike} />
             )}
+            <Share onClick={openShareAppModalAndSetText} />
           </div>
 
           {allowEdit && (
@@ -192,6 +211,13 @@ const AppInfo = (props) => {
           selectedApp={props?.app}
         />
       ) : null}
+      <ShareAppModal
+        setTextForShare={setTextForShare}
+        showModal={showShareModal}
+        handleCloseModal={() => setShowShareModal(false)}
+        selectedApp={props.app}
+        textForShare={textForShare}
+      />
     </div>
   );
 };
