@@ -26,6 +26,7 @@ const AppInfo = (props) => {
   const zapButtonRef = useRef(null);
   const zapButtonRefByEmail = useRef(null);
   const [textForShare, setTextForShare] = useState('');
+  const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
@@ -36,7 +37,6 @@ const AppInfo = (props) => {
   }, [props.app]);
 
   const handleLike = async () => {
-    const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
     if (login) {
       if (liked.length === 0) {
         const event = {
@@ -114,12 +114,16 @@ const AppInfo = (props) => {
   }, []);
 
   const openShareAppModalAndSetText = () => {
-    const naddr = cmn.getNaddr(props.app);
-    setShowShareModal(true);
-    setTextForShare(
-      `Check out ${props.app.profile.display_name} - ${props.app.profile.about}
-https://nostrapp.link/a/${naddr}`
-    );
+    if (login) {
+      const naddr = cmn.getNaddr(props.app);
+      setShowShareModal(true);
+      setTextForShare(
+        `Check out ${props.app.profile.display_name} - ${props.app.profile.about}
+  https://nostrapp.link/a/${naddr}`
+      );
+    } else {
+      setShowLogin(true);
+    }
   };
 
   return (
