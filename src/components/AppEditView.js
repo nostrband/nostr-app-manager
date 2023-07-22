@@ -6,10 +6,10 @@ import { nip19 } from 'nostr-tools';
 import AppEditForm from './AppEditForm';
 
 import * as cmn from '../common';
+import CodeRepositoryForm from './AddCodeRepositores';
 
 const AppEditView = () => {
   const params = useParams();
-  console.log('done app edit view');
   const naddr = (params.naddr ?? '').toLowerCase();
 
   const [info, setInfo] = useState(null);
@@ -74,7 +74,8 @@ const AppEditView = () => {
           )}
           {!forbidden && (
             <div className="mt-5">
-              <AppEditForm app={app} profileMeta={meta} />
+              <CodeRepositoryForm />
+              {/* <AppEditForm app={app} profileMeta={meta} /> */}
             </div>
           )}
         </>
