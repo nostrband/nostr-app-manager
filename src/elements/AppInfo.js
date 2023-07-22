@@ -117,8 +117,8 @@ const AppInfo = (props) => {
     const naddr = cmn.getNaddr(props.app);
     setShowShareModal(true);
     setTextForShare(
-      `Check out ${props.app.profile.display_name} - ${props.app.profile.about}, 
-nostr:${naddr}`
+      `Check out ${props.app.profile.display_name} - ${props.app.profile.about}
+https://nostrapp.link/a/${naddr}`
     );
   };
 
