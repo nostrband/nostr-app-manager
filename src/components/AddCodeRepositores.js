@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
-import { Formik, Field, ErrorMessage } from 'formik';
-import { validationSchemaForFormAddApp } from '../const';
+import { Formik, Field, useFormik } from 'formik';
+import { programmingLanguages, validationSchemaForFormAddApp } from '../const';
+import Select from 'react-select';
 
 const initialValues = {
   name: '',
@@ -9,25 +10,63 @@ const initialValues = {
   link: '',
   tags: '',
   license: '',
-  programmingLanguages: '',
+  programmingLanguages: [],
 };
 
 const handleSubmit = (values) => {
+  const selectedLanguages = values.programmingLanguages.map((language) =>
+    language.value.toLowerCase()
+  );
+
+  const tagsArray = values.tags
+    .split(',')
+    .map((tag) => tag.trim().toLowerCase());
+
+  const tags = [
+    ...(values.name ? [['title', values.name]] : []),
+    ...(values.description ? [['description', values.description]] : []),
+    ...(values.link ? [['r', values.link]] : []),
+    ...(values.license ? [['license', values.license]] : []),
+    ['d', Date.now()],
+    ...selectedLanguages.map((language) => ['t', language]),
+    ...tagsArray.map((tag) => ['t', tag]),
+  ].filter((tag) => tag[1]);
+
+  const tagKeys = tags.map((tag) => tag[0]);
+
+  const tTags = [...new Set(tagKeys)]
+    .filter((key) => key !== 't')
+    .map((key) => ['t', key]);
+
   const event = {
     kind: 30117,
-    title: ['title', values.name],
-    description: ['description', values.description],
-    r: ['r', values.link],
-    t: ['t', ...values.tags.split(',').map((tag) => tag.trim())], // Split tags and remove extra spaces
-    license: ['license', values.license],
-    d: Date.now(),
+    tags: [...tags, ...tTags],
   };
 
-  // You can do something else with the event data, e.g., send it to the server
   console.log('Event:', event);
 };
 
 const CodeRepositoryForm = () => {
+  const textareaRef = useRef(null);
+
+  const updateTextareaHeight = () => {
+    if (textareaRef && textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const taHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = taHeight + 'px';
+    }
+  };
+
+  const customStyles = {
+    control: () => ({
+      borderColor: 'red',
+      boxShadow: '0 0 0 1px red',
+      '&:hover': {
+        borderColor: 'red',
+      },
+    }),
+  };
+
   return (
     <Container>
       <Row>
@@ -37,12 +76,13 @@ const CodeRepositoryForm = () => {
             initialValues={initialValues}
             onSubmit={handleSubmit}
           >
-            {({ handleSubmit, touched, errors }) => (
+            {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <Form onSubmit={handleSubmit}>
-                {console.log({ touched, errors }, 'TOUCHED')}
                 <Form.Group>
                   <Form.Label>Name</Form.Label>
                   <Field
+                    id="name"
+                    itemID="name"
                     as={Form.Control}
                     type="text"
                     name="name"
@@ -52,68 +92,56 @@ const CodeRepositoryForm = () => {
 
                 <Form.Group>
                   <Form.Label>Description</Form.Label>
-                  <Field
-                    as={Form.Control}
-                    type="text"
-                    name="description"
+                  <textarea
+                    id="description"
+                    rows={1}
+                    ref={textareaRef}
                     className={
                       touched.description && errors.description
-                        ? 'is-invalid'
-                        : ''
+                        ? 'form-control is-invalid'
+                        : 'form-control'
                     }
+                    name="description"
+                    value={values.description}
+                    onChange={(e) => {
+                      setFieldValue('description', e.target.value);
+                      updateTextareaHeight();
+                    }}
                   />
                 </Form.Group>
-
                 <Form.Group>
                   <Form.Label>Link</Form.Label>
-                  <Field
-                    as={Form.Control}
-                    type="text"
-                    name="link"
-                    className={touched.link && errors.link ? 'is-invalid' : ''}
-                  />
-                </Form.Group>
-
-                <Form.Group>
-                  <Form.Label>Tags (comma-separated)</Form.Label>
-                  <Field
-                    as={Form.Control}
-                    type="text"
-                    name="tags"
-                    className={touched.tags && errors.tags ? 'is-invalid' : ''}
-                  />
+                  <Field as={Form.Control} id="link" type="text" name="link" />
                 </Form.Group>
 
                 <Form.Group>
                   <Form.Label>License</Form.Label>
                   <Field
+                    id="license"
                     as={Form.Control}
                     type="text"
                     name="license"
-                    className={
-                      touched.license && errors.license ? 'is-invalid' : ''
-                    }
                   />
                 </Form.Group>
 
                 <Form.Group>
                   <Form.Label>Programming Languages</Form.Label>
-                  <Field
-                    as={Form.Control}
-                    type="text"
-                    name="programmingLanguages"
-                    className={
-                      touched.programmingLanguages &&
-                      errors.programmingLanguages
-                        ? 'is-invalid'
-                        : ''
+                  <Select
+                    isMulti
+                    name="colors"
+                    options={programmingLanguages}
+                    classNamePrefix="select"
+                    value={values.programmingLanguages}
+                    onChange={(selectedOptions) =>
+                      setFieldValue('programmingLanguages', selectedOptions)
                     }
+                    className="basic-multi-select"
                   />
                 </Form.Group>
-                {Object.keys(touched).length > 0 && // Check if any field is touched
-                  Object.keys(errors).length > 0 && ( // Check if any field has an error
+                {Object.keys(touched).length > 0 &&
+                  Object.keys(errors).length > 0 && (
                     <div className="text-danger mt-3">
-                      Please fill in all fields.
+                      Please fill in the required fields, please.
                     </div>
                   )}
                 <div className="mt-2">

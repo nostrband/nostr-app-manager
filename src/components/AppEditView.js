@@ -56,9 +56,6 @@ const AppEditView = () => {
     naddr && info && cmn.isAuthed() && cmn.getLoginPubkey() !== app.pubkey;
   const viewUrl = naddr && info ? '/a/' + cmn.getNaddr(app) : '';
 
-  console.log('app', app);
-  console.log('meta', meta);
-
   return (
     <div className="mt-5">
       {!ready && <>Loading...</>}

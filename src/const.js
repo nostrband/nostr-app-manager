@@ -48,11 +48,13 @@ export const kinds = {
 
 export const validationSchemaForFormAddApp = Yup.object().shape({
   name: Yup.string().required('Name is required'),
-  description: Yup.string().required('Description is required'),
-  link: Yup.string().required('Link is required'),
-  tags: Yup.string().required('Tags are required'),
-  license: Yup.string().required('License is required'),
-  programmingLanguages: Yup.string().required(
-    'Programming Languages are required'
-  ),
 });
+
+export const programmingLanguages = [
+  { value: 'JavaScript', label: 'JavaScirpt' },
+  { value: 'Python', label: 'Python' },
+  { value: 'C++', label: 'C++' },
+  { value: 'C#', label: 'C#' },
+  { value: 'Php', label: 'Php' },
+  { value: 'Java', label: 'Java' },
+];
