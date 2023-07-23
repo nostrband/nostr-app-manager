@@ -57,16 +57,6 @@ const CodeRepositoryForm = () => {
     }
   };
 
-  const customStyles = {
-    control: () => ({
-      borderColor: 'red',
-      boxShadow: '0 0 0 1px red',
-      '&:hover': {
-        borderColor: 'red',
-      },
-    }),
-  };
-
   return (
     <Container>
       <Row>
