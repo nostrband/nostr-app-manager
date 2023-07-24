@@ -4,12 +4,12 @@ import { useParams } from 'react-router-dom';
 import { nip19 } from 'nostr-tools';
 
 import AppEditForm from './AppEditForm';
+import AddCodeRepositoriesForm from './AddCodeRepositoriesForm';
 
 import * as cmn from '../common';
 
 const AppEditView = () => {
   const params = useParams();
-  console.log('done app edit view');
   const naddr = (params.naddr ?? '').toLowerCase();
 
   const [info, setInfo] = useState(null);
@@ -56,9 +56,6 @@ const AppEditView = () => {
     naddr && info && cmn.isAuthed() && cmn.getLoginPubkey() !== app.pubkey;
   const viewUrl = naddr && info ? '/a/' + cmn.getNaddr(app) : '';
 
-  console.log('app', app);
-  console.log('meta', meta);
-
   return (
     <div className="mt-5">
       {!ready && <>Loading...</>}
@@ -74,7 +71,8 @@ const AppEditView = () => {
           )}
           {!forbidden && (
             <div className="mt-5">
-              <AppEditForm app={app} profileMeta={meta} />
+              {/* <AppEditForm app={app} profileMeta={meta} /> */}
+              <AddCodeRepositoriesForm />
             </div>
           )}
         </>

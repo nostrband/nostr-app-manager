@@ -1,3 +1,5 @@
+import * as Yup from 'yup';
+
 export const KIND_META = 0;
 export const KIND_RECOMM = 31989;
 export const KIND_HANDLERS = 31990;
@@ -43,3 +45,16 @@ export const kinds = {
   31990: 'App handlers',
   31337: 'Audio track',
 };
+
+export const validationSchemaForFormAddApp = Yup.object().shape({
+  name: Yup.string().required('Name is required'),
+});
+
+export const programmingLanguages = [
+  { value: 'JavaScript', label: 'JavaScirpt' },
+  { value: 'Python', label: 'Python' },
+  { value: 'C++', label: 'C++' },
+  { value: 'C#', label: 'C#' },
+  { value: 'Php', label: 'Php' },
+  { value: 'Java', label: 'Java' },
+];
