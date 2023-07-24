@@ -25,6 +25,7 @@ const AppInfoView = () => {
   const [addKinds, setAddKinds] = useState([]);
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
+  const [countUsersUsedByApp, setCountUsersUsedByApp] = useState(0);
 
   const init = useCallback(async () => {
     const { type, data } = nip19.decode(naddr);
@@ -51,7 +52,7 @@ const AppInfoView = () => {
       setRecomms(await cmn.fetchRecomms(addr));
     });
   }, [naddr]);
-
+  console.log(recomms, 'RECOMMS');
   // on the start
   useEffect(() => {
     init().catch(console.error);
@@ -132,7 +133,7 @@ const AppInfoView = () => {
               </span>
             );
           })}
-          <h6 className="mt-3">Used by:</h6>
+          <h6 className="mt-3">Used by ({countUsersUsedByApp}):</h6>
           {!recomms && <>Loading...</>}
           {recomms != null && !recomms.length && <>No one yet.</>}
           {(function () {
@@ -141,6 +142,9 @@ const AppInfoView = () => {
               recomms.map((r) => (profiles[r.pubkey] = r));
               let list = Object.values(profiles);
               if (list.length > 10) list.length = 10;
+              if (countUsersUsedByApp === 0) {
+                setCountUsersUsedByApp(list.length);
+              }
               return list.map((r) => {
                 return (
                   <Profile
