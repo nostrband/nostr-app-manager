@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { nip19 } from 'nostr-tools';
 
 import AppEditForm from './AppEditForm';
-import AddCodeRepositoriesForm from './AddCodeRepositoriesForm';
 
 import * as cmn from '../common';
 
@@ -71,8 +70,7 @@ const AppEditView = () => {
           )}
           {!forbidden && (
             <div className="mt-5">
-              {/* <AppEditForm app={app} profileMeta={meta} /> */}
-              <AddCodeRepositoriesForm />
+              <AppEditForm app={app} profileMeta={meta} />
             </div>
           )}
         </>
