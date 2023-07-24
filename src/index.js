@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider from 'react-bootstrap/ThemeProvider';
 import { IntlProvider } from './IntlProvider';
+import RepositoryPage from './pages/RepositoryPage';
 
 import './index.scss';
 import Root from './Root';
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
   {
     path: '/edit/:naddr?',
     element: <AppEdit />,
+  },
+  {
+    path: '/create-repository',
+    element: <RepositoryPage />,
   },
 ]);
 

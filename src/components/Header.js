@@ -138,6 +138,14 @@ const Header = () => {
                   >
                     Create app
                   </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/create-repository');
+                    }}
+                  >
+                    Create repository
+                  </Dropdown.Item>
                   <Dropdown.Divider></Dropdown.Divider>
                   <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
                 </Dropdown.Menu>
