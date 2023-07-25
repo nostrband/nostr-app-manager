@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { Formik, Field } from 'formik';
 import {
@@ -37,6 +37,9 @@ const handleSubmit = (values) => {
 };
 
 const CodeRepositoryForm = () => {
+  const [tempTag, setTempTag] = useState('');
+  const [tempLanguage, setTempLanguage] = useState('');
+
   const textareaRef = useRef(null);
   const updateTextareaHeight = () => {
     if (textareaRef && textareaRef.current) {
@@ -44,6 +47,10 @@ const CodeRepositoryForm = () => {
       const taHeight = textareaRef.current.scrollHeight;
       textareaRef.current.style.height = taHeight + 'px';
     }
+  };
+
+  const isDuplicate = (newValue, values) => {
+    return values.some((item) => item.label === newValue);
   };
 
   return (
@@ -110,13 +117,19 @@ const CodeRepositoryForm = () => {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.target.value) {
                         e.preventDefault();
-                        const tag = {
-                          value: e.target.value,
-                          label: e.target.value,
-                        };
-                        setFieldValue('tags', [...values.tags, tag]);
+                        const newTagLabel = e.target.value;
+                        if (!isDuplicate(newTagLabel, values.tags)) {
+                          const tag = {
+                            value: newTagLabel,
+                            label: newTagLabel,
+                          };
+                          setFieldValue('tags', [...values.tags, tag]);
+                        }
+                        setTempTag('');
                       }
                     }}
+                    onInputChange={(newValue) => setTempTag(newValue)}
+                    inputValue={tempTag}
                   />
                 </Form.Group>
 
@@ -150,16 +163,27 @@ const CodeRepositoryForm = () => {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.target.value) {
                         e.preventDefault();
-                        const language = {
-                          value: e.target.value,
-                          label: e.target.value,
-                        };
-                        setFieldValue('programmingLanguages', [
-                          ...values.programmingLanguages,
-                          language,
-                        ]);
+                        const newLanguageLabel = e.target.value;
+                        if (
+                          !isDuplicate(
+                            newLanguageLabel,
+                            values.programmingLanguages
+                          )
+                        ) {
+                          const language = {
+                            value: newLanguageLabel,
+                            label: newLanguageLabel,
+                          };
+                          setFieldValue('programmingLanguages', [
+                            ...values.programmingLanguages,
+                            language,
+                          ]);
+                        }
+                        setTempLanguage('');
                       }
                     }}
+                    onInputChange={(newValue) => setTempLanguage(newValue)}
+                    inputValue={tempLanguage}
                   />
                 </Form.Group>
 
