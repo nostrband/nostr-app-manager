@@ -34,7 +34,6 @@ const AppInfoView = () => {
       setRecomms(null);
       return;
     }
-
     const addr = data;
     setAddr(addr);
 

@@ -58,3 +58,8 @@ export const programmingLanguages = [
   { value: 'Php', label: 'Php' },
   { value: 'Java', label: 'Java' },
 ];
+
+export const optionsLicensies = [
+  { value: 'MIT', label: 'MIT' },
+  { value: 'GPL3', label: 'GPL3' },
+];
