@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { Formik, Field } from 'formik';
 import {
@@ -6,6 +6,7 @@ import {
   programmingLanguages,
   validationSchemaForFormAddApp,
 } from '../const';
+import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
 
 const initialValues = {
@@ -17,7 +18,7 @@ const initialValues = {
   programmingLanguages: [],
 };
 
-const handleSubmit = (values) => {
+const handleSubmit = async (values) => {
   const event = {
     kind: 30117,
     tags: [
@@ -33,7 +34,8 @@ const handleSubmit = (values) => {
   };
 
   event.tags = event.tags.filter((tag) => tag[1]);
-  console.log('Event:', event);
+  const result = await cmn.publishEvent(event);
+  console.log(result, 'RESULT');
 };
 
 const CodeRepositoryForm = () => {
@@ -52,6 +54,20 @@ const CodeRepositoryForm = () => {
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
+
+  useEffect(async () => {
+    const ndk = await cmn.getNDK();
+    const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+
+    const addrForFilter = {
+      kinds: [30117],
+      authors: [pubkey],
+    };
+    const resultFetchAllEvents = await cmn.fetchAllEvents([
+      cmn.startFetch(ndk, addrForFilter),
+    ]);
+    console.log(resultFetchAllEvents, 'FETCH ALL EVENTS');
+  }, []);
 
   return (
     <Container>

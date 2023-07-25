@@ -59,7 +59,6 @@ const ProfileView = () => {
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = pubKey ? nip19.npubEncode(pubKey) : '';
-
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -71,7 +70,7 @@ const ProfileView = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const getRecomnsQuery = useCallback(() => {
-    setIsLoading(true); // Set loading state when fetching data
+    setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
       .then(() => setIsLoading(false))
       .catch(console.error);
