@@ -55,19 +55,19 @@ const CodeRepositoryForm = () => {
     return values.some((item) => item.label === newValue);
   };
 
-  useEffect(async () => {
-    const ndk = await cmn.getNDK();
-    const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  // useEffect(async () => {
+  //   const ndk = await cmn.getNDK();
+  //   const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
-    const addrForFilter = {
-      kinds: [30117],
-      authors: [pubkey],
-    };
-    const resultFetchAllEvents = await cmn.fetchAllEvents([
-      cmn.startFetch(ndk, addrForFilter),
-    ]);
-    console.log(resultFetchAllEvents, 'FETCH ALL EVENTS');
-  }, []);
+  //   const addrForFilter = {
+  //     kinds: [30117],
+  //     authors: [pubkey],
+  //   };
+  //   const resultFetchAllEvents = await cmn.fetchAllEvents([
+  //     cmn.startFetch(ndk, addrForFilter),
+  //   ]);
+  //   console.log(resultFetchAllEvents, 'FETCH ALL EVENTS');
+  // }, []);
 
   return (
     <Container>
