@@ -18,26 +18,6 @@ const initialValues = {
   programmingLanguages: [],
 };
 
-const handleSubmit = async (values) => {
-  const event = {
-    kind: 30117,
-    tags: [
-      ['title', values.name],
-      ['description', values.description],
-      ['r', values.link],
-      ['license', values.license.value],
-      ...values.tags.map((tag) => ['t', tag.label]),
-      ...values.programmingLanguages.map((lang) => ['t', lang.label]),
-    ],
-    d: Date.now(),
-    content: '',
-  };
-
-  event.tags = event.tags.filter((tag) => tag[1]);
-  const result = await cmn.publishEvent(event);
-  console.log(result, 'RESULT');
-};
-
 const CodeRepositoryForm = () => {
   const [tempTag, setTempTag] = useState('');
   const [tempLanguage, setTempLanguage] = useState('');
@@ -51,23 +31,28 @@ const CodeRepositoryForm = () => {
     }
   };
 
+  const handleSubmit = async (values) => {
+    const event = {
+      kind: 30117,
+      tags: [
+        ['title', values.name],
+        ['description', values.description],
+        ['r', values.link],
+        ['license', values.license.value],
+        ...values.tags.map((tag) => ['t', tag.label]),
+        ...values.programmingLanguages.map((lang) => ['t', lang.label]),
+      ],
+      d: Date.now(),
+      content: '',
+    };
+    event.tags = event.tags.filter((tag) => tag[1]);
+    const result = await cmn.publishEvent(event);
+    console.log(result, 'RESULT');
+  };
+
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
-
-  // useEffect(async () => {
-  //   const ndk = await cmn.getNDK();
-  //   const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
-
-  //   const addrForFilter = {
-  //     kinds: [30117],
-  //     authors: [pubkey],
-  //   };
-  //   const resultFetchAllEvents = await cmn.fetchAllEvents([
-  //     cmn.startFetch(ndk, addrForFilter),
-  //   ]);
-  //   console.log(resultFetchAllEvents, 'FETCH ALL EVENTS');
-  // }, []);
 
   return (
     <Container>

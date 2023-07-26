@@ -3,7 +3,8 @@ import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
 
 const PublisedRepositories = () => {
-  const [publishedRepositories, setPublishedRepositories] = useState();
+  const [publishedRepositories, setPublishedRepositories] = useState([]);
+
   useEffect(async () => {
     const ndk = await cmn.getNDK();
     const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
@@ -17,11 +18,13 @@ const PublisedRepositories = () => {
     ]);
     setPublishedRepositories(resultFetchAllEvents);
   }, []);
+
+  console.log(publishedRepositories, 'PUBLISHED REPOS');
   return (
     <div>
       <h4 className="mt-5">Publised repositories:</h4>
       <ListGroup>
-        {publishedRepositories.map((repo) => {
+        {publishedRepositories?.map((repo) => {
           return <div>test</div>;
         })}
       </ListGroup>

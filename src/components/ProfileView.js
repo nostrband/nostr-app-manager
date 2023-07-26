@@ -8,6 +8,7 @@ import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
 import { ListGroup, Spinner } from 'react-bootstrap';
+import PublisedRepositories from './PublisedRepositories';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -116,6 +117,7 @@ const ProfileView = () => {
                   <Button variant="primary">Add app</Button>
                 </Link>
               </div>
+              <PublisedRepositories />
               <h4 className="mt-5">Used apps:</h4>
               {!recomms.length && 'Nothing yet.'}
               {recomms.length > 0 && (

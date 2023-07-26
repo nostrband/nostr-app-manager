@@ -921,6 +921,10 @@ export function formatAppUrl(naddr) {
   return '/a/' + naddr;
 }
 
+export function formatRepositoryEditUrl(naddr) {
+  return '/create-repository' + naddr;
+}
+
 export function formatProfileUrl(npub) {
   return '/p/' + npub;
 }
