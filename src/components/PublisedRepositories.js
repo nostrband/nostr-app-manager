@@ -5,7 +5,7 @@ import { ListGroup } from 'react-bootstrap';
 const PublisedRepositories = () => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
 
-  useEffect(async () => {
+  const fetchPublishedRepositories = async () => {
     const ndk = await cmn.getNDK();
     const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
@@ -17,6 +17,10 @@ const PublisedRepositories = () => {
       cmn.startFetch(ndk, addrForFilter),
     ]);
     setPublishedRepositories(resultFetchAllEvents);
+  };
+
+  useEffect(() => {
+    fetchPublishedRepositories();
   }, []);
 
   console.log(publishedRepositories, 'PUBLISHED REPOS');
