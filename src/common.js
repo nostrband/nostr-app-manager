@@ -929,6 +929,10 @@ export function formatProfileUrl(npub) {
   return '/p/' + npub;
 }
 
+export function formatRepositoryUrl(naddr) {
+  return /r/ + naddr;
+}
+
 export function formatAppEditUrl(naddr) {
   return '/edit/' + naddr;
 }

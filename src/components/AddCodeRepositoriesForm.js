@@ -8,6 +8,7 @@ import {
 } from '../const';
 import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
+import { useNavigate } from 'react-router';
 
 const initialValues = {
   name: '',
@@ -21,6 +22,7 @@ const initialValues = {
 const CodeRepositoryForm = () => {
   const [tempTag, setTempTag] = useState('');
   const [tempLanguage, setTempLanguage] = useState('');
+  const navigate = useNavigate();
 
   const textareaRef = useRef(null);
   const updateTextareaHeight = () => {
@@ -32,6 +34,7 @@ const CodeRepositoryForm = () => {
   };
 
   const handleSubmit = async (values) => {
+    const d = '' + Date.now().toString();
     const event = {
       kind: 30117,
       tags: [
@@ -39,15 +42,23 @@ const CodeRepositoryForm = () => {
         ['description', values.description],
         ['r', values.link],
         ['license', values.license.value],
+        ['d', Date.now().toString()],
         ...values.tags.map((tag) => ['t', tag.label]),
         ...values.programmingLanguages.map((lang) => ['t', lang.label]),
       ],
-      d: Date.now(),
       content: '',
     };
     event.tags = event.tags.filter((tag) => tag[1]);
     const result = await cmn.publishEvent(event);
-    console.log(result, 'RESULT');
+
+    const naddr = cmn.formatNaddr({
+      kind: 30117,
+      pubkey: cmn.getLoginPubkey(),
+      identifier: d,
+    });
+    setTimeout(() => {
+      navigate(cmn.formatRepositoryUrl(naddr));
+    }, 500);
   };
 
   const isDuplicate = (newValue, values) => {
