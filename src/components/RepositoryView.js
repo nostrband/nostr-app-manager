@@ -14,6 +14,7 @@ const RepositoryView = () => {
   });
   const [programmingLanguagesTags, setProgrammingLanguagesTags] = useState([]);
   const [authorRepository, setAuthorRepository] = useState();
+
   const params = useParams();
   const addr = cmn.naddrToAddr(params.naddr.toLowerCase());
   const parts = addr.split(':');
@@ -40,19 +41,14 @@ const RepositoryView = () => {
 
     setProgrammingLanguagesTags(programmingLanguagesAndTags);
 
-    setLoading(false);
-  };
-
-  const getAuthorRepository = async () => {
-    const ndk = await cmn.getNDK();
     const filter = {
       kinds: [0],
-      authors: [repository.pubkey],
+      authors: [resultFetchAllEvents[0].pubkey],
     };
-    const authorRepository = await cmn.fetchAllEvents([
+    const authorRepositoryByFilter = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, filter),
     ]);
-    const contentJson = JSON.parse(repository.content || '{}');
+    const contentJson = JSON.parse(authorRepositoryByFilter[0].content || '{}');
     const profile = {
       name: contentJson.name || '',
       picture: contentJson.picture || '',
@@ -61,15 +57,14 @@ const RepositoryView = () => {
       emailConfirmation: contentJson.lud16 || '',
       website: contentJson.website || '',
     };
-
-    setAuthorRepository({ ...authorRepository[0], profile });
+    authorRepositoryByFilter[0].profile = profile;
+    setAuthorRepository(authorRepositoryByFilter[0]);
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchRepository();
-    getAuthorRepository();
   }, []);
-  console.log(authorRepository, 'AUTHOR');
 
   const descriptionTagValue =
     repository?.tags.find((tag) => tag[0] === 'description')?.[1] || '';

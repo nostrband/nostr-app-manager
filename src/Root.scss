@@ -26,17 +26,17 @@ img.banner {
   cursor: pointer;
 }
 .repo-item:hover {
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.1
-  ); /* Здесь можно настроить цвет затемнения */
-  cursor: pointer; /* Изменение курсора при наведении для указания на интерактивность */
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
   transition: 0.3s;
 }
 
 .repository-view {
+  padding: 0 0 0 5px;
+  ul {
+    margin: 0;
+    padding: 0;
+  }
   ul > li {
     list-style: none;
   }
