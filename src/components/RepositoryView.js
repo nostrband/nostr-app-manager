@@ -48,17 +48,21 @@ const RepositoryView = () => {
     const authorRepositoryByFilter = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, filter),
     ]);
-    const contentJson = JSON.parse(authorRepositoryByFilter[0].content || '{}');
-    const profile = {
-      name: contentJson.name || '',
-      picture: contentJson.picture || '',
-      about: contentJson.about || '',
-      email: contentJson.nip05 || '',
-      emailConfirmation: contentJson.lud16 || '',
-      website: contentJson.website || '',
-    };
-    authorRepositoryByFilter[0].profile = profile;
-    setAuthorRepository(authorRepositoryByFilter[0]);
+    if (authorRepositoryByFilter.length > 0) {
+      const contentJson = JSON.parse(
+        authorRepositoryByFilter[0].content || '{}'
+      );
+      const profile = {
+        name: contentJson.name || '',
+        picture: contentJson.picture || '',
+        about: contentJson.about || '',
+        email: contentJson.nip05 || '',
+        emailConfirmation: contentJson.lud16 || '',
+        website: contentJson.website || '',
+      };
+      authorRepositoryByFilter[0].profile = profile;
+      setAuthorRepository(authorRepositoryByFilter[0]);
+    }
     setLoading(false);
   };
 
