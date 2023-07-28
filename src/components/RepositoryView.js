@@ -3,6 +3,9 @@ import { Container } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import * as cmn from '../common';
 import LoadingSpinner from '../elements/LoadingSpinner';
+import ShareIconForRepository from '../icons/ShareForRepository';
+import KindElement from '../elements/KindElement';
+import Profile from '../elements/Profile';
 
 const RepositoryView = () => {
   const [loading, setLoading] = useState(true);
@@ -10,15 +13,17 @@ const RepositoryView = () => {
     tags: [],
   });
   const [programmingLanguagesTags, setProgrammingLanguagesTags] = useState([]);
+  const [authorRepository, setAuthorRepository] = useState();
   const params = useParams();
   const addr = cmn.naddrToAddr(params.naddr.toLowerCase());
+  const parts = addr.split(':');
+  const kind = parts[0];
+  const pubkey = parts[1];
+  const identifier = parts[2];
 
   const fetchRepository = async () => {
     const ndk = await cmn.getNDK();
-    const parts = addr.split(':');
-    const kind = parts[0];
-    const pubkey = parts[1];
-    const identifier = parts[2];
+
     const addrForFilter = {
       kinds: [+kind],
       authors: [pubkey],
@@ -31,15 +36,40 @@ const RepositoryView = () => {
 
     const programmingLanguagesAndTags = resultFetchAllEvents[0]?.tags
       .filter((tag) => tag[0] === 't')
-      .map((tag, index) => tag[1])
-      .join(', ');
+      .map((tag, index) => tag[1]);
+
     setProgrammingLanguagesTags(programmingLanguagesAndTags);
+
     setLoading(false);
+  };
+
+  const getAuthorRepository = async () => {
+    const ndk = await cmn.getNDK();
+    const filter = {
+      kinds: [0],
+      authors: [repository.pubkey],
+    };
+    const authorRepository = await cmn.fetchAllEvents([
+      cmn.startFetch(ndk, filter),
+    ]);
+    const contentJson = JSON.parse(repository.content || '{}');
+    const profile = {
+      name: contentJson.name || '',
+      picture: contentJson.picture || '',
+      about: contentJson.about || '',
+      email: contentJson.nip05 || '',
+      emailConfirmation: contentJson.lud16 || '',
+      website: contentJson.website || '',
+    };
+
+    setAuthorRepository({ ...authorRepository[0], profile });
   };
 
   useEffect(() => {
     fetchRepository();
+    getAuthorRepository();
   }, []);
+  console.log(authorRepository, 'AUTHOR');
 
   const descriptionTagValue =
     repository?.tags.find((tag) => tag[0] === 'description')?.[1] || '';
@@ -54,22 +84,18 @@ const RepositoryView = () => {
         <LoadingSpinner />
       ) : (
         <ul>
-          <h3>
+          <h2 className="font-weight-bold">
             {`${repository?.tags.find((tag) => tag[0] === 'title')?.[1] || ''}`}
-          </h3>
-          {descriptionTagValue ? (
-            <li>
-              <strong>Description: </strong>
-              {descriptionTagValue}
-            </li>
-          ) : null}
+          </h2>
           {linkTagValue ? (
             <li>
-              <strong>Link: </strong>
-              {linkTagValue}
+              <ShareIconForRepository />
+              <a href={linkTagValue} target="_blank" rel="noopener noreferrer">
+                {linkTagValue}
+              </a>
             </li>
           ) : null}
-
+          {descriptionTagValue ? <p>{descriptionTagValue}</p> : null}
           {licenseTagValue ? (
             <li>
               <strong>License: </strong>
@@ -77,11 +103,35 @@ const RepositoryView = () => {
             </li>
           ) : null}
           {programmingLanguagesTags.length > 0 ? (
-            <li>
-              <strong>Programming languages, tags: </strong>
-              {`${programmingLanguagesTags}`}
+            <li className="mt-3">
+              <strong className="d-block">
+                Programming languages and tags:
+              </strong>
+              {programmingLanguagesTags.map((item) => {
+                return (
+                  <KindElement
+                    className="mx-1 mt-2"
+                    key={item}
+                    size="sm"
+                    variant="outline-primary"
+                  >
+                    {item}
+                  </KindElement>
+                );
+              })}
             </li>
           ) : null}
+
+          <li className="mt-2">
+            <strong>Published by:</strong>
+            <div className="mt-2">
+              <Profile
+                profile={authorRepository}
+                pubkey={pubkey}
+                small={true}
+              />
+            </div>
+          </li>
         </ul>
       )}
     </Container>

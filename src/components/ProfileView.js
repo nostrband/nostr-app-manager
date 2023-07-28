@@ -79,7 +79,7 @@ const ProfileView = () => {
 
   useEffect(() => {
     getRecomnsQuery();
-  }, []);
+  }, [npub]);
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
@@ -118,6 +118,11 @@ const ProfileView = () => {
                 </Link>
               </div>
               <PublisedRepositories />
+              <div className="mt-2">
+                <Link to={cmn.formatRepositoryEditUrl('')}>
+                  <Button variant="primary">Add repository</Button>
+                </Link>
+              </div>
               <h4 className="mt-5">Used apps:</h4>
               {!recomms.length && 'Nothing yet.'}
               {recomms.length > 0 && (

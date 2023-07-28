@@ -27,7 +27,6 @@ const AppEditView = () => {
     }
 
     cmn.addOnNostr(async () => {
-      console.log('addr', addr, 'auth', cmn.isAuthed());
       if (addr) {
         const info = await cmn.fetchApps(addr.pubkey, addr);
         setInfo(info);

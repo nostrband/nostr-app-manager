@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { nip19 } from 'nostr-tools';
 
 const PublisedRepositories = () => {
+  const { npub } = useParams();
   const navigate = useNavigate();
   const [publishedRepositories, setPublishedRepositories] = useState([]);
 
@@ -17,7 +19,6 @@ const PublisedRepositories = () => {
     const resultFetchAllEvents = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, addrForFilter),
     ]);
-    console.log(resultFetchAllEvents, 'PUBLISHED REPO');
     setPublishedRepositories(resultFetchAllEvents);
   };
 
@@ -30,30 +31,38 @@ const PublisedRepositories = () => {
     navigate(viewUrl);
   };
 
+  const filteredRepositories = publishedRepositories.filter(
+    (repo) => nip19?.npubEncode(repo?.pubkey) === npub
+  );
+
   return (
     <div>
       <h4 className="mt-5">Published repositories:</h4>
       <ListGroup>
-        {publishedRepositories?.map((repo) => {
-          const titleTag = repo.tags.find((tag) => tag[0] === 'title');
-          const descriptionTag = repo.tags.find(
-            (tag) => tag[0] === 'description'
-          );
-          return (
-            <ListGroup.Item
-              onClick={() => navigateToRepositoryDetail(repo)}
-              key={repo.id}
-              className="repo-item"
-            >
-              <div>
-                <strong>{titleTag && titleTag[1]}</strong>
-              </div>
-              <div>
-                <p> {descriptionTag && descriptionTag[1]}</p>
-              </div>
-            </ListGroup.Item>
-          );
-        })}
+        {filteredRepositories.length > 0 ? (
+          filteredRepositories?.map((repo) => {
+            const titleTag = repo.tags.find((tag) => tag[0] === 'title');
+            const descriptionTag = repo.tags.find(
+              (tag) => tag[0] === 'description'
+            );
+            return (
+              <ListGroup.Item
+                onClick={() => navigateToRepositoryDetail(repo)}
+                key={repo.id}
+                className="repo-item"
+              >
+                <div>
+                  <strong>{titleTag && titleTag[1]}</strong>
+                </div>
+                <div>
+                  <p> {descriptionTag && descriptionTag[1]}</p>
+                </div>
+              </ListGroup.Item>
+            );
+          })
+        ) : (
+          <span>Nothing yet.</span>
+        )}
       </ListGroup>
     </div>
   );

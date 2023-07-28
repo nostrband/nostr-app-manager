@@ -48,6 +48,10 @@ export const kinds = {
 
 export const validationSchemaForFormAddApp = Yup.object().shape({
   name: Yup.string().required('Name is required'),
+  link: Yup.string().matches(
+    /^(ftp|http|https):\/\/[^ "]+$/,
+    'Please enter a valid link URL'
+  ),
 });
 
 export const programmingLanguages = [

@@ -77,6 +77,7 @@ const CodeRepositoryForm = () => {
           >
             {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <>
+                {console.log(errors, 'ERRORS')}
                 <Form.Group>
                   <Form.Label className="mt-2">Name</Form.Label>
                   <Field
@@ -87,6 +88,7 @@ const CodeRepositoryForm = () => {
                     name="name"
                     className={touched.name && errors.name ? 'is-invalid' : ''}
                   />
+                  <div className="text-danger mt-1">{errors?.name}</div>
                 </Form.Group>
 
                 <Form.Group>
@@ -111,7 +113,14 @@ const CodeRepositoryForm = () => {
 
                 <Form.Group>
                   <Form.Label className="mt-2">Link</Form.Label>
-                  <Field as={Form.Control} id="link" type="text" name="link" />
+                  <Field
+                    className={touched.link && errors.link ? 'is-invalid' : ''}
+                    as={Form.Control}
+                    id="link"
+                    type="text"
+                    name="link"
+                  />
+                  <div className="text-danger mt-1">{errors?.link}</div>
                 </Form.Group>
 
                 <Form.Group>
@@ -198,13 +207,6 @@ const CodeRepositoryForm = () => {
                     inputValue={tempLanguage}
                   />
                 </Form.Group>
-
-                {Object.keys(touched).length > 0 &&
-                  Object.keys(errors).length > 0 && (
-                    <div className="text-danger mt-3">
-                      Please fill in the required fields, please.
-                    </div>
-                  )}
 
                 <div className="mt-2">
                   <Button variant="secondary" size="lg" className="btn-block">

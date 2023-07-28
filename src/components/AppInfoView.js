@@ -90,7 +90,6 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
-
   return (
     <>
       {info === null && (
