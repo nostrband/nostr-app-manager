@@ -10,6 +10,17 @@ import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
 
+const tabs = [
+  {
+    title: 'Nostr App',
+    value: 'nostr',
+  },
+  {
+    title: 'Other App',
+    value: 'other',
+  },
+];
+
 const AppEditForm = (props) => {
   const navigate = useNavigate();
 
@@ -162,17 +173,6 @@ const AppEditForm = (props) => {
   }
 
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
-
-  const tabs = [
-    {
-      title: 'Nostr App',
-      value: 'nostr',
-    },
-    {
-      title: 'Other App',
-      value: 'other',
-    },
-  ];
 
   return (
     <div>
