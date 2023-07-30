@@ -10,6 +10,17 @@ import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
 
+const tabs = [
+  {
+    title: 'Nostr App',
+    value: 'nostr',
+  },
+  {
+    title: 'Other App',
+    value: 'other',
+  },
+];
+
 const AppEditForm = (props) => {
   const navigate = useNavigate();
 
@@ -28,6 +39,11 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('nostr');
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+  };
 
   const toggleInherit = (v) => {
     setInherit(v);
@@ -74,13 +90,14 @@ const AppEditForm = (props) => {
   async function save() {
     if (
       urls.find((u) => u.url.trim() === '' || !u.url.includes('<bech32>')) !==
-      undefined
+        undefined &&
+      selectedTab === 'nostr'
     ) {
       setError('Specify a valid url with the <bech32> placeholder.');
       return;
     }
 
-    if (!kinds.length) {
+    if (!kinds.length && selectedTab === 'nostr') {
       setError('Specify which kinds of events are supported by this app.');
       return;
     }
@@ -141,7 +158,6 @@ const AppEditForm = (props) => {
           pubkey: cmn.getLoginPubkey(),
           identifier: d,
         });
-        console.log('naddr', naddr);
         // NOTE: right now publishEvent doesn't wait for the 'ok',
         // so we should give relays some time to accept and publish our event
         setTimeout(() => {
@@ -157,6 +173,7 @@ const AppEditForm = (props) => {
   }
 
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
+
   return (
     <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
@@ -169,7 +186,23 @@ const AppEditForm = (props) => {
             disabled={props.profileMeta === null}
             onChange={(e) => toggleInherit(e.target.checked)}
           />
-          <Form.Group className="mb-3" controlId="metaName">
+
+          <ul class="nav nav-tabs mt-2 mb-2" id="myTab" role="tablist">
+            {tabs.map((tab) => {
+              return (
+                <li
+                  onClick={() => handleTabChange(tab.value)}
+                  class={`tab nav-link ${
+                    selectedTab === tab.value ? 'activeTab' : ''
+                  }`}
+                >
+                  {tab.title}
+                </li>
+              );
+            })}
+          </ul>
+
+          <Form.Group className="mb-3 mt-1" controlId="metaName">
             <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
@@ -278,57 +311,67 @@ const AppEditForm = (props) => {
           </Form.Group>
         </Form>
       </div>
-      <h4 className="mt-5">Kinds</h4>
-      <div>
-        {kinds.map((k) => (
-          <KindButton key={k} kind={k} onRemove={removeKind} />
-        ))}
-        <AddKind onSelect={addKind} />
-      </div>
-      <h4 className="mt-5">Handler URLs</h4>
-      <div>
-        <div>
-          <small className="text-muted">
-            Specify how to redirect users to this app. For each platform this
-            app supports, specify a URL with &quot;&lt;bech32&gt;&quot;
-            template, and a type of identifier to fill in place of this
-            template.
-            <br />
-            Example: https://app.com/&lt;bech32&gt; or nostr:&lt;bech32&gt;.
-          </small>
-        </div>
 
-        {urls.length > 0 && (
-          <>
-            <table className="table-responsive mt-3">
-              <thead>
-                <tr>
-                  <th scope="col">Platform</th>
-                  <th scope="col">Url</th>
-                  <th scope="col">Identifier</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {urls.map((u, i) => (
-                  <tr key={i}>
-                    <HandlerUrl
-                      index={i}
-                      url={u}
-                      onRemove={removeUrl}
-                      onChange={editUrl}
-                    />
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
+      {selectedTab === 'nostr' ? (
+        <>
+          <h4 className="mt-5">Kinds</h4>
+          <div>
+            {kinds.map((k) => (
+              <KindButton key={k} kind={k} onRemove={removeKind} />
+            ))}
+            <AddKind onSelect={addKind} />
+          </div>
+        </>
+      ) : null}
+      {selectedTab === 'nostr' ? (
+        <>
+          <h4 className="mt-5">Handler URLs</h4>
+          <div>
+            <div>
+              <small className="text-muted">
+                Specify how to redirect users to this app. For each platform
+                this app supports, specify a URL with &quot;&lt;bech32&gt;&quot;
+                template, and a type of identifier to fill in place of this
+                template.
+                <br />
+                Example: https://app.com/&lt;bech32&gt; or nostr:&lt;bech32&gt;.
+              </small>
+            </div>
 
-        <Button variant="outline-primary mt-2" onClick={addUrl}>
-          Add URL
-        </Button>
-      </div>
+            {urls.length > 0 && (
+              <>
+                <table className="table-responsive mt-3">
+                  <thead>
+                    <tr>
+                      <th scope="col">Platform</th>
+                      <th scope="col">Url</th>
+                      <th scope="col">Identifier</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {urls.map((u, i) => (
+                      <tr key={i}>
+                        <HandlerUrl
+                          index={i}
+                          url={u}
+                          onRemove={removeUrl}
+                          onChange={editUrl}
+                        />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+
+            <Button variant="outline-primary mt-2" onClick={addUrl}>
+              Add URL
+            </Button>
+          </div>
+        </>
+      ) : null}
+
       <div className="mt-5">
         {error !== null && error !== '' && (
           <Alert variant="danger" dismissible={true}>

@@ -25,6 +25,21 @@ img.banner {
 .pointer {
   cursor: pointer;
 }
+
+.tab {
+  cursor: pointer;
+  border-top: 1px solid #0c6dfd !important;
+  border-left: 1px solid #0c6dfd !important;
+  border-right: 1px solid #0c6dfd !important;
+  margin-right: 8px;
+}
+
+.activeTab {
+  background-color: #0c6dfd !important;
+  color: #ffffff !important;
+  border-bottom: none !important;
+}
+
 .repo-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
   cursor: pointer;
