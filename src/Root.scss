@@ -25,3 +25,30 @@ img.banner {
 .pointer {
   cursor: pointer;
 }
+.repo-item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.repository-view {
+  padding: 0 0 0 5px;
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+  ul > li {
+    list-style: none;
+  }
+}
+
+.kind-element {
+  min-width: 70px;
+  display: inline-block;
+  text-align: center;
+  padding: 5px 10px;
+  margin: 7px 10px 0 0;
+  border: 1px solid #0c6dfd;
+  color: #0c6dfd;
+  border-radius: 5px;
+}

@@ -75,6 +75,7 @@ const Header = () => {
 
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
   const createUrl = cmn.formatAppEditUrl('');
+  const createUrlForAddRepo = cmn.formatRepositoryEditUrl('');
 
   const goHome = () => {
     // Link click changes the location.hash but doesn't cause the
@@ -137,6 +138,14 @@ const Header = () => {
                     }}
                   >
                     Create app
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(createUrlForAddRepo);
+                    }}
+                  >
+                    Create repository
                   </Dropdown.Item>
                   <Dropdown.Divider></Dropdown.Divider>
                   <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>

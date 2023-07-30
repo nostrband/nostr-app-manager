@@ -8,6 +8,7 @@ import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
 import { ListGroup, Spinner } from 'react-bootstrap';
+import PublisedRepositories from './PublisedRepositories';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -59,7 +60,6 @@ const ProfileView = () => {
   const [recomms, setRecomms] = useState([]);
   const pubKey = cmn.getLoginPubkey();
   const myNpubKey = pubKey ? nip19.npubEncode(pubKey) : '';
-
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -71,7 +71,7 @@ const ProfileView = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const getRecomnsQuery = useCallback(() => {
-    setIsLoading(true); // Set loading state when fetching data
+    setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
       .then(() => setIsLoading(false))
       .catch(console.error);
@@ -79,7 +79,7 @@ const ProfileView = () => {
 
   useEffect(() => {
     getRecomnsQuery();
-  }, []);
+  }, [npub]);
 
   useEffect(() => {
     reorganizeData(recomms, setReorganizesData);
@@ -115,6 +115,12 @@ const ProfileView = () => {
               <div className="mt-2">
                 <Link to={cmn.formatAppEditUrl('')}>
                   <Button variant="primary">Add app</Button>
+                </Link>
+              </div>
+              <PublisedRepositories />
+              <div className="mt-2">
+                <Link to={cmn.formatRepositoryEditUrl('')}>
+                  <Button variant="primary">Add repository</Button>
                 </Link>
               </div>
               <h4 className="mt-5">Used apps:</h4>

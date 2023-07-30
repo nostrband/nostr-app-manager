@@ -129,7 +129,6 @@ const AppEditForm = (props) => {
       event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
     );
 
-    console.log('event', event);
     setSending(true);
     const r = await cmn.publishEvent(event);
     setSending(false);

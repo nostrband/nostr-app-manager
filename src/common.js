@@ -480,7 +480,6 @@ function prepareHandlers(events, metaPubkey) {
 
 export function startFetch(ndk, filter) {
   const relaySet = NDKRelaySet.fromRelayUrls(readRelays, ndk);
-
   // have to reimplement the ndk's fetchEvents method to allow:
   // - relaySet - only read relays to exclude the mutiny relay that returns EOSE on everything which
   // breaks the NDK's internal EOSE handling (sends eose too early assuming this "fast" relay has sent all we need)
@@ -507,7 +506,6 @@ export function startFetch(ndk, filter) {
 
 export async function fetchApps(pubkey, addr) {
   const ndk = await getNDK();
-  console.log(ndk, 'NDK');
   const filter: NDKFilter = {
     authors: [pubkey],
     kinds: [cs.KIND_META],
@@ -921,8 +919,16 @@ export function formatAppUrl(naddr) {
   return '/a/' + naddr;
 }
 
+export function formatRepositoryEditUrl(naddr) {
+  return '/create-repository' + naddr;
+}
+
 export function formatProfileUrl(npub) {
   return '/p/' + npub;
+}
+
+export function formatRepositoryUrl(naddr) {
+  return /r/ + naddr;
 }
 
 export function formatAppEditUrl(naddr) {

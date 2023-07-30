@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider from 'react-bootstrap/ThemeProvider';
 import { IntlProvider } from './IntlProvider';
+import RepositoryPage from './pages/RepositoryPage';
 
 import './index.scss';
 import Root from './Root';
@@ -15,6 +16,9 @@ import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/ShowModalContext';
 import { ToastContainer } from 'react-toastify';
+import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
+import RepositoryView from './components/RepositoryView';
+import RepositoryInfo from './RepositoryInfo';
 
 const HTTP = new QueryClient();
 
@@ -42,6 +46,14 @@ export const router = createBrowserRouter([
   {
     path: '/edit/:naddr?',
     element: <AppEdit />,
+  },
+  {
+    path: '/create-repository',
+    element: <RepositoryPage />,
+  },
+  {
+    path: '/r/:naddr',
+    element: <RepositoryInfo />,
   },
 ]);
 
