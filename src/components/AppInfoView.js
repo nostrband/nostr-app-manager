@@ -34,7 +34,6 @@ const AppInfoView = () => {
       setRecomms(null);
       return;
     }
-
     const addr = data;
     setAddr(addr);
 
@@ -91,7 +90,6 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
-
   return (
     <>
       {info === null && (

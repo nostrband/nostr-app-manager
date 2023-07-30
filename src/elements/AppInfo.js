@@ -13,7 +13,6 @@ import LikedHeart from '../icons/LikedHeart';
 import Share from '../icons/Share';
 import { useAuth } from '../context/ShowModalContext';
 import ShareAppModal from './ShareAppModal';
-import Toast from './Toast';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);

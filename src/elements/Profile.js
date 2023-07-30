@@ -1,13 +1,12 @@
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
-
 import * as cmn from '../common';
 import Avatar from '../icons/Avatar';
 
 const Profile = (props) => {
-  const p = props.profile?.profile;
-  const pubkey = props.pubkey;
+  const p = props?.profile?.profile;
+  const pubkey = props?.pubkey;
   const getUrl =
     props.getUrl || ((pubkey) => cmn.formatProfileUrl(cmn.formatNpub(pubkey)));
   const onSelect = props.onSelect || (() => {});

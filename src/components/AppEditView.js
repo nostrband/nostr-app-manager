@@ -9,7 +9,6 @@ import * as cmn from '../common';
 
 const AppEditView = () => {
   const params = useParams();
-  console.log('done app edit view');
   const naddr = (params.naddr ?? '').toLowerCase();
 
   const [info, setInfo] = useState(null);
@@ -28,7 +27,6 @@ const AppEditView = () => {
     }
 
     cmn.addOnNostr(async () => {
-      console.log('addr', addr, 'auth', cmn.isAuthed());
       if (addr) {
         const info = await cmn.fetchApps(addr.pubkey, addr);
         setInfo(info);
@@ -55,9 +53,6 @@ const AppEditView = () => {
   const forbidden =
     naddr && info && cmn.isAuthed() && cmn.getLoginPubkey() !== app.pubkey;
   const viewUrl = naddr && info ? '/a/' + cmn.getNaddr(app) : '';
-
-  console.log('app', app);
-  console.log('meta', meta);
 
   return (
     <div className="mt-5">
