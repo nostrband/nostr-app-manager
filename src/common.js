@@ -920,7 +920,7 @@ export function formatAppUrl(naddr) {
 }
 
 export function formatRepositoryEditUrl(naddr) {
-  return '/create-repository' + naddr;
+  return '/create-repository/' + naddr;
 }
 
 export function formatProfileUrl(npub) {
@@ -1042,3 +1042,24 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
 
   return !r || r.error ? r?.error || 'Failed' : '';
 }
+
+export const fetchRepositoryByUser = async (naddr) => {
+  const addr = naddrToAddr(naddr.toLowerCase());
+  const parts = addr.split(':');
+  const kind = parts[0];
+  const pubkey = parts[1];
+  const identifier = parts[2];
+  const ndk = await getNDK();
+
+  const addrForFilter = {
+    kinds: [+kind],
+    authors: [pubkey],
+    '#d': [identifier],
+  };
+
+  const resultFetchAllEvents = await fetchAllEvents([
+    startFetch(ndk, addrForFilter),
+  ]);
+
+  return { resultFetchAllEvents, pubkey, identifier };
+};

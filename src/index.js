@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
     element: <AppEdit />,
   },
   {
-    path: '/create-repository',
+    path: '/create-repository/:naddr?',
     element: <RepositoryPage />,
   },
   {

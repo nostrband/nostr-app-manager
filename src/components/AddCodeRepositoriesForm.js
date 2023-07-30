@@ -8,20 +8,23 @@ import {
 } from '../const';
 import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
-import { useNavigate } from 'react-router';
-
-const initialValues = {
-  name: '',
-  description: '',
-  link: '',
-  tags: [],
-  license: '',
-  programmingLanguages: [],
-};
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CodeRepositoryForm = () => {
+  const { naddr } = useParams();
   const [tempTag, setTempTag] = useState('');
   const [tempLanguage, setTempLanguage] = useState('');
+  const [initialValues, setInitialValues] = useState({
+    name: '',
+    description: '',
+    link: '',
+    tags: [],
+    license: '',
+    programmingLanguages: [],
+  });
+
+  const [identifier, setIdentifier] = useState('');
+
   const navigate = useNavigate();
 
   const textareaRef = useRef(null);
@@ -34,7 +37,7 @@ const CodeRepositoryForm = () => {
   };
 
   const handleSubmit = async (values) => {
-    const d = '' + Date.now().toString();
+    const d = identifier ? identifier : '' + Date.now().toString();
     const event = {
       kind: 30117,
       tags: [
@@ -42,7 +45,7 @@ const CodeRepositoryForm = () => {
         ['description', values.description],
         ['r', values.link],
         ['license', values.license.value],
-        ['d', Date.now().toString()],
+        ['d', d],
         ...values.tags.map((tag) => ['t', tag.label]),
         ...values.programmingLanguages.map((lang) => ['t', lang.label]),
       ],
@@ -61,6 +64,40 @@ const CodeRepositoryForm = () => {
     }, 500);
   };
 
+  const getRepositoryForEdit = async () => {
+    const { resultFetchAllEvents, identifier: identifierForEdit } =
+      await cmn.fetchRepositoryByUser(naddr);
+    const repositoryData = resultFetchAllEvents[0];
+    setIdentifier(identifierForEdit);
+    if (repositoryData) {
+      const initialValuesInFunction = {
+        name: repositoryData.tags.find((tag) => tag[0] === 'title')[1] || '',
+        description:
+          repositoryData.tags.find((tag) => tag[0] === 'description')[1] || '',
+        link: repositoryData.tags.find((tag) => tag[0] === 'r')[1] || '',
+        license:
+          optionsLicensies.find(
+            (option) =>
+              option.value ===
+              repositoryData.tags.find((tag) => tag[0] === 'license')[1]
+          ) || null,
+        tags: repositoryData.tags
+          .filter((tag) => tag[0] === 't')
+          .map((tag) => ({ label: tag[1], value: tag[1] })),
+        programmingLanguages: repositoryData.tags
+          .filter((tag) => tag[0] === 't')
+          .map((tag) => ({ label: tag[1], value: tag[1] })),
+      };
+      setInitialValues(initialValuesInFunction);
+    }
+  };
+
+  useEffect(() => {
+    if (naddr) {
+      getRepositoryForEdit();
+    }
+  }, []);
+
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
@@ -71,13 +108,13 @@ const CodeRepositoryForm = () => {
         <Col>
           <h4 className="mt-5">Create repository</h4>
           <Formik
+            enableReinitialize={true}
             validationSchema={validationSchemaForFormAddApp}
             initialValues={initialValues}
             onSubmit={handleSubmit}
           >
             {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <>
-                {console.log(errors, 'ERRORS')}
                 <Form.Group>
                   <Form.Label className="mt-2">Name</Form.Label>
                   <Field
