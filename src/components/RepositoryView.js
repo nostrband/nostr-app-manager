@@ -15,7 +15,6 @@ const RepositoryView = () => {
   const [repository, setRepository] = useState({
     tags: [],
   });
-  const [programmingLanguagesTags, setProgrammingLanguagesTags] = useState([]);
   const [authorRepository, setAuthorRepository] = useState();
   const { naddr } = useParams();
   const editUrl = cmn.formatRepositoryEditUrl(naddr);
@@ -32,13 +31,17 @@ const RepositoryView = () => {
     const { resultFetchAllEvents, pubkey: pubkenFromServer } =
       await cmn.fetchRepositoryByUser(naddr);
 
-    setRepository(resultFetchAllEvents[0]);
     setPubKey(pubkenFromServer);
-    const programmingLanguagesAndTags = resultFetchAllEvents[0]?.tags
+    const otherTags = resultFetchAllEvents[0]?.tags
       .filter((tag) => tag[0] === 't')
       .map((tag, index) => tag[1]);
 
-    setProgrammingLanguagesTags(programmingLanguagesAndTags);
+    const programmingLanguages = resultFetchAllEvents[0]?.tags
+      .filter((tag) => tag[0] === 'l')
+      .map((tag, index) => tag[1]);
+
+    const repositoryData = resultFetchAllEvents[0];
+    setRepository({ ...repositoryData, otherTags, programmingLanguages });
 
     const filter = {
       kinds: [0],
@@ -82,9 +85,11 @@ const RepositoryView = () => {
       if (result) {
         setOpenConfirmDeleteModal(false);
         navigate(`/p/${npub}`);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Failed to delete app:', error);
+      setLoading(false);
     }
   };
 
@@ -126,12 +131,29 @@ const RepositoryView = () => {
                 {licenseTagValue}
               </li>
             ) : null}
-            {programmingLanguagesTags?.length > 0 ? (
+
+            {repository?.programmingLanguages?.length > 0 ? (
               <li className="mt-3">
-                <strong className="d-block">
-                  Programming languages and tags:
-                </strong>
-                {programmingLanguagesTags.map((item) => {
+                <strong className="d-block">Programming languages:</strong>
+                {repository?.programmingLanguages?.map((item) => {
+                  return (
+                    <KindElement
+                      className="mx-1 mt-2"
+                      key={item}
+                      size="sm"
+                      variant="outline-primary"
+                    >
+                      {item}
+                    </KindElement>
+                  );
+                })}
+              </li>
+            ) : null}
+
+            {repository?.otherTags?.length > 0 ? (
+              <li className="mt-3">
+                <strong className="d-block">Tags:</strong>
+                {repository?.otherTags?.map((item) => {
                   return (
                     <KindElement
                       className="mx-1 mt-2"

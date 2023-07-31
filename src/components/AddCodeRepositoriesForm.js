@@ -36,7 +36,8 @@ const CodeRepositoryForm = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmitHandler = async (values) => {
+    console.log(values, 'VALUES');
     const d = identifier ? identifier : '' + Date.now().toString();
     const event = {
       kind: 30117,
@@ -44,10 +45,15 @@ const CodeRepositoryForm = () => {
         ['title', values.name],
         ['description', values.description],
         ['r', values.link],
-        ['license', values.license.value],
+        ['license', values?.license?.value],
         ['d', d],
         ...values.tags.map((tag) => ['t', tag.label]),
-        ...values.programmingLanguages.map((lang) => ['t', lang.label]),
+        ...values.programmingLanguages.map((lang) => [
+          'l',
+          lang.label,
+          'programming-languages',
+        ]),
+        ['L', 'programming-languages'],
       ],
       content: '',
     };
@@ -70,24 +76,26 @@ const CodeRepositoryForm = () => {
     const repositoryData = resultFetchAllEvents[0];
     setIdentifier(identifierForEdit);
     if (repositoryData) {
+      const findTagValue = (tag) => {
+        const foundTag = repositoryData.tags.find((t) => t[0] === tag);
+        return foundTag ? foundTag[1] : '';
+      };
+
       const initialValuesInFunction = {
         name: repositoryData.tags.find((tag) => tag[0] === 'title')[1] || '',
-        description:
-          repositoryData.tags.find((tag) => tag[0] === 'description')[1] || '',
-        link: repositoryData.tags.find((tag) => tag[0] === 'r')[1] || '',
-        license:
-          optionsLicensies.find(
-            (option) =>
-              option.value ===
-              repositoryData.tags.find((tag) => tag[0] === 'license')[1]
-          ) || null,
+        description: findTagValue('description'),
+        link: findTagValue('r'),
+        license: optionsLicensies.find(
+          (option) => option.value === findTagValue('license')
+        ),
         tags: repositoryData.tags
           .filter((tag) => tag[0] === 't')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
         programmingLanguages: repositoryData.tags
-          .filter((tag) => tag[0] === 't')
+          .filter((tag) => tag[0] === 'l')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
       };
+      console.log(initialValues, 'INITIAL VALUES');
       setInitialValues(initialValuesInFunction);
     }
   };
@@ -111,7 +119,7 @@ const CodeRepositoryForm = () => {
             enableReinitialize={true}
             validationSchema={validationSchemaForFormAddApp}
             initialValues={initialValues}
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmitHandler}
           >
             {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <>
@@ -159,7 +167,47 @@ const CodeRepositoryForm = () => {
                   />
                   <div className="text-danger mt-1">{errors?.link}</div>
                 </Form.Group>
-
+                <Form.Group>
+                  <Form.Label className="mt-2">
+                    Programming Languages
+                  </Form.Label>
+                  <CreatableSelect
+                    isMulti
+                    minMenuHeight={500}
+                    name="colors"
+                    options={programmingLanguages}
+                    classNamePrefix="select"
+                    value={values.programmingLanguages}
+                    onChange={(selectedOptions) =>
+                      setFieldValue('programmingLanguages', selectedOptions)
+                    }
+                    className="basic-multi-select"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.target.value) {
+                        e.preventDefault();
+                        const newLanguageLabel = e.target.value;
+                        if (
+                          !isDuplicate(
+                            newLanguageLabel,
+                            values.programmingLanguages
+                          )
+                        ) {
+                          const language = {
+                            value: newLanguageLabel,
+                            label: newLanguageLabel,
+                          };
+                          setFieldValue('programmingLanguages', [
+                            ...values.programmingLanguages,
+                            language,
+                          ]);
+                        }
+                        setTempLanguage('');
+                      }
+                    }}
+                    onInputChange={(newValue) => setTempLanguage(newValue)}
+                    inputValue={tempLanguage}
+                  />
+                </Form.Group>
                 <Form.Group>
                   <Form.Label className="mt-2">Tags</Form.Label>
                   <CreatableSelect
@@ -204,48 +252,7 @@ const CodeRepositoryForm = () => {
                     className="basic-multi-select"
                   />
                 </Form.Group>
-                <Form.Group>
-                  <Form.Label className="mt-2">
-                    Programming Languages
-                  </Form.Label>
-                  <CreatableSelect
-                    isMulti
-                    name="colors"
-                    options={programmingLanguages}
-                    classNamePrefix="select"
-                    value={values.programmingLanguages}
-                    onChange={(selectedOptions) =>
-                      setFieldValue('programmingLanguages', selectedOptions)
-                    }
-                    className="basic-multi-select"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.target.value) {
-                        e.preventDefault();
-                        const newLanguageLabel = e.target.value;
-                        if (
-                          !isDuplicate(
-                            newLanguageLabel,
-                            values.programmingLanguages
-                          )
-                        ) {
-                          const language = {
-                            value: newLanguageLabel,
-                            label: newLanguageLabel,
-                          };
-                          setFieldValue('programmingLanguages', [
-                            ...values.programmingLanguages,
-                            language,
-                          ]);
-                        }
-                        setTempLanguage('');
-                      }
-                    }}
-                    onInputChange={(newValue) => setTempLanguage(newValue)}
-                    inputValue={tempLanguage}
-                  />
-                </Form.Group>
-
-                <div className="mt-2">
+                <div className="mt-3">
                   <Button variant="secondary" size="lg" className="btn-block">
                     Cancel
                   </Button>
