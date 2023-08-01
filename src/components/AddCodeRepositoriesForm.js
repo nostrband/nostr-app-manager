@@ -37,13 +37,13 @@ const CodeRepositoryForm = () => {
   };
 
   const handleSubmitHandler = async (values) => {
-    console.log(values, 'VALUES');
-    const d = identifier ? identifier : '' + Date.now().toString();
+    const d = '' + Date.now().toString();
+    const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
     const event = {
       kind: 30117,
       tags: [
         ['title', values.name],
-        ['description', values.description],
+        ['description', descriptionWithLineBreaks],
         ['r', values.link],
         ['license', values?.license?.value],
         ['d', d],

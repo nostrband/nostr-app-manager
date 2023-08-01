@@ -45,6 +45,24 @@ const PublisedRepositories = () => {
             const descriptionTag = repo.tags.find(
               (tag) => tag[0] === 'description'
             );
+            let limitedDescription = '';
+            if (descriptionTag) {
+              const cleanDescription = descriptionTag[1].replace(
+                /<br\s*\/?>/gi,
+                ' '
+              );
+              const trimmedDescription = cleanDescription
+                .replace(/<[^>]+>/g, '')
+                .trim();
+              const singleSpaceDescription = trimmedDescription.replace(
+                /\s+/g,
+                ' '
+              );
+              limitedDescription =
+                singleSpaceDescription.length > 150
+                  ? singleSpaceDescription.substring(0, 150) + '...'
+                  : singleSpaceDescription;
+            }
             return (
               <ListGroup.Item
                 onClick={() => navigateToRepositoryDetail(repo)}
@@ -55,7 +73,7 @@ const PublisedRepositories = () => {
                   <strong>{titleTag && titleTag[1]}</strong>
                 </div>
                 <div>
-                  <p> {descriptionTag && descriptionTag[1]}</p>
+                  <p> {limitedDescription}</p>
                 </div>
               </ListGroup.Item>
             );

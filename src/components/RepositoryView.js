@@ -124,14 +124,15 @@ const RepositoryView = () => {
                 </a>
               </li>
             ) : null}
-            {descriptionTagValue ? <p>{descriptionTagValue}</p> : null}
+            {descriptionTagValue ? (
+              <p dangerouslySetInnerHTML={{ __html: descriptionTagValue }}></p>
+            ) : null}
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
                 {licenseTagValue}
               </li>
             ) : null}
-
             {repository?.programmingLanguages?.length > 0 ? (
               <li className="mt-3">
                 <strong className="d-block">Programming languages:</strong>
