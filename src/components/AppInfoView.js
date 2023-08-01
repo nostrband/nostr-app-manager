@@ -41,7 +41,7 @@ const AppInfoView = () => {
     const info = await cmn.fetchApps(addr.pubkey, addr);
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
-
+    console.log(JSON.stringify(info.apps), 'INFOOO');
     const appInfo = Object.values(info.apps)[0].addrHandler;
     setAddKinds(appInfo.kinds);
     setAddPlatforms(appInfo.platforms);
