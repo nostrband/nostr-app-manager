@@ -171,7 +171,7 @@ const RepositoryView = () => {
                 })}
               </li>
             ) : null}
-            <li className="mt-2">
+            <li className="mt-4">
               <strong>Published by:</strong>
               <div className="mt-2">
                 <Profile
