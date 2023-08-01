@@ -117,7 +117,7 @@ const ProfileView = () => {
                   <Button variant="primary">Add app</Button>
                 </Link>
               </div>
-              <PublisedRepositories />
+              <PublisedRepositories pubkey={pubkey} />
               <div className="mt-2">
                 <Link to={cmn.formatRepositoryEditUrl('')}>
                   <Button variant="primary">Add repository</Button>
