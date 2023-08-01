@@ -69,6 +69,14 @@ img.banner {
 }
 
 .description-repository {
-  max-width: 600px;
+  max-width: 550px;
   word-wrap: break-word;
+}
+
+.limited-text {
+  max-width: 660px;
+  word-wrap: break-word;
+  a {
+    margin-left: 6px;
+  }
 }

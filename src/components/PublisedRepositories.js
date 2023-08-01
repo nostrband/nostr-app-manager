@@ -3,6 +3,7 @@ import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
 import { nip19 } from 'nostr-tools';
+import ShareIconForRepository from '../icons/ShareForRepository';
 
 const PublisedRepositories = () => {
   const { npub } = useParams();
@@ -34,7 +35,6 @@ const PublisedRepositories = () => {
   const filteredRepositories = publishedRepositories.filter(
     (repo) => nip19?.npubEncode(repo?.pubkey) === npub
   );
-
   return (
     <div>
       <h4 className="mt-5">Published repositories:</h4>
@@ -45,6 +45,8 @@ const PublisedRepositories = () => {
             const descriptionTag = repo.tags.find(
               (tag) => tag[0] === 'description'
             );
+
+            const link = repo.tags.find((tag) => tag[0] === 'r');
             let limitedDescription = '';
             if (descriptionTag) {
               const cleanDescription = descriptionTag[1].replace(
@@ -72,10 +74,17 @@ const PublisedRepositories = () => {
                 <div>
                   <strong>{titleTag && titleTag[1]}</strong>
                 </div>
+                {link ? (
+                  <div className="mt-1 mb-1 limited-text">
+                    <ShareIconForRepository />
+                    <a href={link} target="_blank" rel="noopener noreferrer">
+                      {link}
+                    </a>
+                  </div>
+                ) : null}
+
                 <div>
-                  <p style={{ maxWidth: '660px', wordWrap: 'break-word' }}>
-                    {limitedDescription}
-                  </p>
+                  <p className="limited-text">{limitedDescription}</p>
                 </div>
               </ListGroup.Item>
             );

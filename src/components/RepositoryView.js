@@ -106,10 +106,7 @@ const RepositoryView = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Container
-          style={{ border: '2px solid red' }}
-          className="mt-4 repository-view d-flex justify-content-between"
-        >
+        <Container className="mt-4 repository-view d-flex justify-content-between">
           <ul>
             <h2 className="font-weight-bold">
               {`${
@@ -134,7 +131,6 @@ const RepositoryView = () => {
                 dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
               ></p>
             ) : null}
-
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
@@ -158,7 +154,6 @@ const RepositoryView = () => {
                 })}
               </li>
             ) : null}
-
             {repository?.otherTags?.length > 0 ? (
               <li className="mt-3">
                 <strong className="d-block">Tags:</strong>
@@ -176,7 +171,6 @@ const RepositoryView = () => {
                 })}
               </li>
             ) : null}
-
             <li className="mt-2">
               <strong>Published by:</strong>
               <div className="mt-2">
