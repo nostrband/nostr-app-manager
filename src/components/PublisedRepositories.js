@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router';
-import { nip19 } from 'nostr-tools';
 import ShareIconForRepository from '../icons/ShareForRepository';
 
 const PublisedRepositories = ({ pubkey }) => {
