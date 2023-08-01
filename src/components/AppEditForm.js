@@ -9,6 +9,7 @@ import KindButton from '../elements/KindButton';
 import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
+import CreatableSelect from 'react-select/creatable';
 
 const tabs = [
   {
@@ -23,7 +24,6 @@ const tabs = [
 
 const AppEditForm = (props) => {
   const navigate = useNavigate();
-
   const noMeta = !Object.keys(props.app?.profile ?? {}).length;
 
   const [inherit, setInherit] = useState(false);
@@ -39,6 +39,8 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  const [tags, setTags] = useState(props.app?.otherTags || []);
+  const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
 
   const handleTabChange = (tab) => {
@@ -108,7 +110,6 @@ const AppEditForm = (props) => {
     }
 
     setError(null);
-
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
@@ -146,6 +147,21 @@ const AppEditForm = (props) => {
       event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
     );
 
+    event.tags = event.tags.filter((tag) => {
+      if (tag[0] !== 't') {
+        return true;
+      }
+      const tagLabel = tag[1];
+      return tags.some((t) => t.label === tagLabel);
+    });
+
+    tags.forEach((tag) => {
+      const tagLabel = tag.label;
+      if (!event.tags.some((t) => t[0] === 't' && t[1] === tagLabel)) {
+        event.tags.push(['t', tagLabel]);
+      }
+    });
+
     setSending(true);
     const r = await cmn.publishEvent(event);
     setSending(false);
@@ -171,7 +187,9 @@ const AppEditForm = (props) => {
       }
     }
   }
-
+  const isDuplicate = (newValue, values) => {
+    return values.some((item) => item.label === newValue);
+  };
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
 
   return (
@@ -311,6 +329,35 @@ const AppEditForm = (props) => {
           </Form.Group>
         </Form>
       </div>
+
+      <Form.Group>
+        <Form.Label className="mt-2">Tags</Form.Label>
+        <CreatableSelect
+          isMulti
+          name="tags"
+          options={[]}
+          classNamePrefix="select"
+          value={tags}
+          onChange={(selectedOptions) => setTags(selectedOptions)}
+          className="basic-multi-select"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.target.value) {
+              e.preventDefault();
+              const newTagLabel = e.target.value;
+              if (!isDuplicate(newTagLabel, tags)) {
+                const tag = {
+                  value: newTagLabel,
+                  label: newTagLabel,
+                };
+                setTags([...tags, tag]);
+              }
+              setTempTag('');
+            }
+          }}
+          onInputChange={(newValue) => setTempTag(newValue)}
+          inputValue={tempTag}
+        />
+      </Form.Group>
 
       {selectedTab === 'nostr' ? (
         <>
