@@ -10,11 +10,11 @@ import * as cmn from '../common';
 const AppEditView = () => {
   const params = useParams();
   const naddr = (params.naddr ?? '').toLowerCase();
-
   const [info, setInfo] = useState(null);
   const [addr, setAddr] = useState(null);
   const [profile, setProfile] = useState(null);
   const [ready, setReady] = useState(false);
+  const [otherTags, setOtherTags] = useState([]);
 
   const init = useCallback(async () => {
     let addr = null;
@@ -30,8 +30,15 @@ const AppEditView = () => {
       if (addr) {
         const info = await cmn.fetchApps(addr.pubkey, addr);
         setInfo(info);
+        const firstApp = Object.values(info.apps)[0];
+        const tags = firstApp.addrHandler.tags
+          .filter((tag) => tag[0] === 't')
+          .map((tag) => {
+            return { label: tag[1], value: tag[1] };
+          });
+        setOtherTags(tags);
+        setInfo(info);
       } else if (cmn.isAuthed()) {
-        console.log('get profile');
         setProfile(await cmn.fetchProfile(cmn.getLoginPubkey()));
       }
       setReady(true);
@@ -48,12 +55,14 @@ const AppEditView = () => {
   if (naddr && info && !Object.values(info.apps).length)
     return 'Nothing found.';
 
-  const app = naddr && info ? Object.values(info.apps)[0].addrHandler : null;
+  const app =
+    naddr && info
+      ? { ...Object.values(info.apps)[0].addrHandler, otherTags }
+      : null;
   const meta = naddr && info ? info.meta : profile;
   const forbidden =
     naddr && info && cmn.isAuthed() && cmn.getLoginPubkey() !== app.pubkey;
   const viewUrl = naddr && info ? '/a/' + cmn.getNaddr(app) : '';
-
   return (
     <div className="mt-5">
       {!ready && <>Loading...</>}

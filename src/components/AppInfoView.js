@@ -23,6 +23,7 @@ const AppInfoView = () => {
   const [recomms, setRecomms] = useState(null);
   const [showAddApp, setShowAddApp] = useState(false);
   const [addKinds, setAddKinds] = useState([]);
+  const [tags, setTags] = useState([]);
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
 
@@ -41,8 +42,12 @@ const AppInfoView = () => {
     const info = await cmn.fetchApps(addr.pubkey, addr);
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
-    console.log(JSON.stringify(info.apps), 'INFOOO');
     const appInfo = Object.values(info.apps)[0].addrHandler;
+    const tags = appInfo.tags
+      .filter((tag) => tag[0] === 't')
+      .map((tag) => tag[1]);
+
+    setTags(tags);
     setAddKinds(appInfo.kinds);
     setAddPlatforms(appInfo.platforms);
 
@@ -90,6 +95,7 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
+
   return (
     <>
       {info === null && (
@@ -126,6 +132,21 @@ const AppInfoView = () => {
                   className="me-1"
                 >
                   {p}
+                </Button>
+              </span>
+            );
+          })}
+          <h6 className="mt-3">Tags:</h6>
+          {tags.map((t) => {
+            return (
+              <span key={t}>
+                <Button
+                  key={t}
+                  size="sm"
+                  variant="outline-primary"
+                  className="me-1"
+                >
+                  {t}
                 </Button>
               </span>
             );

@@ -24,7 +24,6 @@ const tabs = [
 
 const AppEditForm = (props) => {
   const navigate = useNavigate();
-
   const noMeta = !Object.keys(props.app?.profile ?? {}).length;
 
   const [inherit, setInherit] = useState(false);
@@ -40,7 +39,6 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
-  const [tags, setTags] = useState([]);
   const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
 
@@ -111,7 +109,6 @@ const AppEditForm = (props) => {
     }
 
     setError(null);
-
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
@@ -149,6 +146,21 @@ const AppEditForm = (props) => {
       event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
     );
 
+    event.tags = event.tags.filter((tag) => {
+      if (tag[0] !== 't') {
+        return true;
+      }
+      const tagLabel = tag[1];
+      return tags.some((t) => t.label === tagLabel);
+    });
+
+    tags.forEach((tag) => {
+      const tagLabel = tag.label;
+      if (!event.tags.some((t) => t[0] === 't' && t[1] === tagLabel)) {
+        event.tags.push(['t', tagLabel]);
+      }
+    });
+
     setSending(true);
     const r = await cmn.publishEvent(event);
     setSending(false);
@@ -177,9 +189,6 @@ const AppEditForm = (props) => {
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
-  console.log(tags, 'TAGS');
-  const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
-
   return (
     <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
