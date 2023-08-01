@@ -88,7 +88,6 @@ const RepositoryView = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Failed to delete app:', error);
       setLoading(false);
     }
   };
@@ -100,12 +99,17 @@ const RepositoryView = () => {
   const licenseTagValue =
     repository?.tags.find((tag) => tag[0] === 'license')?.[1] || '';
 
+  console.log(descriptionTagValue, 'VALUE');
+
   return (
     <>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Container className="mt-4 repository-view d-flex justify-content-between">
+        <Container
+          style={{ border: '2px solid red' }}
+          className="mt-4 repository-view d-flex justify-content-between"
+        >
           <ul>
             <h2 className="font-weight-bold">
               {`${
@@ -125,8 +129,12 @@ const RepositoryView = () => {
               </li>
             ) : null}
             {descriptionTagValue ? (
-              <p dangerouslySetInnerHTML={{ __html: descriptionTagValue }}></p>
+              <p
+                className="description-repository"
+                dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
+              ></p>
             ) : null}
+
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>

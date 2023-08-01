@@ -59,8 +59,8 @@ const PublisedRepositories = () => {
                 ' '
               );
               limitedDescription =
-                singleSpaceDescription.length > 150
-                  ? singleSpaceDescription.substring(0, 150) + '...'
+                singleSpaceDescription.length > 170
+                  ? singleSpaceDescription.substring(0, 170) + '...'
                   : singleSpaceDescription;
             }
             return (
@@ -73,7 +73,9 @@ const PublisedRepositories = () => {
                   <strong>{titleTag && titleTag[1]}</strong>
                 </div>
                 <div>
-                  <p> {limitedDescription}</p>
+                  <p style={{ maxWidth: '660px', wordWrap: 'break-word' }}>
+                    {limitedDescription}
+                  </p>
                 </div>
               </ListGroup.Item>
             );
