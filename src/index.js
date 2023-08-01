@@ -16,8 +16,6 @@ import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/ShowModalContext';
 import { ToastContainer } from 'react-toastify';
-import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
-import RepositoryView from './components/RepositoryView';
 import RepositoryInfo from './RepositoryInfo';
 
 const HTTP = new QueryClient();
@@ -48,7 +46,7 @@ export const router = createBrowserRouter([
     element: <AppEdit />,
   },
   {
-    path: '/create-repository',
+    path: '/create-repository/:naddr?',
     element: <RepositoryPage />,
   },
   {
