@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import ShareIconForRepository from '../icons/ShareForRepository';
 
 const PublisedRepositories = ({ pubkey }) => {
-  const { npub } = useParams();
   const navigate = useNavigate();
   const [publishedRepositories, setPublishedRepositories] = useState([]);
 
