@@ -9,6 +9,7 @@ import KindButton from '../elements/KindButton';
 import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
+import CreatableSelect from 'react-select/creatable';
 
 const tabs = [
   {
@@ -39,6 +40,8 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
 
   const handleTabChange = (tab) => {
@@ -112,7 +115,7 @@ const AppEditForm = (props) => {
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
-      tags: [],
+      tags: [...tags.map((tag) => ['t', tag.label])],
     };
 
     if (!inherit) {
@@ -171,7 +174,10 @@ const AppEditForm = (props) => {
       }
     }
   }
-
+  const isDuplicate = (newValue, values) => {
+    return values.some((item) => item.label === newValue);
+  };
+  console.log(tags, 'TAGS');
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
 
   return (
@@ -311,6 +317,35 @@ const AppEditForm = (props) => {
           </Form.Group>
         </Form>
       </div>
+
+      <Form.Group>
+        <Form.Label className="mt-2">Tags</Form.Label>
+        <CreatableSelect
+          isMulti
+          name="tags"
+          options={[]}
+          classNamePrefix="select"
+          value={tags}
+          onChange={(selectedOptions) => setTags(selectedOptions)}
+          className="basic-multi-select"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.target.value) {
+              e.preventDefault();
+              const newTagLabel = e.target.value;
+              if (!isDuplicate(newTagLabel, tags)) {
+                const tag = {
+                  value: newTagLabel,
+                  label: newTagLabel,
+                };
+                setTags([...tags, tag]);
+              }
+              setTempTag('');
+            }
+          }}
+          onInputChange={(newValue) => setTempTag(newValue)}
+          inputValue={tempTag}
+        />
+      </Form.Group>
 
       {selectedTab === 'nostr' ? (
         <>
