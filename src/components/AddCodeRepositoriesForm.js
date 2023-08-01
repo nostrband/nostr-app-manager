@@ -77,7 +77,6 @@ const CodeRepositoryForm = () => {
           >
             {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <>
-                {console.log(errors, 'ERRORS')}
                 <Form.Group>
                   <Form.Label className="mt-2">Name</Form.Label>
                   <Field
