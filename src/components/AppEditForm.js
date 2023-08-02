@@ -200,6 +200,12 @@ const AppEditForm = (props) => {
     }
   }
 
+  useEffect(() => {
+    if (kinds.length === 0 && urls.length === 0) {
+      setSelectedTab('other');
+    }
+  }, [kinds, urls]);
+
   const askShareOrNorAndNavigateNext = async () => {
     setTimeout(() => {
       navigate(cmn.formatAppUrl(naddr));
