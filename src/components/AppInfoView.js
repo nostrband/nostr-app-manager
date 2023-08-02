@@ -95,7 +95,7 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
-
+  console.log(tags, 'TAGSS');
   return (
     <>
       {info === null && (
@@ -136,7 +136,8 @@ const AppInfoView = () => {
               </span>
             );
           })}
-          <h6 className="mt-3">Tags:</h6>
+
+          {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
           {tags.map((t) => {
             return (
               <span key={t}>
@@ -151,6 +152,7 @@ const AppInfoView = () => {
               </span>
             );
           })}
+
           <h6 className="mt-3">Used by:</h6>
           {!recomms && <>Loading...</>}
           {recomms != null && !recomms.length && <>No one yet.</>}
