@@ -39,6 +39,7 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  const [tags, setTags] = useState(props.app?.otherTags || []);
   const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
 
@@ -112,7 +113,7 @@ const AppEditForm = (props) => {
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
-      tags: [...tags.map((tag) => ['t', tag.label])],
+      tags: [],
     };
 
     if (!inherit) {
@@ -189,6 +190,8 @@ const AppEditForm = (props) => {
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
+  const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
+
   return (
     <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
