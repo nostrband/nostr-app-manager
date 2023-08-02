@@ -88,7 +88,6 @@ const RepositoryView = () => {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Failed to delete app:', error);
       setLoading(false);
     }
   };
@@ -99,6 +98,8 @@ const RepositoryView = () => {
     repository?.tags.find((tag) => tag[0] === 'r')?.[1] || '';
   const licenseTagValue =
     repository?.tags.find((tag) => tag[0] === 'license')?.[1] || '';
+
+  console.log(descriptionTagValue, 'VALUE');
 
   return (
     <>
@@ -124,14 +125,18 @@ const RepositoryView = () => {
                 </a>
               </li>
             ) : null}
-            {descriptionTagValue ? <p>{descriptionTagValue}</p> : null}
+            {descriptionTagValue ? (
+              <p
+                className="description-repository"
+                dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
+              ></p>
+            ) : null}
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
                 {licenseTagValue}
               </li>
             ) : null}
-
             {repository?.programmingLanguages?.length > 0 ? (
               <li className="mt-3">
                 <strong className="d-block">Programming languages:</strong>
@@ -149,7 +154,6 @@ const RepositoryView = () => {
                 })}
               </li>
             ) : null}
-
             {repository?.otherTags?.length > 0 ? (
               <li className="mt-3">
                 <strong className="d-block">Tags:</strong>
@@ -167,8 +171,7 @@ const RepositoryView = () => {
                 })}
               </li>
             ) : null}
-
-            <li className="mt-2">
+            <li className="mt-4">
               <strong>Published by:</strong>
               <div className="mt-2">
                 <Profile

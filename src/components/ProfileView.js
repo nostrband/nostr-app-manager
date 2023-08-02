@@ -44,6 +44,7 @@ const reorganizeData = (recomms, setReorganizesData) => {
       }
     }
   }
+
   const unsortedApps = Object.values(groupedApps);
   const sortedApps = unsortedApps.sort((a, b) =>
     a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })
@@ -117,7 +118,7 @@ const ProfileView = () => {
                   <Button variant="primary">Add app</Button>
                 </Link>
               </div>
-              <PublisedRepositories />
+              <PublisedRepositories pubkey={pubkey} />
               <div className="mt-2">
                 <Link to={cmn.formatRepositoryEditUrl('')}>
                   <Button variant="primary">Add repository</Button>
