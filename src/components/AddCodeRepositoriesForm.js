@@ -95,7 +95,6 @@ const CodeRepositoryForm = () => {
           .filter((tag) => tag[0] === 'l')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
       };
-      console.log(initialValues, 'INITIAL VALUES');
       setInitialValues(initialValuesInFunction);
     }
   };
