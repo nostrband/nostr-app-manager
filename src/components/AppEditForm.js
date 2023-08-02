@@ -147,10 +147,12 @@ const AppEditForm = (props) => {
       });
     }
 
-    kinds.map((k) => event.tags.push(['k', k]));
-    urls.map((u) =>
-      event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
-    );
+    if (selectedTab === 'nostr') {
+      kinds.map((k) => event.tags.push(['k', k]));
+      urls.map((u) =>
+        event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
+      );
+    }
 
     event.tags = event.tags.filter((tag) => {
       if (tag[0] !== 't') {
