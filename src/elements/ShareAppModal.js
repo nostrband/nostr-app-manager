@@ -80,7 +80,7 @@ const ShareAppModal = ({
             variant="secondary"
             className="w-50"
           >
-            Cancel
+            {askShareOrNorAndNavigateNext ? 'Skip' : 'Cancel'}
           </Button>
           <Button onClick={shareApp} variant="primary" className="w-50 ms-3 ">
             Share
