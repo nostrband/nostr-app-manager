@@ -20,7 +20,9 @@ const RepositoryView = () => {
   const editUrl = cmn.formatRepositoryEditUrl(naddr);
   const [pubkey, setPubKey] = useState('');
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
-  const npub = nip19?.npubEncode(cmn?.getLoginPubkey());
+  const npub = cmn?.getLoginPubkey()
+    ? nip19?.npubEncode(cmn?.getLoginPubkey())
+    : '';
   const navigate = useNavigate();
   const allowEditDelete =
     cmn.isAuthed() && cmn.getLoginPubkey() === repository?.pubkey;
