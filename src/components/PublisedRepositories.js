@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
-import ShareIconForRepository from '../icons/ShareForRepository';
+import { Link } from 'react-router-dom';
+import './PublishedRepositories.scss';
+import GithubIcon from '../icons/Github';
 
 const PublisedRepositories = ({ pubkey }) => {
   const navigate = useNavigate();
@@ -24,9 +26,9 @@ const PublisedRepositories = ({ pubkey }) => {
     fetchPublishedRepositories();
   }, []);
 
-  const navigateToRepositoryDetail = (event) => {
+  const getUrl = (event) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
-    navigate(viewUrl);
+    return viewUrl;
   };
 
   return (
@@ -40,7 +42,6 @@ const PublisedRepositories = ({ pubkey }) => {
               (tag) => tag[0] === 'description'
             );
             const link = repo.tags.find((tag) => tag[0] === 'r');
-            console.log(link, 'LINK');
             let limitedDescription = '';
             if (descriptionTag) {
               const cleanDescription = descriptionTag[1].replace(
@@ -60,26 +61,25 @@ const PublisedRepositories = ({ pubkey }) => {
                   : singleSpaceDescription;
             }
             return (
-              <ListGroup.Item
-                onClick={() => navigateToRepositoryDetail(repo)}
-                key={repo.id}
-                className="repo-item"
-              >
-                <div>
-                  <strong>{titleTag && titleTag[1]}</strong>
-                </div>
-                {link ? (
-                  <div className="mt-1 mb-1 limited-text">
-                    <ShareIconForRepository />
-                    <a href={link[1]} target="_blank" rel="noopener noreferrer">
-                      {link[1]}
-                    </a>
+              <ListGroup.Item className="repository-card repo-item">
+                <Link to={getUrl(repo)}>
+                  <div>
+                    <strong>{titleTag && titleTag[1]}</strong>
                   </div>
+                  <div>
+                    <p className="limited-text">{limitedDescription}</p>
+                  </div>
+                </Link>
+                {link ? (
+                  <a
+                    href={link[1]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 mb-1 limited-text pointer"
+                  >
+                    <GithubIcon />
+                  </a>
                 ) : null}
-
-                <div>
-                  <p className="limited-text">{limitedDescription}</p>
-                </div>
               </ListGroup.Item>
             );
           })
