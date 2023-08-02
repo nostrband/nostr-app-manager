@@ -8,7 +8,7 @@ import * as cmn from '../common';
 import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
 import { ListGroup, Spinner } from 'react-bootstrap';
-import PublisedRepositories from './PublisedRepositories';
+import PublishedRepositories from './PublishedRepositories';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -118,7 +118,7 @@ const ProfileView = () => {
                   <Button variant="primary">Add app</Button>
                 </Link>
               </div>
-              <PublisedRepositories pubkey={pubkey} />
+              <PublishedRepositories pubkey={pubkey} />
               <div className="mt-2">
                 <Link to={cmn.formatRepositoryEditUrl('')}>
                   <Button variant="primary">Add repository</Button>

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
 import { ListGroup } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
 import GithubIcon from '../icons/Github';
 
-const PublisedRepositories = ({ pubkey }) => {
-  const navigate = useNavigate();
+const PublishedRepositories = ({ pubkey }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
 
   const fetchPublishedRepositories = async () => {
@@ -91,4 +89,4 @@ const PublisedRepositories = ({ pubkey }) => {
   );
 };
 
-export default PublisedRepositories;
+export default PublishedRepositories;
