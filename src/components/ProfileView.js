@@ -44,6 +44,7 @@ const reorganizeData = (recomms, setReorganizesData) => {
       }
     }
   }
+
   const unsortedApps = Object.values(groupedApps);
   const sortedApps = unsortedApps.sort((a, b) =>
     a.app_id.localeCompare(b.app_id, undefined, { sensitivity: 'base' })

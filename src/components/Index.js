@@ -49,7 +49,6 @@ const Index = () => {
       get('nprofile1', link) ||
       get('naddr1', link) ||
       (link.length === 64 ? link : '');
-    console.log('id', id);
 
     window.location.hash = '#' + id + (select ? '?select=true' : '');
   };
@@ -85,7 +84,6 @@ const Index = () => {
         for (const name in info.apps) {
           const app = info.apps[name].handlers[0];
           const a = cmn.naddrToAddr(cmn.getNaddr(app));
-          console.log('app', a, app);
           app.forKinds = appKinds[a];
           apps.push(app);
         }

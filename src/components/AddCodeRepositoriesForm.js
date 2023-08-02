@@ -9,6 +9,7 @@ import {
 import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
 import { useNavigate, useParams } from 'react-router-dom';
+import TextAreaAutosize from 'react-textarea-autosize';
 
 const CodeRepositoryForm = () => {
   const { naddr } = useParams();
@@ -27,23 +28,14 @@ const CodeRepositoryForm = () => {
 
   const navigate = useNavigate();
 
-  const textareaRef = useRef(null);
-  const updateTextareaHeight = () => {
-    if (textareaRef && textareaRef.current) {
-      textareaRef.current.style.height = '64px';
-      const taHeight = textareaRef.current.scrollHeight;
-      textareaRef.current.style.height = taHeight + 'px';
-    }
-  };
-
   const handleSubmitHandler = async (values) => {
-    console.log(values, 'VALUES');
-    const d = identifier ? identifier : '' + Date.now().toString();
+    const d = '' + Date.now().toString();
+    const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
     const event = {
       kind: 30117,
       tags: [
         ['title', values.name],
-        ['description', values.description],
+        ['description', descriptionWithLineBreaks],
         ['r', values.link],
         ['license', values?.license?.value],
         ['d', d],
@@ -81,9 +73,13 @@ const CodeRepositoryForm = () => {
         return foundTag ? foundTag[1] : '';
       };
 
+      const descriptionWithLineBreaks = findTagValue('description').replace(
+        /<br>/g,
+        '\n'
+      );
       const initialValuesInFunction = {
         name: repositoryData.tags.find((tag) => tag[0] === 'title')[1] || '',
-        description: findTagValue('description'),
+        description: descriptionWithLineBreaks,
         link: findTagValue('r'),
         license: optionsLicensies.find(
           (option) => option.value === findTagValue('license')
@@ -95,7 +91,6 @@ const CodeRepositoryForm = () => {
           .filter((tag) => tag[0] === 'l')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
       };
-      console.log(initialValues, 'INITIAL VALUES');
       setInitialValues(initialValuesInFunction);
     }
   };
@@ -124,7 +119,7 @@ const CodeRepositoryForm = () => {
             {({ handleSubmit, touched, errors, setFieldValue, values }) => (
               <>
                 <Form.Group>
-                  <Form.Label className="mt-2">Name</Form.Label>
+                  <Form.Label className="mb-1 mt-3">Name</Form.Label>
                   <Field
                     id="name"
                     itemID="name"
@@ -133,15 +128,16 @@ const CodeRepositoryForm = () => {
                     name="name"
                     className={touched.name && errors.name ? 'is-invalid' : ''}
                   />
-                  <div className="text-danger mt-1">{errors?.name}</div>
+                  {errors?.name ? (
+                    <div className="text-danger mt-1">{errors?.name}</div>
+                  ) : null}
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label className="mt-2">Description</Form.Label>
-                  <textarea
+                  <Form.Label className="mb-1 mt-3">Description</Form.Label>
+                  <TextAreaAutosize
                     id="description"
-                    rows={2}
-                    ref={textareaRef}
+                    minRows={3}
                     className={
                       touched.description && errors.description
                         ? 'form-control is-invalid'
@@ -151,13 +147,12 @@ const CodeRepositoryForm = () => {
                     value={values.description}
                     onChange={(e) => {
                       setFieldValue('description', e.target.value);
-                      updateTextareaHeight();
                     }}
                   />
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label className="mt-2">Link</Form.Label>
+                  <Form.Label className="mb-1 mt-3">Link</Form.Label>
                   <Field
                     className={touched.link && errors.link ? 'is-invalid' : ''}
                     as={Form.Control}
@@ -165,10 +160,12 @@ const CodeRepositoryForm = () => {
                     type="text"
                     name="link"
                   />
-                  <div className="text-danger mt-1">{errors?.link}</div>
+                  {errors?.link ? (
+                    <div className="text-danger mt-1">{errors?.link}</div>
+                  ) : null}
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label className="mt-2">
+                  <Form.Label className="mb-1 mt-3">
                     Programming Languages
                   </Form.Label>
                   <CreatableSelect
@@ -209,7 +206,7 @@ const CodeRepositoryForm = () => {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label className="mt-2">Tags</Form.Label>
+                  <Form.Label className="mb-1 mt-3">Tags</Form.Label>
                   <CreatableSelect
                     isMulti
                     name="tags"
@@ -240,7 +237,7 @@ const CodeRepositoryForm = () => {
                 </Form.Group>
 
                 <Form.Group>
-                  <Form.Label className="mt-2">License</Form.Label>
+                  <Form.Label className="mb-1 mt-3">License</Form.Label>
                   <CreatableSelect
                     name="license"
                     options={optionsLicensies}
@@ -252,7 +249,7 @@ const CodeRepositoryForm = () => {
                     className="basic-multi-select"
                   />
                 </Form.Group>
-                <div className="mt-3">
+                <div className="mt-4">
                   <Button variant="secondary" size="lg" className="btn-block">
                     Cancel
                   </Button>
@@ -260,7 +257,7 @@ const CodeRepositoryForm = () => {
                     onClick={handleSubmit}
                     variant="primary"
                     size="lg"
-                    className="mx-2 btn-block"
+                    className="mx-3 btn-block"
                   >
                     Save
                   </Button>
