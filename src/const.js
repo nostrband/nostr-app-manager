@@ -55,7 +55,7 @@ export const validationSchemaForFormAddApp = Yup.object().shape({
 });
 
 export const programmingLanguages = [
-  { value: 'JavaScript', label: 'JavaScirpt' },
+  { value: 'JavaScript', label: 'JavaScript' },
   { value: 'Python', label: 'Python' },
   { value: 'C++', label: 'C++' },
   { value: 'C#', label: 'C#' },

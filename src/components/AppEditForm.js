@@ -113,7 +113,7 @@ const AppEditForm = (props) => {
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
-      tags: [],
+      tags: [...tags.map((tag) => ['t', tag.label])],
     };
 
     if (!inherit) {
