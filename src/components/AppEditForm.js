@@ -10,6 +10,8 @@ import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
 import CreatableSelect from 'react-select/creatable';
+import ShareAppModal from '../elements/ShareAppModal';
+import { nip19 } from 'nostr-tools';
 
 const tabs = [
   {
@@ -42,6 +44,10 @@ const AppEditForm = (props) => {
   const [tags, setTags] = useState(props.app?.otherTags || []);
   const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
+  const [createdApp, setCreatedApp] = useState();
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [naddr, setNaddr] = useState();
+  const [textForShare, setTextForShare] = useState('');
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -49,7 +55,6 @@ const AppEditForm = (props) => {
 
   const toggleInherit = (v) => {
     setInherit(v);
-
     const meta = v ? props.profileMeta : props.app ?? {};
     setName(meta.profile?.name || '');
     setDisplayName(meta.profile?.display_name || '');
@@ -113,7 +118,7 @@ const AppEditForm = (props) => {
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
-      tags: [...tags.map((tag) => ['t', tag.label])],
+      tags: [],
     };
 
     if (!inherit) {
@@ -174,11 +179,18 @@ const AppEditForm = (props) => {
           pubkey: cmn.getLoginPubkey(),
           identifier: d,
         });
+        setNaddr(naddr);
+        setShowShareModal(true);
+        const { type, data } = nip19.decode(naddr);
+        const info = await cmn.fetchApps(data.pubkey, data);
+        setCreatedApp(info.apps[name].addrHandler);
+        const naddrForBySelectedApp = cmn.getNaddr(info.apps[name].addrHandler);
+        setTextForShare(
+          `Check out ${info.apps[name].addrHandler.profile.display_name} - ${info.apps[name].addrHandler.profile.about}
+      https://nostrapp.link/a/${naddrForBySelectedApp}`
+        );
         // NOTE: right now publishEvent doesn't wait for the 'ok',
         // so we should give relays some time to accept and publish our event
-        setTimeout(() => {
-          navigate(cmn.formatAppUrl(naddr));
-        }, 500);
       } else {
         setError('');
         setTimeout(() => {
@@ -187,6 +199,18 @@ const AppEditForm = (props) => {
       }
     }
   }
+
+  const askShareOrNorAndNavigateNext = async () => {
+    setTimeout(() => {
+      navigate(cmn.formatAppUrl(naddr));
+    }, 500);
+  };
+
+  const handleCloseModal = () => {
+    setShowShareModal(false);
+    askShareOrNorAndNavigateNext();
+  };
+
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
@@ -437,6 +461,16 @@ const AppEditForm = (props) => {
           </Link>
         )}
       </div>
+      {createdApp ? (
+        <ShareAppModal
+          showModal={showShareModal}
+          handleCloseModal={handleCloseModal}
+          selectedApp={createdApp}
+          askShareOrNorAndNavigateNext={askShareOrNorAndNavigateNext}
+          textForShare={textForShare}
+          setTextForShare={setTextForShare}
+        />
+      ) : null}
     </div>
   );
 };

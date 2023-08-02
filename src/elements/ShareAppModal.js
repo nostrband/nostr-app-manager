@@ -9,8 +9,9 @@ const ShareAppModal = ({
   showModal,
   selectedApp,
   handleCloseModal,
-  textForShare,
+  askShareOrNorAndNavigateNext,
   setTextForShare,
+  textForShare,
 }) => {
   const textRef = useRef();
   const [showToast, setShowToast] = useState(false);
@@ -40,12 +41,15 @@ const ShareAppModal = ({
         type: 'success',
         autoClose: 3000,
       });
+      if (askShareOrNorAndNavigateNext) {
+        askShareOrNorAndNavigateNext();
+      }
     } else {
       toast.dismiss(toastId);
     }
     handleCloseModal();
   };
-
+  console.log(textForShare, 'TEXT FOR SHARE');
   return (
     <Modal show={showModal} onHide={handleCloseModal}>
       <Toast
