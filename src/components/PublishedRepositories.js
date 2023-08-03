@@ -60,7 +60,7 @@ const PublishedRepositories = ({ pubkey }) => {
             }
             return (
               <ListGroup.Item className="repository-card repo-item">
-                <Link to={getUrl(repo)}>
+                <Link className="card-link" to={getUrl(repo)}>
                   <div>
                     <strong>{titleTag && titleTag[1]}</strong>
                   </div>
@@ -70,10 +70,10 @@ const PublishedRepositories = ({ pubkey }) => {
                 </Link>
                 {link ? (
                   <a
+                    className="link-to-github "
                     href={link[1]}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 mb-1 limited-text pointer"
                   >
                     <GithubIcon />
                   </a>

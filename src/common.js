@@ -550,7 +550,6 @@ export async function fetchApps(pubkey, addr) {
       );
     }
   }
-  console.log('apps', info);
   return info;
 }
 

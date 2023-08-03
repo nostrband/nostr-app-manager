@@ -10,6 +10,9 @@ import HandlerUrl from '../elements/HandlerUrl';
 import * as cmn from '../common';
 import * as cs from '../const';
 import CreatableSelect from 'react-select/creatable';
+import ShareAppModal from '../elements/ShareAppModal';
+import { nip19 } from 'nostr-tools';
+import { toast } from 'react-toastify';
 
 const tabs = [
   {
@@ -42,6 +45,10 @@ const AppEditForm = (props) => {
   const [tags, setTags] = useState(props.app?.otherTags || []);
   const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
+  const [createdApp, setCreatedApp] = useState();
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [naddr, setNaddr] = useState();
+  const [textForShare, setTextForShare] = useState('');
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -49,7 +56,6 @@ const AppEditForm = (props) => {
 
   const toggleInherit = (v) => {
     setInherit(v);
-
     const meta = v ? props.profileMeta : props.app ?? {};
     setName(meta.profile?.name || '');
     setDisplayName(meta.profile?.display_name || '');
@@ -90,6 +96,7 @@ const AppEditForm = (props) => {
   };
 
   async function save() {
+    const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     if (
       urls.find((u) => u.url.trim() === '' || !u.url.includes('<bech32>')) !==
         undefined &&
@@ -113,7 +120,7 @@ const AppEditForm = (props) => {
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
-      tags: [...tags.map((tag) => ['t', tag.label])],
+      tags: [],
     };
 
     if (!inherit) {
@@ -142,10 +149,12 @@ const AppEditForm = (props) => {
       });
     }
 
-    kinds.map((k) => event.tags.push(['k', k]));
-    urls.map((u) =>
-      event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
-    );
+    if (selectedTab === 'nostr') {
+      kinds.map((k) => event.tags.push(['k', k]));
+      urls.map((u) =>
+        event.tags.push([u.platform, u.url, u.type === '-' ? '' : u.type])
+      );
+    }
 
     event.tags = event.tags.filter((tag) => {
       if (tag[0] !== 't') {
@@ -174,11 +183,23 @@ const AppEditForm = (props) => {
           pubkey: cmn.getLoginPubkey(),
           identifier: d,
         });
+        setNaddr(naddr);
+        toast.update(toastId, {
+          render: props.app ? 'Saved' : 'Created',
+          type: 'success',
+          autoClose: 3000,
+        });
+        setShowShareModal(true);
+        const { type, data } = nip19.decode(naddr);
+        const info = await cmn.fetchApps(data.pubkey, data);
+        setCreatedApp(info.apps[name].addrHandler);
+        const naddrForBySelectedApp = cmn.getNaddr(info.apps[name].addrHandler);
+        setTextForShare(
+          `Check out ${info.apps[name].addrHandler.profile.display_name} - ${info.apps[name].addrHandler.profile.about}
+      https://nostrapp.link/a/${naddrForBySelectedApp}`
+        );
         // NOTE: right now publishEvent doesn't wait for the 'ok',
         // so we should give relays some time to accept and publish our event
-        setTimeout(() => {
-          navigate(cmn.formatAppUrl(naddr));
-        }, 500);
       } else {
         setError('');
         setTimeout(() => {
@@ -187,6 +208,23 @@ const AppEditForm = (props) => {
       }
     }
   }
+  useEffect(() => {
+    if (kinds.length === 0 && urls.length === 0 && props?.app?.id) {
+      setSelectedTab('other');
+    }
+  }, [kinds, urls]);
+
+  const askShareOrNorAndNavigateNext = async () => {
+    setTimeout(() => {
+      navigate(cmn.formatAppUrl(naddr));
+    }, 500);
+  };
+
+  const handleCloseModal = () => {
+    setShowShareModal(false);
+    askShareOrNorAndNavigateNext();
+  };
+
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
   };
@@ -204,14 +242,13 @@ const AppEditForm = (props) => {
             disabled={props.profileMeta === null}
             onChange={(e) => toggleInherit(e.target.checked)}
           />
-
-          <ul class="nav nav-tabs mt-2 mb-2" id="myTab" role="tablist">
+          <ul class="nav nav-pills mt-3 mb-3">
             {tabs.map((tab) => {
               return (
                 <li
                   onClick={() => handleTabChange(tab.value)}
-                  class={`tab nav-link ${
-                    selectedTab === tab.value ? 'activeTab' : ''
+                  className={`tab nav-item nav-link ${
+                    selectedTab === tab.value ? 'active' : ''
                   }`}
                 >
                   {tab.title}
@@ -219,9 +256,14 @@ const AppEditForm = (props) => {
               );
             })}
           </ul>
+          <p>
+            {selectedTab === 'nostr'
+              ? 'Nostr apps can display, edit or process nostr events.'
+              : "Other apps don't handle nostr events, but are still useful to nostr users."}
+          </p>
 
-          <Form.Group className="mb-3 mt-1" controlId="metaName">
-            <Form.Label>Name</Form.Label>
+          <Form.Group className="mb-3" controlId="metaName">
+            <Form.Label className="mt-2">Name</Form.Label>
             <Form.Control
               type="text"
               placeholder={inherit ? '' : 'myapp'}
@@ -437,6 +479,16 @@ const AppEditForm = (props) => {
           </Link>
         )}
       </div>
+      {createdApp ? (
+        <ShareAppModal
+          showModal={showShareModal}
+          handleCloseModal={handleCloseModal}
+          selectedApp={createdApp}
+          askShareOrNorAndNavigateNext={askShareOrNorAndNavigateNext}
+          textForShare={textForShare}
+          setTextForShare={setTextForShare}
+        />
+      ) : null}
     </div>
   );
 };
