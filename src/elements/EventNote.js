@@ -5,7 +5,7 @@ import Profile from './Profile';
 
 const EventNote = (props) => {
   const event = props.event;
-  const author = event.author;
+  const author = event.meta;
   return (
     <Container className="ps-0 pe-0">
       <Profile profile={author} pubkey={event.pubkey} />

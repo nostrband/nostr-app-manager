@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as qs from 'native-querystring';
 
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
@@ -238,7 +238,7 @@ const EventApps = () => {
       }
 
       // fetch author, need to display the event
-      event.author = (await cmn.fetchProfile(event.pubkey)) || {};
+      event.meta = (await cmn.fetchProfile(event.pubkey)) || {};
 
       // get apps for this kind
       const info = await cmn.fetchAppsByKinds([addr.kind]);
