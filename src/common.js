@@ -5,8 +5,7 @@ import NDK, {
   NDKNip07Signer,
   NDKRelaySet,
 } from '@nostrband/ndk';
-import { nip19 } from '@nostrband/nostr-tools';
-import { getPublicKey } from '@nostrband/nostr-tools/lib/keys.d.ts';
+import { nip19, getPublicKey } from '@nostrband/nostr-tools';
 
 import * as cs from './const';
 
