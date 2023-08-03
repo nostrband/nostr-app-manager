@@ -5,7 +5,8 @@ import NDK, {
   NDKNip07Signer,
   NDKRelaySet,
 } from '@nostrband/ndk';
-import { getPublicKey, nip19 } from '@nostrband/nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
+import { getPublicKey } from '@nostrband/nostr-tools/lib/keys';
 
 import * as cs from './const';
 
@@ -477,7 +478,6 @@ function prepareHandlers(events, metaPubkey) {
 
   return info;
 }
-
 export function startFetch(ndk, filter) {
   const relaySet = NDKRelaySet.fromRelayUrls(readRelays, ndk);
   // have to reimplement the ndk's fetchEvents method to allow:
