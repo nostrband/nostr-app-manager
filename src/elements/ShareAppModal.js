@@ -49,7 +49,6 @@ const ShareAppModal = ({
     }
     handleCloseModal();
   };
-  console.log(textForShare, 'TEXT FOR SHARE');
   return (
     <Modal show={showModal} onHide={handleCloseModal}>
       <Toast

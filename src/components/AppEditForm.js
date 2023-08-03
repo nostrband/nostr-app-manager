@@ -12,6 +12,7 @@ import * as cs from '../const';
 import CreatableSelect from 'react-select/creatable';
 import ShareAppModal from '../elements/ShareAppModal';
 import { nip19 } from 'nostr-tools';
+import { toast } from 'react-toastify';
 
 const tabs = [
   {
@@ -95,6 +96,7 @@ const AppEditForm = (props) => {
   };
 
   async function save() {
+    const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     if (
       urls.find((u) => u.url.trim() === '' || !u.url.includes('<bech32>')) !==
         undefined &&
@@ -182,6 +184,11 @@ const AppEditForm = (props) => {
           identifier: d,
         });
         setNaddr(naddr);
+        toast.update(toastId, {
+          render: props.app ? 'Saved' : 'Created',
+          type: 'success',
+          autoClose: 3000,
+        });
         setShowShareModal(true);
         const { type, data } = nip19.decode(naddr);
         const info = await cmn.fetchApps(data.pubkey, data);
@@ -201,9 +208,8 @@ const AppEditForm = (props) => {
       }
     }
   }
-
   useEffect(() => {
-    if (kinds.length === 0 && urls.length === 0) {
+    if (kinds.length === 0 && urls.length === 0 && props?.app?.id) {
       setSelectedTab('other');
     }
   }, [kinds, urls]);
@@ -236,14 +242,13 @@ const AppEditForm = (props) => {
             disabled={props.profileMeta === null}
             onChange={(e) => toggleInherit(e.target.checked)}
           />
-
-          <ul class="nav nav-tabs mt-2 mb-2" id="myTab" role="tablist">
+          <ul class="nav nav-pills mt-3 mb-3">
             {tabs.map((tab) => {
               return (
                 <li
                   onClick={() => handleTabChange(tab.value)}
-                  class={`tab nav-link ${
-                    selectedTab === tab.value ? 'activeTab' : ''
+                  className={`tab nav-item nav-link ${
+                    selectedTab === tab.value ? 'active' : ''
                   }`}
                 >
                   {tab.title}
@@ -251,9 +256,14 @@ const AppEditForm = (props) => {
               );
             })}
           </ul>
+          <p>
+            {selectedTab === 'nostr'
+              ? 'Nostr apps can display, edit or process nostr events.'
+              : "Other apps don't handle nostr events, but are still useful to nostr users."}
+          </p>
 
-          <Form.Group className="mb-3 mt-1" controlId="metaName">
-            <Form.Label>Name</Form.Label>
+          <Form.Group className="mb-3" controlId="metaName">
+            <Form.Label className="mt-2">Name</Form.Label>
             <Form.Control
               type="text"
               placeholder={inherit ? '' : 'myapp'}

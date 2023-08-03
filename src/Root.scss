@@ -28,16 +28,8 @@ img.banner {
 
 .tab {
   cursor: pointer;
-  border-top: 1px solid #0c6dfd !important;
-  border-left: 1px solid #0c6dfd !important;
-  border-right: 1px solid #0c6dfd !important;
-  margin-right: 8px;
-}
-
-.activeTab {
-  background-color: #0c6dfd !important;
-  color: #ffffff !important;
-  border-bottom: none !important;
+  border: 1px solid #0c6dfd !important;
+  margin: 10px 10px 0 0;
 }
 
 .repo-item:hover {
