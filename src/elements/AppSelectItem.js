@@ -52,10 +52,10 @@ const AppSelectItem = (props) => {
                     <small className="text-muted">Used for: {used}</small>
                   </div>
                 )}
-                {props.showAuthor && props.app?.author && (
+                {props.showAuthor && props.app?.meta && (
                   <div className="d-flex justify-content-end ">
                     <Profile
-                      profile={props.app?.author}
+                      profile={props.app?.meta}
                       small={true}
                       pubkey={props.app?.pubkey}
                     />

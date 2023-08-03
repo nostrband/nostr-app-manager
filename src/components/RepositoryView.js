@@ -8,7 +8,7 @@ import KindElement from '../elements/KindElement';
 import Profile from '../elements/Profile';
 import { Link, useNavigate } from 'react-router-dom';
 import ReasubleModal from '../elements/Modal';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 
 const RepositoryView = () => {
   const [loading, setLoading] = useState(true);

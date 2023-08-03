@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 import { Link } from 'react-router-dom';
 import Profile from '../elements/Profile';
 import AppSelectItem from '../elements/AppSelectItem';

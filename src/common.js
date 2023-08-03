@@ -4,8 +4,8 @@ import NDK, {
   NDKEvent,
   NDKNip07Signer,
   NDKRelaySet,
-} from '@nostr-dev-kit/ndk';
-import { getPublicKey, nip19 } from 'nostr-tools';
+} from '@nostrband/ndk';
+import { getPublicKey, nip19 } from '@nostrband/nostr-tools';
 
 import * as cs from './const';
 
@@ -421,8 +421,8 @@ function prepareHandlers(events, metaPubkey) {
 
     // init handler profile
     e.inheritedProfile = !e.content;
-    e.author = e.pubkey in metas ? metas[e.pubkey] : null;
-    if (e.inheritedProfile) e.profile = e.author?.profile || {};
+    e.meta = e.pubkey in metas ? metas[e.pubkey] : null;
+    if (e.inheritedProfile) e.profile = e.meta?.profile || {};
     else e.profile = parseContentJson(e.content);
 
     const kinds = {};

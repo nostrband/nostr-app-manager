@@ -17,7 +17,7 @@ const Event = (props) => {
     default:
       return (
         <Container className="ps-0 pe-0">
-          <Profile profile={event.author} pubkey={event.pubkey} />
+          <Profile profile={event.meta} pubkey={event.pubkey} />
           <Row>
             <Col xs={12}>
               <p>

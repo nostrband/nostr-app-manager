@@ -5,7 +5,7 @@ import Profile from './Profile';
 
 const EventProfile = (props) => {
   const event = props.event;
-  const author = event.author;
+  const author = event.meta;
   let profile = author;
   try {
     profile = JSON.parse(event.content);
