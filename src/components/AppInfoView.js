@@ -95,7 +95,6 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
-  console.log(tags, 'TAGSS');
   return (
     <>
       {info === null && (
