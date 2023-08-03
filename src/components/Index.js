@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';

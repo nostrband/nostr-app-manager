@@ -4,8 +4,8 @@ import NDK, {
   NDKEvent,
   NDKNip07Signer,
   NDKRelaySet,
-} from '@nostr-dev-kit/ndk';
-import { getPublicKey, nip19 } from 'nostr-tools';
+} from '@nostrband/ndk';
+import { getPublicKey, nip19 } from '@nostrband/nostr-tools';
 
 import * as cs from './const';
 

@@ -7,7 +7,7 @@ import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../common';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import Zap from '../icons/Zap';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 import Heart from '../icons/Heart';
 import LikedHeart from '../icons/LikedHeart';
 import Share from '../icons/Share';

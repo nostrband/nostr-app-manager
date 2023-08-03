@@ -7,7 +7,7 @@ import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 
 const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
   const navigate = useNavigate();

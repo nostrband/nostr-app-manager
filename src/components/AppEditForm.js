@@ -11,7 +11,7 @@ import * as cmn from '../common';
 import * as cs from '../const';
 import CreatableSelect from 'react-select/creatable';
 import ShareAppModal from '../elements/ShareAppModal';
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 import { toast } from 'react-toastify';
 
 const tabs = [

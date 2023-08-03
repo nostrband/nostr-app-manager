@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
-import { nip19 } from 'nostr-tools';
+import { nip19 } from '@nostrband/nostr-tools';
 
 import AppEditForm from './AppEditForm';
 
