@@ -9,6 +9,7 @@ import Profile from '../elements/Profile';
 import { Link, useNavigate } from 'react-router-dom';
 import ReasubleModal from '../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
+import GitHubIconWithStar from '../elements/GitHubIconWithStar';
 
 const RepositoryView = () => {
   const [loading, setLoading] = useState(true);
@@ -101,8 +102,6 @@ const RepositoryView = () => {
   const licenseTagValue =
     repository?.tags.find((tag) => tag[0] === 'license')?.[1] || '';
 
-  console.log(descriptionTagValue, 'VALUE');
-
   return (
     <>
       {loading ? (
@@ -110,11 +109,15 @@ const RepositoryView = () => {
       ) : (
         <Container className="mt-4 repository-view d-flex justify-content-between">
           <ul>
-            <h2 className="font-weight-bold">
-              {`${
-                repository?.tags.find((tag) => tag[0] === 'title')?.[1] || ''
-              }`}
-            </h2>
+            <div className="container-name">
+              <h2 className="font-weight-bold">
+                {`${
+                  repository?.tags.find((tag) => tag[0] === 'title')?.[1] || ''
+                }`}
+              </h2>
+              <GitHubIconWithStar link={linkTagValue} />
+            </div>
+
             {linkTagValue ? (
               <li>
                 <ShareIconForRepository />
