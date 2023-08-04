@@ -8,13 +8,16 @@ import {
 } from '../const';
 import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
+import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextAreaAutosize from 'react-textarea-autosize';
+import { optionsNips } from '../const';
 
 const CodeRepositoryForm = () => {
   const { naddr } = useParams();
   const [tempTag, setTempTag] = useState('');
   const [tempLanguage, setTempLanguage] = useState('');
+  const [tempNipValue, setTempNipValue] = useState('');
   const [initialValues, setInitialValues] = useState({
     name: '',
     description: '',
@@ -22,10 +25,10 @@ const CodeRepositoryForm = () => {
     tags: [],
     license: '',
     programmingLanguages: [],
+    nips: [],
   });
 
   const [identifier, setIdentifier] = useState('');
-
   const navigate = useNavigate();
 
   const handleSubmitHandler = async (values) => {
@@ -45,13 +48,14 @@ const CodeRepositoryForm = () => {
           lang.label,
           'programming-languages',
         ]),
+        ...values.nips.map((nip) => ['l', nip.value, 'NIP']),
+        ['L', 'NIP'],
         ['L', 'programming-languages'],
       ],
       content: '',
     };
     event.tags = event.tags.filter((tag) => tag[1]);
     const result = await cmn.publishEvent(event);
-
     const naddr = cmn.formatNaddr({
       kind: 30117,
       pubkey: cmn.getLoginPubkey(),
@@ -88,7 +92,10 @@ const CodeRepositoryForm = () => {
           .filter((tag) => tag[0] === 't')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
         programmingLanguages: repositoryData.tags
-          .filter((tag) => tag[0] === 'l')
+          .filter((tag) => tag[0] === 'l' && tag[2] === 'programming-languages')
+          .map((tag) => ({ label: tag[1], value: tag[1] })),
+        nips: repositoryData.tags
+          .filter((tag) => tag[0] === 'l' && tag[2] === 'NIP')
           .map((tag) => ({ label: tag[1], value: tag[1] })),
       };
       setInitialValues(initialValuesInFunction);
@@ -233,6 +240,36 @@ const CodeRepositoryForm = () => {
                     }}
                     onInputChange={(newValue) => setTempTag(newValue)}
                     inputValue={tempTag}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label className="mb-1 mt-3">Supported NIPs</Form.Label>
+                  <Select
+                    isMulti
+                    name="nips"
+                    options={optionsNips}
+                    classNamePrefix="select"
+                    value={values.nips}
+                    onChange={(selectedOptions) =>
+                      setFieldValue('nips', selectedOptions)
+                    }
+                    className="basic-multi-select"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.target.value) {
+                        e.preventDefault();
+                        const newTagLabel = e.target.value;
+                        if (!isDuplicate(newTagLabel, values.tags)) {
+                          const tag = {
+                            value: newTagLabel,
+                            label: newTagLabel,
+                          };
+                          setFieldValue('nips', [...values.nips, tag]);
+                        }
+                        setTempNipValue('');
+                      }
+                    }}
+                    onInputChange={(newValue) => setTempNipValue(newValue)}
+                    inputValue={tempNipValue}
                   />
                 </Form.Group>
 
