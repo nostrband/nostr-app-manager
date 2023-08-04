@@ -8,7 +8,6 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import { Spinner } from 'react-bootstrap';
-
 import Profile from '../elements/Profile';
 import AppInfo from '../elements/AppInfo';
 
@@ -26,6 +25,7 @@ const AppInfoView = () => {
   const [tags, setTags] = useState([]);
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
+  const [countUsers, setCountUsers] = useState(0);
 
   const init = useCallback(async () => {
     const { type, data } = nip19.decode(naddr);
@@ -51,6 +51,13 @@ const AppInfoView = () => {
     setAddKinds(appInfo.kinds);
     setAddPlatforms(appInfo.platforms);
 
+    const ndk = await cmn.getNDK();
+    const addrForGetCountUser = cmn.naddrToAddr(cmn.getNaddr(appInfo));
+    const { count } = await ndk.fetchCount({
+      kinds: [31989],
+      '#a': [addrForGetCountUser],
+    });
+    setCountUsers(count);
     cmn.onAuthed(async () => {
       setRecomms(await cmn.fetchRecomms(addr));
     });
@@ -152,7 +159,7 @@ const AppInfoView = () => {
             );
           })}
 
-          <h6 className="mt-3">Used by:</h6>
+          <h6 className="mt-3">Used by ({countUsers}) :</h6>
           {!recomms && <>Loading...</>}
           {recomms != null && !recomms.length && <>No one yet.</>}
           {(function () {

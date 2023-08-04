@@ -262,7 +262,6 @@ async function createConnectNDK(custom_relays) {
   if (custom_relays) relays.push(...custom_relays);
   const nip07signer = nostrEnabled ? new NDKNip07Signer() : null;
   ndkObject = new NDK({ explicitRelayUrls: relays, signer: nip07signer });
-  console.log('ndk connecting, signer', nip07signer != null);
   await ndkObject.connect();
 }
 
@@ -841,7 +840,6 @@ export async function fetchEvent(addr) {
   }
 
   const events = await fetchAllEvents(reqs);
-  console.log('events', events);
   return events.length > 0 ? events[0] : null;
 }
 
