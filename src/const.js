@@ -52,6 +52,15 @@ export const validationSchemaForFormAddApp = Yup.object().shape({
     /^(ftp|http|https):\/\/[^ "]+$/,
     'Please enter a valid link URL'
   ),
+  nips: Yup.array().of(
+    Yup.object().shape({
+      value: Yup.string().matches(
+        /^NIP-\d{2}$/,
+        'NIP should start with "NIP-" followed by two digits'
+      ),
+      label: Yup.string(), // Optional: You can also add validation for the label if needed
+    })
+  ),
 });
 
 export const programmingLanguages = [
@@ -69,7 +78,10 @@ export const optionsLicensies = [
 ];
 
 export const optionsNips = [
-  { value: 'NIP-01', label: 'NIP-01: Basic protocol flow description' },
+  {
+    value: 'NIP-01',
+    label: 'NIP-01: Basic protocol flow description',
+  },
   { value: 'NIP-02', label: 'NIP-02: Contact List and Petnames' },
   { value: 'NIP-03', label: 'NIP-03: OpenTimestamps Attestations for Events' },
   { value: 'NIP-04', label: 'NIP-04: Encrypted Direct Message' },

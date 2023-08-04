@@ -12,6 +12,7 @@ import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextAreaAutosize from 'react-textarea-autosize';
 import { optionsNips } from '../const';
+import * as Yup from 'yup';
 
 const CodeRepositoryForm = () => {
   const { naddr } = useParams();
@@ -27,11 +28,13 @@ const CodeRepositoryForm = () => {
     programmingLanguages: [],
     nips: [],
   });
-
+  const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const [identifier, setIdentifier] = useState('');
+  const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
   const navigate = useNavigate();
 
   const handleSubmitHandler = async (values) => {
+    console.log(JSON.stringify(values), 'VALUES');
     const d = '' + Date.now().toString();
     const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
     const event = {
@@ -110,6 +113,14 @@ const CodeRepositoryForm = () => {
 
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);
+  };
+
+  const MultiValueLabel = ({ data }) => {
+    return (
+      <div style={{ padding: '5px 5px 5px 10px', fontSize: '13px' }}>
+        {data.value}
+      </div>
+    );
   };
 
   return (
@@ -244,7 +255,7 @@ const CodeRepositoryForm = () => {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label className="mb-1 mt-3">Supported NIPs</Form.Label>
-                  <Select
+                  <CreatableSelect
                     isMulti
                     name="nips"
                     options={optionsNips}
@@ -253,24 +264,33 @@ const CodeRepositoryForm = () => {
                     onChange={(selectedOptions) =>
                       setFieldValue('nips', selectedOptions)
                     }
+                    components={{
+                      MultiValueLabel,
+                    }}
                     className="basic-multi-select"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.target.value) {
                         e.preventDefault();
                         const newTagLabel = e.target.value;
-                        if (!isDuplicate(newTagLabel, values.tags)) {
+                        if (!isDuplicate(newTagLabel, values.nips)) {
                           const tag = {
                             value: newTagLabel,
                             label: newTagLabel,
                           };
                           setFieldValue('nips', [...values.nips, tag]);
+                          setTempNipValue('');
                         }
-                        setTempNipValue('');
                       }
                     }}
                     onInputChange={(newValue) => setTempNipValue(newValue)}
                     inputValue={tempNipValue}
                   />
+                  {console.log(JSON.stringify(errors), 'ERRRORS')}
+                  {errors?.nips ? (
+                    <div className="text-danger mt-1">
+                      Please enter a valid NIP in the format "NIP-xx
+                    </div>
+                  ) : null}
                 </Form.Group>
 
                 <Form.Group>
@@ -287,7 +307,12 @@ const CodeRepositoryForm = () => {
                   />
                 </Form.Group>
                 <div className="mt-4">
-                  <Button variant="secondary" size="lg" className="btn-block">
+                  <Button
+                    onClick={() => navigate(appsUrl)}
+                    variant="secondary"
+                    size="lg"
+                    className="btn-block"
+                  >
                     Cancel
                   </Button>
                   <Button
