@@ -107,35 +107,44 @@ const AppInfoView = () => {
           <AppInfo key={appInfo.name} app={appInfo} />
           <h6 className="mt-3">Published by:</h6>
           <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
-          <h6 className="mt-3">Event kinds:</h6>
-          {app.kinds.map((k) => {
-            return (
-              <Button
-                key={k}
-                size="sm"
-                variant="outline-primary"
-                className="me-1"
-              >
-                {cmn.getKindLabel(k)}
-              </Button>
-            );
-          })}
-          <h6 className="mt-3">Platforms:</h6>
-          {app.platforms.map((p) => {
-            return (
-              <span key={p}>
-                <Button
-                  key={p}
-                  size="sm"
-                  variant="outline-primary"
-                  className="me-1"
-                >
-                  {p}
-                </Button>
-              </span>
-            );
-          })}
 
+          {app.kinds ? (
+            <>
+              <h6 className="mt-3">Event kinds:</h6>
+              {app.kinds.map((k) => {
+                return (
+                  <Button
+                    key={k}
+                    size="sm"
+                    variant="outline-primary"
+                    className="me-1"
+                  >
+                    {cmn.getKindLabel(k)}
+                  </Button>
+                );
+              })}
+            </>
+          ) : null}
+
+          {app.platforms.length > 0 ? (
+            <>
+              <h6 className="mt-3">Platforms:</h6>
+              {app.platforms.map((p) => {
+                return (
+                  <span key={p}>
+                    <Button
+                      key={p}
+                      size="sm"
+                      variant="outline-primary"
+                      className="me-1"
+                    >
+                      {p}
+                    </Button>
+                  </span>
+                );
+              })}
+            </>
+          ) : null}
           {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
           {tags.map((t) => {
             return (
