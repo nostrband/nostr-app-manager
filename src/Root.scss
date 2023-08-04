@@ -41,6 +41,15 @@ img.banner {
   ul > li {
     list-style: none;
   }
+  .container-name {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 8px 0;
+    h2 {
+      margin: 0;
+    }
+  }
 }
 
 .kind-element {

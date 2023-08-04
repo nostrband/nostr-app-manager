@@ -30,10 +30,6 @@ const PublishedRepositories = ({ pubkey }) => {
     return viewUrl;
   };
 
-  const repoOwner = 'nostrband';
-  const repoName = 'nostr-app-manager';
-  const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}`;
-
   return (
     <div>
       <h4 className="mt-5">Published repositories:</h4>
