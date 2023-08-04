@@ -1,19 +1,31 @@
 .repository-card {
-  padding: 0 15px 0 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   a {
     color: black !important;
     text-decoration: none;
   }
+  p {
+    width: 100%;
+    word-wrap: break-word;
+    margin: 0;
+  }
+}
+
+.repository-card:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
 }
 
 .card-link {
   width: 100%;
-  padding: 20px 0 0 20px;
+  padding: 20px 10px 0 10px;
 }
 
 .link-to-github {
-  padding: 7px;
+  padding: 0 10px 0 10px;
+}
+.github-icon {
+  width: 100px;
+  padding-top: 7px;
 }

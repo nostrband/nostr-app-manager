@@ -4,6 +4,7 @@ import { ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
 import GithubIcon from '../icons/Github';
+import GitHubIconWithStar from '../elements/GitHubIconWithStar';
 
 const PublishedRepositories = ({ pubkey }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
@@ -28,6 +29,10 @@ const PublishedRepositories = ({ pubkey }) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
     return viewUrl;
   };
+
+  const repoOwner = 'nostrband';
+  const repoName = 'nostr-app-manager';
+  const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}`;
 
   return (
     <div>
@@ -59,13 +64,13 @@ const PublishedRepositories = ({ pubkey }) => {
                   : singleSpaceDescription;
             }
             return (
-              <ListGroup.Item className="repository-card repo-item">
+              <ListGroup.Item className="repository-card ">
                 <Link className="card-link" to={getUrl(repo)}>
                   <div>
                     <strong>{titleTag && titleTag[1]}</strong>
                   </div>
                   <div>
-                    <p className="limited-text">{limitedDescription}</p>
+                    <p>{limitedDescription}</p>
                   </div>
                 </Link>
                 {link ? (
@@ -75,7 +80,7 @@ const PublishedRepositories = ({ pubkey }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <GithubIcon />
+                    <GitHubIconWithStar link={link[1]} />
                   </a>
                 ) : null}
               </ListGroup.Item>
