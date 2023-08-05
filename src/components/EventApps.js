@@ -6,8 +6,6 @@ import { nip19 } from '@nostrband/nostr-tools';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-//import Tooltip from 'react-bootstrap/Tooltip';
 import { Link } from 'react-router-dom';
 
 import NostrEvent from '../elements/Event';
@@ -66,12 +64,19 @@ const EventApps = () => {
         findUrl(
           nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays })
         ) ||
-        findUrl(nip19.naddrEncode(naddrId)) ||
+//        findUrl(nip19.naddrEncode(naddrId)) ||
         findUrl(nip19.neventEncode(neventId)) ||
         findUrl(nip19.noteEncode(ad.event_id));
     } else if (
       ad.kind === 3 ||
-      (ad.kind >= 10000 && ad.kind < 20000) ||
+      (ad.kind >= 10000 && ad.kind < 20000)
+    ) {
+      // specific order - naddr preferred
+      url =
+	// FIXME naddr?
+        findUrl(nip19.neventEncode(neventId)) ||
+        findUrl(nip19.noteEncode(ad.event_id));
+    } else if (
       (ad.kind >= 30000 && ad.kind < 40000)
     ) {
       // specific order - naddr preferred
