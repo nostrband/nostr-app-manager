@@ -8,11 +8,9 @@ import {
 } from '../const';
 import * as cmn from '../common';
 import CreatableSelect from 'react-select/creatable';
-import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextAreaAutosize from 'react-textarea-autosize';
 import { optionsNips } from '../const';
-import * as Yup from 'yup';
 
 const CodeRepositoryForm = () => {
   const { naddr } = useParams();
