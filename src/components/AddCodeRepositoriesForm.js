@@ -32,7 +32,12 @@ const CodeRepositoryForm = () => {
   const navigate = useNavigate();
   const handleSubmitHandler = async (values) => {
     const d = identifier ? identifier : '' + Date.now().toString();
+    const published_at = initialValues.published_at
+      ? initialValues.published_at
+      : Math.floor(Date.now() / 1000).toString();
+
     const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
+
     const event = {
       kind: 30117,
       tags: [
@@ -50,12 +55,12 @@ const CodeRepositoryForm = () => {
         ...values.nips.map((nip) => ['l', nip.value, 'NIP']),
         ['L', 'NIP'],
         ['L', 'programming-languages'],
-        ['published_at', d],
+        ['published_at', published_at],
       ],
       content: '',
     };
+
     event.tags = event.tags.filter((tag) => tag[1]);
-    console.log(event, 'EVENT');
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
       kind: 30117,
@@ -66,7 +71,6 @@ const CodeRepositoryForm = () => {
       navigate(cmn.formatRepositoryUrl(naddr));
     }, 500);
   };
-
   const getRepositoryForEdit = async () => {
     const { resultFetchAllEvents, identifier: identifierForEdit } =
       await cmn.fetchRepositoryByUser(naddr);
@@ -86,6 +90,7 @@ const CodeRepositoryForm = () => {
         name: repositoryData.tags.find((tag) => tag[0] === 'title')[1] || '',
         description: descriptionWithLineBreaks,
         link: findTagValue('r'),
+        published_at: findTagValue('published_at'),
         license: optionsLicensies.find(
           (option) => option.value === findTagValue('license')
         ),
