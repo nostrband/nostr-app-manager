@@ -109,7 +109,6 @@ const CodeRepositoryForm = () => {
   };
 
   useEffect(() => {
-    console.log('done repo form');
     if (naddr) {
       getRepositoryForEdit();
     } else {
