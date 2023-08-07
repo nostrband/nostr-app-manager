@@ -573,15 +573,12 @@ export async function fetchAppsByKinds(kinds) {
         authors: Object.keys(pubkeys),
       }),
     ]);
-    console.log('metas', metas);
-
     events = [...events, ...metas];
   }
 
   // parse
   const info = prepareHandlers(events);
 
-  console.log('apps', info);
   return info;
 }
 
@@ -602,7 +599,6 @@ export async function fetchAppByNaddr(naddr, platform) {
       kinds: [cs.KIND_META],
     }),
   ]);
-  console.log('events', events);
 
   // parse
   const info = prepareHandlers(events);

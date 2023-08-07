@@ -1,19 +1,36 @@
 import { useState, useEffect, useCallback } from 'react';
 import { nip19 } from '@nostrband/nostr-tools';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
-import { Spinner } from 'react-bootstrap';
+import UsedApps from './MainPageComponents/UsedApps';
+import NewApps from './MainPageComponents/NewApps';
+import FindApps from './MainPageComponents/FindApps';
+import Codes from './MainPageComponents/RepositoriesInMainPage';
+import Repositories from './MainPageComponents/RepositoriesInMainPage';
+
+const navs = [
+  {
+    title: 'Apps',
+    path: 'apps',
+  },
+  {
+    title: 'Code',
+    path: 'codes',
+  },
+  {
+    title: 'Used Apps',
+    path: 'used-apps',
+  },
+  {
+    title: 'Find app for event ',
+    path: 'search',
+  },
+];
 
 const Index = () => {
   const [link, setLink] = useState('');
@@ -23,6 +40,7 @@ const Index = () => {
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
   const [allApps, setAllApps] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams({ page: 'apps' });
 
   const handleEditClose = () => setEditShow(false);
 
@@ -87,8 +105,6 @@ const Index = () => {
           app.forKinds = appKinds[a];
           apps.push(app);
         }
-        console.log('apps', apps);
-
         setApps(apps);
       }
 
@@ -101,7 +117,6 @@ const Index = () => {
       allApps.sort((a, b) => {
         return b.created_at - a.created_at;
       });
-      allApps.sort(() => Math.random() - 0.5);
       setAllApps(allApps);
     }
 
@@ -150,65 +165,16 @@ const Index = () => {
     setUpdated(updated + 1);
   };
 
+  const pageComponents = {
+    search: <FindApps setLink={setLink} link={link} open={open} go={go} />,
+    'used-apps': <UsedApps apps={apps} onSelect={onSelect} />,
+    apps: <NewApps allApps={allApps} />,
+    codes: <Repositories />,
+  };
+
   return (
     <main className="mt-5">
-      <div className="mt-5">
-        <h1>Paste a Nostr link to find an app:</h1>
-        <Container className="ps-0 pe-0">
-          <Row>
-            <Col>
-              <Form>
-                <InputGroup className="mb-3">
-                  <Form.Control
-                    placeholder="Enter npub, note, nevent, nprofile, naddr or any nostr app link"
-                    aria-label="Nostr link"
-                    aria-describedby="basic-go"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                  />
-
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={
-                      <Tooltip>
-                        View event and a list of suggested apps.
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      variant="outline-primary"
-                      id="button-go"
-                      onClick={open}
-                    >
-                      Show apps
-                    </Button>
-                  </OverlayTrigger>
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={
-                      <Tooltip>
-                        Redirect to the app if you've already saved one. Just
-                        press 'Enter'.
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      variant="outline-primary"
-                      id="button-go"
-                      type="submit"
-                      onClick={go}
-                    >
-                      <i className="bi bi-arrow-right-short"></i>
-                    </Button>
-                  </OverlayTrigger>
-                </InputGroup>
-              </Form>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-
-      <div className="mt-5">
+      <div className="mt-5 text-center">
         <h3>What is Nostr App Manager?</h3>
         <p>
           Discover Nostr apps, recommend to your followers, publish your own
@@ -219,60 +185,26 @@ const Index = () => {
         </Link>
       </div>
 
-      <div className="mt-5">
-        <h3>Apps used on this device:</h3>
-        <Container className="ps-0 pe-0">
-          <Row>
-            <Col>
-              {apps && (
-                <ListGroup>
-                  {apps.map((a) => {
-                    return (
-                      <AppSelectItem
-                        key={a.id}
-                        app={a}
-                        showKinds="true"
-                        onSelect={onSelect}
-                      />
-                    );
-                  })}
-                </ListGroup>
-              )}
-              {!apps.length && (
-                <>
-                  No apps saved yet. Paste a link or event id to setup your
-                  first app.
-                </>
-              )}
-            </Col>
-          </Row>
-        </Container>
+      <div className="d-flex justify-content-center pt-4 pb-5">
+        <ul class="nav nav-pills">
+          {navs.map((nav) => {
+            return (
+              <li
+                onClick={() => {
+                  setSearchParams({ page: nav.path }); // Set select=true when a nav is clicked
+                }}
+                className={` pointer nav-link nav-item${
+                  searchParams.get('page') === nav.path ? ' active' : ''
+                }`}
+              >
+                {nav.title}
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
-      <div className="mt-5">
-        <h3>New apps:</h3>
-        <Container className="ps-0 pe-0">
-          <Row>
-            <Col>
-              {allApps === null && (
-                <div className="d-flex justify-content-center">
-                  <Spinner className="text-primary" />
-                </div>
-              )}
-              {allApps != null && !allApps.length && 'Nothing found on relays.'}
-              {allApps && (
-                <ListGroup>
-                  {allApps.map((a) => {
-                    return (
-                      <AppSelectItem key={a.id} app={a} showAuthor={true} />
-                    );
-                  })}
-                </ListGroup>
-              )}
-            </Col>
-          </Row>
-        </Container>
-      </div>
+      {pageComponents[searchParams.get('page')]}
 
       <Modal show={editShow} onHide={handleEditClose}>
         <Modal.Header closeButton>
