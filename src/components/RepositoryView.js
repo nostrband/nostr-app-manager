@@ -11,6 +11,21 @@ import ReasubleModal from '../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
 import GitHubIconWithStar from '../elements/GitHubIconWithStar';
 
+const dynamicTags = [
+  {
+    title: 'Programming languages:',
+    key: 'programmingLanguages',
+  },
+  {
+    title: 'Tags',
+    key: 'otherTags',
+  },
+  {
+    title: 'Supported NIPs',
+    key: 'nips',
+  },
+];
+
 const RepositoryView = () => {
   const [loading, setLoading] = useState(true);
   const [repository, setRepository] = useState({
@@ -40,11 +55,15 @@ const RepositoryView = () => {
       .map((tag, index) => tag[1]);
 
     const programmingLanguages = resultFetchAllEvents[0]?.tags
-      .filter((tag) => tag[0] === 'l')
+      .filter((tag) => tag[0] === 'l' && tag[2] === 'programming-languages')
+      .map((tag, index) => tag[1]);
+
+    const nips = resultFetchAllEvents[0].tags
+      .filter((tag) => tag[0] === 'l' && tag[2] === 'NIP')
       .map((tag, index) => tag[1]);
 
     const repositoryData = resultFetchAllEvents[0];
-    setRepository({ ...repositoryData, otherTags, programmingLanguages });
+    setRepository({ ...repositoryData, otherTags, programmingLanguages, nips });
 
     const filter = {
       kinds: [0],
@@ -95,12 +114,12 @@ const RepositoryView = () => {
     }
   };
 
-  const descriptionTagValue =
-    repository?.tags.find((tag) => tag[0] === 'description')?.[1] || '';
-  const linkTagValue =
-    repository?.tags.find((tag) => tag[0] === 'r')?.[1] || '';
-  const licenseTagValue =
-    repository?.tags.find((tag) => tag[0] === 'license')?.[1] || '';
+  const getTagValue = (tagName) =>
+    repository?.tags.find((tag) => tag[0] === tagName)?.[1] || '';
+
+  const descriptionTagValue = getTagValue('description');
+  const linkTagValue = getTagValue('r');
+  const licenseTagValue = getTagValue('license');
 
   return (
     <>
@@ -142,40 +161,27 @@ const RepositoryView = () => {
                 {licenseTagValue}
               </li>
             ) : null}
-            {repository?.programmingLanguages?.length > 0 ? (
-              <li className="mt-3">
-                <strong className="d-block">Programming languages:</strong>
-                {repository?.programmingLanguages?.map((item) => {
-                  return (
-                    <KindElement
-                      className="mx-1 mt-2"
-                      key={item}
-                      size="sm"
-                      variant="outline-primary"
-                    >
-                      {item}
-                    </KindElement>
-                  );
-                })}
-              </li>
-            ) : null}
-            {repository?.otherTags?.length > 0 ? (
-              <li className="mt-3">
-                <strong className="d-block">Tags:</strong>
-                {repository?.otherTags?.map((item) => {
-                  return (
-                    <KindElement
-                      className="mx-1 mt-2"
-                      key={item}
-                      size="sm"
-                      variant="outline-primary"
-                    >
-                      {item}
-                    </KindElement>
-                  );
-                })}
-              </li>
-            ) : null}
+
+            {dynamicTags.map(({ title, key }) =>
+              repository[key]?.length > 0 ? (
+                <li className="mt-3" key={title}>
+                  <strong className="d-block">{title}</strong>
+                  {repository[key].map((item) => {
+                    return (
+                      <KindElement
+                        className="mx-1 mt-2"
+                        key={item}
+                        size="sm"
+                        variant="outline-primary"
+                      >
+                        {item}
+                      </KindElement>
+                    );
+                  })}
+                </li>
+              ) : null
+            )}
+
             <li className="mt-4">
               <strong>Published by:</strong>
               <div className="mt-2">
