@@ -30,10 +30,8 @@ const CodeRepositoryForm = () => {
   const [identifier, setIdentifier] = useState('');
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
   const navigate = useNavigate();
-
   const handleSubmitHandler = async (values) => {
-    console.log(JSON.stringify(values), 'VALUES');
-    const d = '' + Date.now().toString();
+    const d = identifier ? identifier : '' + Date.now().toString();
     const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
     const event = {
       kind: 30117,
@@ -52,10 +50,12 @@ const CodeRepositoryForm = () => {
         ...values.nips.map((nip) => ['l', nip.value, 'NIP']),
         ['L', 'NIP'],
         ['L', 'programming-languages'],
+        ['published_at', d],
       ],
       content: '',
     };
     event.tags = event.tags.filter((tag) => tag[1]);
+    console.log(event, 'EVENT');
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
       kind: 30117,
@@ -104,10 +104,21 @@ const CodeRepositoryForm = () => {
   };
 
   useEffect(() => {
+    console.log('done repo form');
     if (naddr) {
       getRepositoryForEdit();
+    } else {
+      setInitialValues({
+        name: '',
+        description: '',
+        link: '',
+        tags: [],
+        license: '',
+        programmingLanguages: [],
+        nips: [],
+      });
     }
-  }, []);
+  }, [naddr]);
 
   const isDuplicate = (newValue, values) => {
     return values.some((item) => item.label === newValue);

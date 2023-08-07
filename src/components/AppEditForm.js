@@ -96,7 +96,9 @@ const AppEditForm = (props) => {
   };
 
   async function save() {
-    const toastId = toast('Loading...', { type: 'pending', autoClose: false });
+    const toastId = !props.app?.id
+      ? toast('Loading...', { type: 'pending', autoClose: false })
+      : null;
     if (
       urls.find((u) => u.url.trim() === '' || !u.url.includes('<bech32>')) !==
         undefined &&

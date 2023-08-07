@@ -22,7 +22,7 @@ const GitHubIconWithStar = ({ link }) => {
     getRepoStarByLink();
   }, []);
 
-  return <img src={imageUrl} alt="Link to Github" />;
+  return <img src={imageUrl} />;
 };
 
 export default GitHubIconWithStar;
