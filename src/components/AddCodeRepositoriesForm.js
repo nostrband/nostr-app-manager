@@ -37,7 +37,6 @@ const CodeRepositoryForm = () => {
       : Math.floor(Date.now() / 1000).toString();
 
     const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
-
     const event = {
       kind: 30117,
       tags: [
@@ -56,10 +55,10 @@ const CodeRepositoryForm = () => {
         ['L', 'NIP'],
         ['L', 'programming-languages'],
         ['published_at', published_at],
+        ['alt', `Code repository: ${values.name}`],
       ],
       content: '',
     };
-
     event.tags = event.tags.filter((tag) => tag[1]);
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
@@ -107,6 +106,7 @@ const CodeRepositoryForm = () => {
       setInitialValues(initialValuesInFunction);
     }
   };
+  console.log(initialValues, 'INITIAL VALUES');
 
   useEffect(() => {
     if (naddr) {

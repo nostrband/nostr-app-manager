@@ -150,7 +150,12 @@ const AppEditForm = (props) => {
         return true;
       });
     }
-
+    if (website) {
+      event.tags.push(['r', website]);
+    }
+    if (name) {
+      event.tags.push(['alt', `Nostr App: ${name}`]);
+    }
     if (selectedTab === 'nostr') {
       kinds.map((k) => event.tags.push(['k', k]));
       urls.map((u) =>
