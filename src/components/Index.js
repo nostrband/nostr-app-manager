@@ -10,7 +10,6 @@ import * as cmn from '../common';
 import UsedApps from './MainPageComponents/UsedApps';
 import NewApps from './MainPageComponents/NewApps';
 import FindApps from './MainPageComponents/FindApps';
-import Codes from './MainPageComponents/RepositoriesInMainPage';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
 
 const navs = [
@@ -39,7 +38,6 @@ const Index = () => {
   const [editApp, setEditApp] = useState(null);
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
-  const [allApps, setAllApps] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams({ page: 'apps' });
 
   const handleEditClose = () => setEditShow(false);
@@ -76,7 +74,6 @@ const Index = () => {
 
   const init = useCallback(async () => {
     const platform = cmn.getPlatform();
-
     const aps = cmn.readAppSettings();
     const appKinds = {};
     if (aps && aps.kinds) {
@@ -97,7 +94,6 @@ const Index = () => {
     async function reload() {
       if (Object.keys(appKinds).length) {
         const info = await cmn.fetchAppsByAs(Object.keys(appKinds));
-
         const apps = [];
         for (const name in info.apps) {
           const app = info.apps[name].handlers[0];
@@ -107,19 +103,7 @@ const Index = () => {
         }
         setApps(apps);
       }
-
-      const info = await cmn.fetchAppsByKinds(null);
-      const allApps = [];
-      for (const name in info.apps) {
-        const app = info.apps[name].handlers[0];
-        allApps.push(app);
-      }
-      allApps.sort((a, b) => {
-        return b.created_at - a.created_at;
-      });
-      setAllApps(allApps);
     }
-
     // no personalized data here
     // cmn.addOnNostr(reload);
     reload();
@@ -168,7 +152,7 @@ const Index = () => {
   const pageComponents = {
     search: <FindApps setLink={setLink} link={link} open={open} go={go} />,
     'used-apps': <UsedApps apps={apps} onSelect={onSelect} />,
-    apps: <NewApps allApps={allApps} />,
+    apps: <NewApps />,
     codes: <Repositories />,
   };
 
