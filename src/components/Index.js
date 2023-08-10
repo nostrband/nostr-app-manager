@@ -157,18 +157,7 @@ const Index = () => {
   };
 
   return (
-    <main className="mt-5">
-      <div className="mt-5 text-center">
-        <h3>What is Nostr App Manager?</h3>
-        <p>
-          Discover Nostr apps, recommend to your followers, publish your own
-          apps.
-        </p>
-        <Link to="/about">
-          <Button variant="outline-primary">Learn more</Button>
-        </Link>
-      </div>
-
+    <main className="mt-3">
       <div className="d-flex justify-content-center pt-4 pb-5">
         <ul class="nav nav-pills">
           {navs.map((nav) => {

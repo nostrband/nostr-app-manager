@@ -10,7 +10,7 @@ import Footer from './components/Footer';
 
 function About() {
   return (
-    <Container className="About mt-5">
+    <Container className="About mt-3">
       <Row>
         <Col>
           <Header />
