@@ -7,13 +7,14 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import * as cmn from '../common';
 import { useAuth } from '../context/ShowModalContext';
 
 const Header = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const [pubkey, setPubkey] = useState('');
   const [profile, setProfile] = useState(null);
@@ -85,7 +86,7 @@ const Header = () => {
       window.dispatchEvent(new Event('goHome'));
     }, 0);
   };
-
+  console.log(pathname);
   return (
     <header>
       <Row>
@@ -97,6 +98,11 @@ const Header = () => {
           </h4>
         </Col>
         <Col xs="auto" className="d-flex align-items-center">
+          {pathname !== '/about' ? (
+            <Link to="/about">
+              <Button variant="outline-primary mx-3">What is it?</Button>
+            </Link>
+          ) : null}
           {!pubkey && (
             <Button
               variant="outline-secondary"
