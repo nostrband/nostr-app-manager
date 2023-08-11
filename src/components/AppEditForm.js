@@ -13,6 +13,7 @@ import CreatableSelect from 'react-select/creatable';
 import ShareAppModal from '../elements/ShareAppModal';
 import { nip19 } from 'nostr-tools';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const tabs = [
   {
@@ -49,6 +50,7 @@ const AppEditForm = (props) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [naddr, setNaddr] = useState();
   const [textForShare, setTextForShare] = useState('');
+  const [importedData, setImportedData] = useState();
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -237,6 +239,32 @@ const AppEditForm = (props) => {
   };
   const viewUrl = props.app ? '/a/' + cmn.getNaddr(props.app) : '';
 
+  const handleImportFromManifest = async () => {
+    try {
+      const response = await axios.get(website);
+      const html = await response.text();
+      const dom = new DOMParser().parseFromString(html, 'text/html');
+      const manifestLink = dom.querySelector('link[rel="manifest"]');
+      if (manifestLink) {
+        const manifestUrl = new URL(manifestLink.href, website);
+        const manifestResponse = await fetch(manifestUrl);
+        const manifestData = await manifestResponse.json();
+        console.log(manifestData, 'MANIFEST DATA');
+        const { name, icons, description } = manifestData;
+        setImportedData({
+          name,
+          icons,
+          description,
+        });
+      } else {
+        setError('Manifest link not found in the HTML.');
+      }
+    } catch (error) {
+      setError('Error while importing from manifest: ' + error.message);
+    }
+  };
+
+  console.log(importedData, 'IMPORTED DATA');
   return (
     <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
@@ -269,6 +297,28 @@ const AppEditForm = (props) => {
               : "Other apps don't handle nostr events, but are still useful to nostr users."}
           </p>
 
+          <Form.Group className="mb-3" controlId="metaLN">
+            <Form.Label>Website:</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder={inherit ? '' : 'https://app.com'}
+              disabled={inherit}
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+            <Form.Text className="text-muted">
+              How should people access the app
+            </Form.Text>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleImportFromManifest}
+              disabled={sending}
+            >
+              Import from PWA manifest
+            </Button>
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="metaName">
             <Form.Label className="mt-2">Name</Form.Label>
             <Form.Control
@@ -296,19 +346,7 @@ const AppEditForm = (props) => {
               Human-readable name of your app
             </Form.Text>
           </Form.Group>
-          <Form.Group className="mb-3" controlId="metaLN">
-            <Form.Label>Website:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'https://app.com'}
-              disabled={inherit}
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              How should people access the app
-            </Form.Text>
-          </Form.Group>
+
           <Form.Group className="mb-3" controlId="metaNip05">
             <Form.Label>Nip-05 identifier</Form.Label>
             <Form.Control
