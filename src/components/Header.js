@@ -7,7 +7,12 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 
 import * as cmn from '../common';
 import { useAuth } from '../context/ShowModalContext';
@@ -20,6 +25,7 @@ const Header = () => {
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuth();
   const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -84,9 +90,9 @@ const Header = () => {
     // _after_ Link has changed the url
     setTimeout(() => {
       window.dispatchEvent(new Event('goHome'));
+      setSearchParams({ page: 'apps' });
     }, 0);
   };
-  console.log(pathname);
   return (
     <header>
       <Row>
