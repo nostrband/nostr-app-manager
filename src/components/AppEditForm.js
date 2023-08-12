@@ -50,7 +50,7 @@ const AppEditForm = (props) => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [naddr, setNaddr] = useState();
   const [textForShare, setTextForShare] = useState('');
-  const [importedData, setImportedData] = useState();
+  const [importedDataByManifest, setImportDataByManifest] = useState({});
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -241,30 +241,30 @@ const AppEditForm = (props) => {
 
   const handleImportFromManifest = async () => {
     try {
-      const response = await axios.get(website);
-      const html = await response.text();
-      const dom = new DOMParser().parseFromString(html, 'text/html');
-      const manifestLink = dom.querySelector('link[rel="manifest"]');
-      if (manifestLink) {
-        const manifestUrl = new URL(manifestLink.href, website);
-        const manifestResponse = await fetch(manifestUrl);
-        const manifestData = await manifestResponse.json();
-        console.log(manifestData, 'MANIFEST DATA');
-        const { name, icons, description } = manifestData;
-        setImportedData({
-          name,
-          icons,
-          description,
-        });
-      } else {
-        setError('Manifest link not found in the HTML.');
+      const { data } = await axios.get(website);
+      if (data) {
+        let manifestUrl = website.endsWith('/')
+          ? website + 'manifest.json'
+          : website + '/manifest.json';
+        const manifestResponse = await axios(manifestUrl);
+        setImportDataByManifest(manifestResponse.data);
       }
     } catch (error) {
       setError('Error while importing from manifest: ' + error.message);
     }
   };
 
-  console.log(importedData, 'IMPORTED DATA');
+  const setDataFromManifest = () => {
+    const { name, icons, description, display } = importedDataByManifest;
+    setName(name);
+    setDisplayName(display);
+    setAbout(description);
+    const iconSrc = website.endsWith('/')
+      ? website + icons[0].src
+      : website + '/' + icons[0].src;
+    setPicture(iconSrc);
+  };
+
   return (
     <div>
       <h4 className="mt-5">{props.app ? 'Edit app' : 'Create app'}</h4>
@@ -297,7 +297,10 @@ const AppEditForm = (props) => {
               : "Other apps don't handle nostr events, but are still useful to nostr users."}
           </p>
 
-          <Form.Group className="mb-3" controlId="metaLN">
+          <Form.Group
+            className={`${importedDataByManifest.name ? 'mb-2' : 'mb-3'}`}
+            controlId="metaLN"
+          >
             <Form.Label>Website:</Form.Label>
             <Form.Control
               type="text"
@@ -305,20 +308,22 @@ const AppEditForm = (props) => {
               disabled={inherit}
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
+              onBlur={handleImportFromManifest}
             />
             <Form.Text className="text-muted">
               How should people access the app
             </Form.Text>
+          </Form.Group>
+          {importedDataByManifest.name ? (
             <Button
+              className="mb-1"
               variant="primary"
-              size="lg"
-              onClick={handleImportFromManifest}
-              disabled={sending}
+              size="sm"
+              onClick={setDataFromManifest}
             >
               Import from PWA manifest
             </Button>
-          </Form.Group>
-
+          ) : null}
           <Form.Group className="mb-3" controlId="metaName">
             <Form.Label className="mt-2">Name</Form.Label>
             <Form.Control
