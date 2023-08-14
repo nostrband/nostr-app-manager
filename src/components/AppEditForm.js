@@ -255,9 +255,9 @@ const AppEditForm = (props) => {
   };
 
   const setDataFromManifest = () => {
-    const { name, icons, description, display } = importedDataByManifest;
-    setName(name);
-    setDisplayName(display);
+    const { short_name, name, icons, description } = importedDataByManifest;
+    setName(short_name);
+    setDisplayName(name);
     setAbout(description);
     const iconSrc = website.endsWith('/')
       ? website + icons[0].src
