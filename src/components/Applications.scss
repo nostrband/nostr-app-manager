@@ -20,21 +20,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 230px;
+  min-height: 320px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
-  -moz-box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
-  box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  -webkit-box-shadow: 0px 7px 10px 3px rgba(34, 60, 80, 0.17);
+  -moz-box-shadow: 0px 7px 10px 3px rgba(34, 60, 80, 0.17);
+  box-shadow: 0px 7px 10px 3px rgba(34, 60, 80, 0.17);
   border-radius: 15px;
   transition: 0.3s;
   cursor: pointer;
+  padding: 0 20px;
+  p {
+    margin: 0;
+  }
 }
 
 .card-app:hover {
-  -webkit-box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
-  -moz-box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
-  box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
+  -webkit-box-shadow: 0px 7px 10px 10px rgba(34, 60, 80, 0.12);
+  -moz-box-shadow: 0px 7px 10px 10px rgba(34, 60, 80, 0.12);
+  box-shadow: 0px 7px 10px 10px rgba(34, 60, 80, 0.12);
 }
 
 .default-image {

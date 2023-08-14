@@ -10,6 +10,8 @@ const ApplicationItem = (props) => {
     content = JSON.parse(props.app?.content);
   }
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
+  let about = content?.about;
+  if (about?.length > 60) about = about.substring(0, 60) + '...';
 
   return (
     <Link key={props.key} to={props.app ? getUrl(props.app) : ''}>
@@ -26,6 +28,7 @@ const ApplicationItem = (props) => {
           </div>
         )}
         <h5>{props?.app?.name || props?.app.display_name}</h5>
+        <p>{about}</p>
       </div>
     </Link>
   );

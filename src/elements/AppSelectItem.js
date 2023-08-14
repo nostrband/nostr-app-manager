@@ -71,7 +71,6 @@ const AppSelectItem = (props) => {
             </Col>
           </div>
         </Link>
-
         {props.myApp ? (
           <div className="edit-button" onClick={props.selecteAppForEdit}>
             <Edit />
