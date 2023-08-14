@@ -164,7 +164,7 @@ const Index = () => {
             return (
               <li
                 onClick={() => {
-                  setSearchParams({ page: nav.path }); // Set select=true when a nav is clicked
+                  setSearchParams({ page: nav.path });
                 }}
                 className={` pointer nav-link nav-item${
                   searchParams.get('page') === nav.path ? ' active' : ''
@@ -176,9 +176,7 @@ const Index = () => {
           })}
         </ul>
       </div>
-
       {pageComponents[searchParams.get('page')]}
-
       <Modal show={editShow} onHide={handleEditClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit app</Modal.Title>

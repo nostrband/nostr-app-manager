@@ -39,7 +39,13 @@ const AppSelectItem = (props) => {
           >
             <Col xs="auto">
               {app.picture && (
-                <img alt="" width="64" height="64" src={app.picture} />
+                <img
+                  className="app-logo"
+                  alt=""
+                  width="64"
+                  height="64"
+                  src={app.picture}
+                />
               )}
               {!app.picture && <OtherApp />}
             </Col>

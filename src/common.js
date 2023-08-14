@@ -557,7 +557,7 @@ export async function fetchAppsByKinds(kinds, created_at, whereWeUse) {
 
   const filter = {
     kinds: [cs.KIND_HANDLERS],
-    ...(whereWeUse === 'MAIN_PAGE' ? { limit: 10 } : {}),
+    ...(whereWeUse === 'MAIN_PAGE' ? { limit: 9 } : {}),
     ...(created_at ? { until: created_at } : {}),
   };
 

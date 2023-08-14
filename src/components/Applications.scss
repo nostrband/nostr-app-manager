@@ -1,0 +1,53 @@
+.container-apps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
+  a {
+    text-decoration: none;
+    color: black;
+  }
+}
+
+.app-logo-main {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.card-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 230px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 0px 4px 8px 0px rgba(34, 60, 80, 0.2);
+  border-radius: 15px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.card-app:hover {
+  -webkit-box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
+  -moz-box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
+  box-shadow: 0px 4px 7px 3px rgba(34, 60, 80, 0.3);
+}
+
+.default-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: rgb(225, 225, 225);
+  margin-bottom: 20px;
+  img {
+    width: 50px;
+    height: 50px;
+  }
+}
