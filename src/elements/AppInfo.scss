@@ -1,0 +1,42 @@
+.count-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0 7px 0;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.zap {
+  border: 1px solid #ffc600;
+  color: #ffc600;
+}
+
+.like {
+  border: 1px solid #b32322;
+  color: #b32322;
+}
+
+.share {
+  border: 1px solid #84b7ff;
+  color: #84b7ff;
+}
+
+.tooltip-inner {
+  background-color: #ffc600;
+  color: rgb(21, 20, 20);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.tooltip-like .tooltip-inner {
+  background-color: #b32322;
+  color: #fff;
+}
+
+.tooltip-share .tooltip-inner {
+  background-color: #84b7ff;
+  color: rgb(21, 20, 20);
+}

@@ -13,6 +13,9 @@ import LikedHeart from '../icons/LikedHeart';
 import Share from '../icons/Share';
 import { useAuth } from '../context/ShowModalContext';
 import ShareAppModal from './ShareAppModal';
+import './AppInfo.scss';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -26,6 +29,9 @@ const AppInfo = (props) => {
   const zapButtonRefByEmail = useRef(null);
   const [textForShare, setTextForShare] = useState('');
   const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const [likeCount, setLikeCount] = useState(0);
+  const [zapCount, setZapCount] = useState(0);
+  const [shareCount, setShareCount] = useState(0);
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
@@ -126,6 +132,30 @@ const AppInfo = (props) => {
     }
   };
 
+  const fetchCounts = async (kind, setStateFunction) => {
+    try {
+      const ndk = await cmn.getNDK();
+      const addrForGetCountUser = cmn.naddrToAddr(cmn.getNaddr(props.app));
+      const { count } = await ndk.fetchCount({
+        kinds: [kind],
+        '#a': [addrForGetCountUser],
+      });
+      setStateFunction(count); // Update the corresponding state variable
+    } catch (error) {
+      console.log(error, 'ERROR');
+    }
+  };
+
+  const fetchCountsLike = () => fetchCounts(7, setLikeCount);
+  const fetchCountsZap = () => fetchCounts(9735, setZapCount);
+  const fetchCountShared = () => fetchCounts(6, setShareCount);
+
+  useEffect(() => {
+    fetchCountsLike();
+    fetchCountsZap();
+    fetchCountShared();
+  }, []);
+
   return (
     <div className="AppInfo">
       <Row>
@@ -171,13 +201,51 @@ const AppInfo = (props) => {
                 src={app.picture}
               />
             )}
-            {app.lud16 ? <Zap zapRef={zapButtonRef} dataNpub={npub} /> : null}
-            {liked.length > 0 ? (
-              <LikedHeart onClick={handleLike} />
-            ) : (
-              <Heart onClick={handleLike} />
-            )}
-            <Share onClick={openShareAppModalAndSetText} />
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip className="tooltip-zap">Total zap amount</Tooltip>
+              }
+            >
+              <div className="zap count-block">
+                <span className="font-weight-bold">{zapCount}</span>
+                {app.lud16 ? (
+                  <Zap zapRef={zapButtonRef} dataNpub={npub} />
+                ) : null}
+              </div>
+            </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip className="tooltip-like">Number of likes</Tooltip>
+              }
+            >
+              <div className="like count-block">
+                <span className="font-weight-bold" style={{ color: '#b32322' }}>
+                  {likeCount}
+                </span>
+                {liked.length > 0 ? (
+                  <LikedHeart onClick={handleLike} />
+                ) : (
+                  <Heart onClick={handleLike} />
+                )}
+              </div>
+            </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip className="tooltip-share">Number of shares</Tooltip>
+              }
+            >
+              <div className="share count-block">
+                <span className="font-weight-bold" style={{ color: '#84b7ff' }}>
+                  {shareCount}
+                </span>
+                <Share onClick={openShareAppModalAndSetText} />
+              </div>
+            </OverlayTrigger>
           </div>
 
           {allowEdit && (
