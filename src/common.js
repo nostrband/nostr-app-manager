@@ -97,7 +97,6 @@ export function localSet(key, value) {
 
 export function readAppSettings() {
   const json = localGet('appSettings');
-  console.log(json, 'JSSOOOON');
   try {
     return json ? JSON.parse(json) : {};
   } catch (e) {
