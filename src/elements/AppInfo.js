@@ -55,7 +55,10 @@ const AppInfo = (props) => {
           content: '+',
         };
         try {
-          await cmn.publishEvent(event);
+          const response = await cmn.publishEvent(event);
+          if (response) {
+            setLikeCount((prev) => prev + 1);
+          }
           checkIfLiked();
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -71,6 +74,7 @@ const AppInfo = (props) => {
           const result = await cmn.publishEvent(deletedEventWithLike);
           if (result) {
             setLiked([]);
+            setLikeCount((prev) => prev - 1);
           }
         } catch (error) {
           console.error('Error publishing like:', error);
