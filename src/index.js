@@ -8,7 +8,7 @@ import RepositoryPage from './pages/RepositoryPage';
 
 import './index.scss';
 import Root from './Root';
-import About from './About';
+import About from './components/About/About';
 import Recommendations from './Recommendations';
 import Profile from './Profile';
 import AppInfo from './AppInfo';
