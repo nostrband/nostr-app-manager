@@ -20,7 +20,7 @@ import errorToast from './ErrorToast';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
-  const { setShowLogin } = useAuth();
+  const { showLogin, setShowLogin } = useAuth();
   const [liked, setLiked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
@@ -29,7 +29,7 @@ const AppInfo = (props) => {
   const zapButtonRef = useRef(null);
   const zapButtonRefByEmail = useRef(null);
   const [textForShare, setTextForShare] = useState('');
-  const login = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const [login, setLogin] = useState(cmn.getLoginPubkey());
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
@@ -37,15 +37,20 @@ const AppInfo = (props) => {
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
-
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
+
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
   }, [props.app]);
 
+  useEffect(() => {
+    setLogin(cmn.getLoginPubkey());
+  }, [showLogin]);
+
   const handleLike = async () => {
     if (login) {
-      if (liked.length === 0) {
+      console.log(liked, 'lIKED');
+      if (liked.length === 0 || !liked) {
         const event = {
           kind: 7,
           tags: [
@@ -54,6 +59,7 @@ const AppInfo = (props) => {
           ],
           content: '+',
         };
+        console.log(event, 'EVENT FOR ADDED LIKE');
         try {
           const response = await cmn.publishEvent(event);
           if (response) {
@@ -66,10 +72,11 @@ const AppInfo = (props) => {
       } else {
         const deletedEventWithLike = {
           kind: 5,
-          pubkey: liked[0]?.pubkey,
+          pubkey: login,
           tags: [['e', liked[0]?.id]],
           content: 'Deleting the app',
         };
+        console.log(deletedEventWithLike, 'EVENT FOR DELETE LIKE');
         try {
           const result = await cmn.publishEvent(deletedEventWithLike);
           if (result) {
