@@ -5,8 +5,9 @@ import { Link } from 'react-router-dom';
 
 import './About.scss';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Header from '../Header';
+import Footer from '../Footer';
+import FaqSection from './FaqSection';
 
 function About() {
   return (
@@ -71,6 +72,7 @@ function About() {
           </p>
         </Col>
       </Row>
+      <FaqSection />
       <Row>
         <Col>
           <Footer />
