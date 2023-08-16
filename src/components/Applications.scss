@@ -18,8 +18,11 @@
 .card-app {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  min-height: 320px;
+  gap: 10px;
+  padding: 50px 15px 20px 15px;
+  min-height: 350px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 0px 7px 10px 3px rgba(34, 60, 80, 0.17);
@@ -28,11 +31,15 @@
   border-radius: 15px;
   transition: 0.3s;
   cursor: pointer;
-  padding: 50px 20px 10px 20px;
   p {
     max-width: 100%;
     margin: 0;
+    font-size: 1rem;
     word-wrap: break-word;
+  }
+  .profile {
+    width: 100%;
+    font-size: 0.95rem;
   }
 }
 
