@@ -5,6 +5,7 @@ import defaultImage from '../images/default.png';
 import * as cmn from '../common';
 
 const ApplicationItem = (props) => {
+  console.log(props, 'PROPS');
   let content = {};
   if (props.app?.content) {
     content = JSON.parse(props.app?.content);
@@ -27,7 +28,9 @@ const ApplicationItem = (props) => {
             <img src={defaultImage} alt={content?.name} />
           </div>
         )}
-        <h5>{props?.app?.name || props?.app.display_name}</h5>
+        <h5>
+          {props?.app?.profile?.display_name || props?.app?.profile?.name}
+        </h5>
         <p>{about}</p>
       </div>
     </Link>
