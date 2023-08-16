@@ -5,7 +5,6 @@ import defaultImage from '../images/default.png';
 import * as cmn from '../common';
 
 const ApplicationItem = (props) => {
-  console.log(props, 'PROPS');
   let content = {};
   if (props.app?.content) {
     content = JSON.parse(props.app?.content);
