@@ -16,6 +16,7 @@ import ShareAppModal from './ShareAppModal';
 import './AppInfo.scss';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import errorToast from './ErrorToast';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -110,6 +111,12 @@ const AppInfo = (props) => {
     checkIfLiked();
   }, []);
 
+  const showZapError = () => {
+    if (!app?.lud16) {
+      errorToast('Lightning address not specified');
+    }
+  };
+
   useEffect(() => {
     if (zapButtonRef.current) {
       window.nostrZap.initTarget(zapButtonRef.current);
@@ -140,7 +147,7 @@ const AppInfo = (props) => {
         kinds: [kind],
         '#a': [addrForGetCountUser],
       });
-      setStateFunction(count); // Update the corresponding state variable
+      setStateFunction(count);
     } catch (error) {
       console.log(error, 'ERROR');
     }
@@ -170,16 +177,17 @@ const AppInfo = (props) => {
                 </a>
               </div>
             )}
-            {app.lud16 && (
+            {app?.lud16 ? (
               <div
+                onClick={showZapError}
                 data-npub={npub}
-                ref={zapButtonRefByEmail}
+                ref={app?.lud16 ? zapButtonRefByEmail : null}
                 className="text-muted pointer"
               >
                 <Lightning className="me-2" />
                 <span>{app.lud16}</span>
               </div>
-            )}
+            ) : null}
             <div className="mt-2">{app.about}</div>
             {app.banner && (
               <div className="mt-2">
@@ -209,9 +217,11 @@ const AppInfo = (props) => {
             >
               <div className="zap count-block">
                 <span className="font-weight-bold">{zapCount}</span>
-                {app.lud16 ? (
-                  <Zap zapRef={zapButtonRef} dataNpub={npub} />
-                ) : null}
+                <Zap
+                  onClick={showZapError}
+                  zapRef={app?.lud16 ? zapButtonRef : null}
+                  dataNpub={npub}
+                />
               </div>
             </OverlayTrigger>
 
