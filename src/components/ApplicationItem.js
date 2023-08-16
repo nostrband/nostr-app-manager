@@ -11,7 +11,7 @@ const ApplicationItem = (props) => {
   }
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
   let about = content?.about;
-  if (about?.length > 60) about = about.substring(0, 60) + '...';
+  if (about?.length > 50) about = about.substring(0, 50) + '...';
 
   return (
     <Link key={props.key} to={props.app ? getUrl(props.app) : ''}>
