@@ -106,7 +106,6 @@ const CodeRepositoryForm = () => {
       setInitialValues(initialValuesInFunction);
     }
   };
-  console.log(initialValues, 'INITIAL VALUES');
 
   useEffect(() => {
     if (naddr) {
@@ -298,7 +297,6 @@ const CodeRepositoryForm = () => {
                     onInputChange={(newValue) => setTempNipValue(newValue)}
                     inputValue={tempNipValue}
                   />
-                  {console.log(JSON.stringify(errors), 'ERRRORS')}
                   {errors?.nips ? (
                     <div className="text-danger mt-1">
                       Please enter a valid NIP in the format "NIP-xx

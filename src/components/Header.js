@@ -15,15 +15,14 @@ import {
 } from 'react-router-dom';
 
 import * as cmn from '../common';
-import { useAuth } from '../context/ShowModalContext';
+import { useAuthShowModal } from '../context/ShowModalContext';
 
 const Header = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
   const [pubkey, setPubkey] = useState('');
   const [profile, setProfile] = useState(null);
-  const { showLogin, setShowLogin } = useAuth();
+  const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
 

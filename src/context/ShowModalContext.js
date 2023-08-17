@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 
 const AuthContext = React.createContext();
 
-export function useAuth() {
+export function useAuthShowModal() {
   return useContext(AuthContext);
 }
 
