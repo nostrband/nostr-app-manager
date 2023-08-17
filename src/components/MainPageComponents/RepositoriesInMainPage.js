@@ -78,7 +78,7 @@ const Repositories = () => {
 
   return (
     <div>
-      <h3>Repositories:</h3>
+      <h2>Repositories:</h2>
       <ListGroup>
         {allRepositories.length > 0 ? (
           allRepositories?.map((repo) => {

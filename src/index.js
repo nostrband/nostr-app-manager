@@ -5,10 +5,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider from 'react-bootstrap/ThemeProvider';
 import { IntlProvider } from './IntlProvider';
 import RepositoryPage from './pages/RepositoryPage';
+import About from './About';
 
 import './index.scss';
 import Root from './Root';
-import About from './About';
 import Recommendations from './Recommendations';
 import Profile from './Profile';
 import AppInfo from './AppInfo';
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/about',
-    element: <About />,
+    element: <Root />,
   },
   {
     path: '/recommendations',

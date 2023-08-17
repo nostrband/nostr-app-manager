@@ -4,9 +4,15 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import { Link, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  useSearchParams,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
+import About from '../About';
 import UsedApps from './MainPageComponents/UsedApps';
 import NewApps from './MainPageComponents/NewApps';
 import FindApps from './MainPageComponents/FindApps';
@@ -39,6 +45,8 @@ const Index = () => {
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams({ page: 'apps' });
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const handleEditClose = () => setEditShow(false);
 
@@ -65,7 +73,6 @@ const Index = () => {
       get('nprofile1', link) ||
       get('naddr1', link) ||
       (link.length === 64 ? link : '');
-
     window.location.hash = '#' + id + (select ? '?select=true' : '');
   };
 
@@ -159,25 +166,38 @@ const Index = () => {
   return (
     <main className="mt-3">
       <div className="d-flex justify-content-center pt-4 pb-5">
-        <ul class="nav nav-pills">
+        <ul class="nav nav-pills d-flex justify-content-center ">
           {navs.map((nav) => {
             return (
               <li
                 onClick={() => {
+                  navigate('/');
                   setSearchParams({ page: nav.path }); // Set select=true when a nav is clicked
                 }}
-                className={` pointer nav-link nav-item${
-                  searchParams.get('page') === nav.path ? ' active' : ''
+                className={`pointer nav-link nav-item ${
+                  searchParams.get('page') === nav.path && pathname !== '/about'
+                    ? 'active'
+                    : ''
                 }`}
               >
                 {nav.title}
               </li>
             );
           })}
+          <Link to="/about">
+            <li
+              className={`pointer nav-link nav-item ${
+                pathname === '/about' ? 'active' : null
+              }`}
+            >
+              What is it?
+            </li>
+          </Link>
         </ul>
       </div>
 
-      {pageComponents[searchParams.get('page')]}
+      {pathname !== '/about' ? pageComponents[searchParams.get('page')] : null}
+      {pathname === '/about' ? <About /> : null}
 
       <Modal show={editShow} onHide={handleEditClose}>
         <Modal.Header closeButton>

@@ -110,7 +110,7 @@ const AppInfoView = () => {
         </div>
       )}
       {info && (
-        <div className="mt-5">
+        <div className="mt-5 app-info-view">
           <AppInfo key={appInfo.name} app={appInfo} />
           <h6 className="mt-3">Published by:</h6>
           <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
