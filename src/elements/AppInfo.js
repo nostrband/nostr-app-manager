@@ -159,7 +159,7 @@ const AppInfo = (props) => {
 
   const fetchCountsLike = () => fetchCounts(7, setLikeCount);
   const fetchCountsZap = () => fetchCounts(9735, setZapCount);
-  const fetchCountShared = () => fetchCounts(6, setShareCount);
+  const fetchCountShared = () => fetchCounts(1, setShareCount);
 
   useEffect(() => {
     fetchCountsLike();
