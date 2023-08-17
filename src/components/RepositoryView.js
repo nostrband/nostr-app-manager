@@ -121,12 +121,17 @@ const RepositoryView = () => {
   const linkTagValue = getTagValue('r');
   const licenseTagValue = getTagValue('license');
 
+  console.log(descriptionTagValue, 'VALUE');
+
   return (
     <>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Container className="mt-4 repository-view d-flex justify-content-between">
+        <Container
+          style={{ border: '2px solid red' }}
+          className="mt-4 repository-view d-flex justify-content-between"
+        >
           <ul>
             <div className="container-name">
               <h2 className="font-weight-bold">
@@ -155,6 +160,7 @@ const RepositoryView = () => {
                 dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
               ></p>
             ) : null}
+
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
