@@ -47,6 +47,7 @@ const PublisedRepositories = () => {
             );
 
             const link = repo.tags.find((tag) => tag[0] === 'r');
+            console.log(link, 'LINK');
             let limitedDescription = '';
             if (descriptionTag) {
               const cleanDescription = descriptionTag[1].replace(
@@ -77,8 +78,8 @@ const PublisedRepositories = () => {
                 {link ? (
                   <div className="mt-1 mb-1 limited-text">
                     <ShareIconForRepository />
-                    <a href={link} target="_blank" rel="noopener noreferrer">
-                      {link}
+                    <a href={link[1]} target="_blank" rel="noopener noreferrer">
+                      {link[1]}
                     </a>
                   </div>
                 ) : null}

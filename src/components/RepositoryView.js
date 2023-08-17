@@ -163,27 +163,40 @@ const RepositoryView = () => {
                 {licenseTagValue}
               </li>
             ) : null}
-
-            {dynamicTags.map(({ title, key }) =>
-              repository[key]?.length > 0 ? (
-                <li className="mt-3" key={title}>
-                  <strong className="d-block">{title}</strong>
-                  {repository[key].map((item) => {
-                    return (
-                      <KindElement
-                        className="mx-1 mt-2"
-                        key={item}
-                        size="sm"
-                        variant="outline-primary"
-                      >
-                        {item}
-                      </KindElement>
-                    );
-                  })}
-                </li>
-              ) : null
-            )}
-
+            {repository?.programmingLanguages?.length > 0 ? (
+              <li className="mt-3">
+                <strong className="d-block">Programming languages:</strong>
+                {repository?.programmingLanguages?.map((item) => {
+                  return (
+                    <KindElement
+                      className="mx-1 mt-2"
+                      key={item}
+                      size="sm"
+                      variant="outline-primary"
+                    >
+                      {item}
+                    </KindElement>
+                  );
+                })}
+              </li>
+            ) : null}
+            {repository?.otherTags?.length > 0 ? (
+              <li className="mt-3">
+                <strong className="d-block">Tags:</strong>
+                {repository?.otherTags?.map((item) => {
+                  return (
+                    <KindElement
+                      className="mx-1 mt-2"
+                      key={item}
+                      size="sm"
+                      variant="outline-primary"
+                    >
+                      {item}
+                    </KindElement>
+                  );
+                })}
+              </li>
+            ) : null}
             <li className="mt-4">
               <strong>Published by:</strong>
               <div className="mt-2">
