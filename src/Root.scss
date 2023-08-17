@@ -75,3 +75,25 @@ img.banner {
     margin-left: 6px;
   }
 }
+
+.app-info-view {
+  @media (max-width: 450px) {
+    font-size: 0.8rem !important;
+    h6 {
+      font-size: 0.9rem !important;
+    }
+  }
+}
+.AppInfo {
+  @media (max-width: 450px) {
+    .lud-16 {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+}

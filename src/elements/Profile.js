@@ -13,7 +13,7 @@ const Profile = (props) => {
   const size = props.small ? 26 : 64;
 
   return (
-    <Row className={'position-relative ' + (props.small ? 'gx-1' : '')}>
+    <Row className={'profile position-relative ' + (props.small ? 'gx-1' : '')}>
       <Col xs="auto">
         <Link
           className="stretched-link"

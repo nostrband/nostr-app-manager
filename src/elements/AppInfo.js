@@ -144,13 +144,13 @@ const AppInfo = (props) => {
               <div
                 data-npub={npub}
                 ref={zapButtonRefByEmail}
-                className="text-muted pointer"
+                className="text-muted pointer lud-16"
               >
                 <Lightning className="me-2" />
                 <span>{app.lud16}</span>
               </div>
             )}
-            <div className="mt-2">{app.about}</div>
+            <div className="mt-2 description">{app.about}</div>
             {app.banner && (
               <div className="mt-2">
                 <a href={app.banner} target="_blank" rel="noopener noreferrer">
