@@ -319,7 +319,7 @@ const EventApps = () => {
   };
 
   return (
-    <main style={{ border: '2px solid red' }} className="mt-5">
+    <main className="mt-5">
       <div>
         {(event && (
           <>
