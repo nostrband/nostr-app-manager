@@ -5,21 +5,14 @@ import { Link } from 'react-router-dom';
 
 import './About.scss';
 
-import Header from './components/Header';
 import Footer from './components/Footer';
 
 function About() {
   return (
-    <Container className="About mt-3">
+    <Container className="About">
       <Row>
         <Col>
-          <Header />
-        </Col>
-      </Row>
-      <Row className="mt-5">
-        <Col>
-          <h1>About</h1>
-
+          <h2>About</h2>
           <p>Every day new apps are created by awesome Nostr devs.</p>
 
           <p>Every minute three new event kinds are invented by Pablo.</p>

@@ -127,17 +127,6 @@ const Header = () => {
                         cmn.formatNpubShort(pubkey)
                       : cmn.formatNpubShort(pubkey)}
                   </Dropdown.ItemText>
-                  {pathname !== '/about' ? (
-                    <Dropdown.Item
-                      href={appsUrl}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/about');
-                      }}
-                    >
-                      What is it?
-                    </Dropdown.Item>
-                  ) : null}
 
                   <Dropdown.Divider></Dropdown.Divider>
                   <Dropdown.Item

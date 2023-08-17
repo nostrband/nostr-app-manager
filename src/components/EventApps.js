@@ -64,21 +64,16 @@ const EventApps = () => {
         findUrl(
           nip19.nprofileEncode({ pubkey: ad.pubkey, relays: ad.relays })
         ) ||
-//        findUrl(nip19.naddrEncode(naddrId)) ||
+        //        findUrl(nip19.naddrEncode(naddrId)) ||
         findUrl(nip19.neventEncode(neventId)) ||
         findUrl(nip19.noteEncode(ad.event_id));
-    } else if (
-      ad.kind === 3 ||
-      (ad.kind >= 10000 && ad.kind < 20000)
-    ) {
+    } else if (ad.kind === 3 || (ad.kind >= 10000 && ad.kind < 20000)) {
       // specific order - naddr preferred
       url =
-	// FIXME naddr?
+        // FIXME naddr?
         findUrl(nip19.neventEncode(neventId)) ||
         findUrl(nip19.noteEncode(ad.event_id));
-    } else if (
-      (ad.kind >= 30000 && ad.kind < 40000)
-    ) {
+    } else if (ad.kind >= 30000 && ad.kind < 40000) {
       // specific order - naddr preferred
       url =
         findUrl(nip19.naddrEncode(naddrId)) ||
@@ -324,7 +319,7 @@ const EventApps = () => {
   };
 
   return (
-    <main className="mt-5">
+    <main style={{ border: '2px solid red' }} className="mt-5">
       <div>
         {(event && (
           <>

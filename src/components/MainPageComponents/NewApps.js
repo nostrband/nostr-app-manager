@@ -65,7 +65,7 @@ const NewApps = () => {
 
   return (
     <div>
-      <h3>New apps:</h3>
+      <h2>New apps:</h2>
       <Container className="ps-0 pe-0">
         <Row>
           <Col>

@@ -11,6 +11,7 @@ import UsedApps from './MainPageComponents/UsedApps';
 import NewApps from './MainPageComponents/NewApps';
 import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
+import About from '../About';
 
 const navs = [
   {
@@ -28,6 +29,10 @@ const navs = [
   {
     title: 'Find app for event ',
     path: 'search',
+  },
+  {
+    title: 'What is it? ',
+    path: 'about',
   },
 ];
 
@@ -154,6 +159,7 @@ const Index = () => {
     'used-apps': <UsedApps apps={apps} onSelect={onSelect} />,
     apps: <NewApps />,
     codes: <Repositories />,
+    about: <About />,
   };
 
   return (
