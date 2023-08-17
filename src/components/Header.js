@@ -104,11 +104,6 @@ const Header = () => {
           </h4>
         </Col>
         <Col xs="auto" className="d-flex align-items-center">
-          {pathname !== '/about' ? (
-            <Link to="/about">
-              <Button variant="outline-primary mx-3">What is it?</Button>
-            </Link>
-          ) : null}
           {!pubkey && (
             <Button
               variant="outline-secondary"
@@ -132,6 +127,18 @@ const Header = () => {
                         cmn.formatNpubShort(pubkey)
                       : cmn.formatNpubShort(pubkey)}
                   </Dropdown.ItemText>
+                  {pathname !== '/about' ? (
+                    <Dropdown.Item
+                      href={appsUrl}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/about');
+                      }}
+                    >
+                      What is it?
+                    </Dropdown.Item>
+                  ) : null}
+
                   <Dropdown.Divider></Dropdown.Divider>
                   <Dropdown.Item
                     href={appsUrl}
