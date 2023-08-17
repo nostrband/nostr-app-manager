@@ -28,7 +28,7 @@ const ApplicationItem = (props) => {
             <img src={defaultImage} alt={content?.name} />
           </div>
         )}
-        <h5>{props.app.display_name || props.app.name}</h5>
+        <h5>{props.app?.profile?.display_name || props.app?.profile?.name}</h5>
         <p>{about}</p>
         <div className="d-flex justify-content-end profile">
           <Profile
