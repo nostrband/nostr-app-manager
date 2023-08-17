@@ -5,7 +5,7 @@
   max-width: 720px;
 }
 
-header a {
+a {
   text-decoration: none;
 }
 
@@ -79,4 +79,26 @@ img.banner {
 .font-weight-bold {
   font-weight: 600;
   font-size: 1.1rem;
+}
+
+.app-info-view {
+  @media (max-width: 450px) {
+    font-size: 0.8rem !important;
+    h6 {
+      font-size: 0.9rem !important;
+    }
+  }
+}
+.AppInfo {
+  @media (max-width: 450px) {
+    .lud-16 {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
 }
