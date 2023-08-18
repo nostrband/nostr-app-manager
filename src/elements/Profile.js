@@ -12,6 +12,10 @@ const Profile = (props) => {
   const onSelect = props.onSelect || (() => {});
   const size = props.small ? 26 : 64;
 
+  let name = p?.display_name || p?.name || cmn.formatNpubShort(pubkey);
+  if (name?.length > 15 && props.shortName)
+    name = name.substring(0, 15) + '...';
+
   return (
     <Row className={'position-relative ' + (props.small ? 'gx-1' : '')}>
       <Col xs="auto">
@@ -34,9 +38,7 @@ const Profile = (props) => {
       </Col>
       <Col>
         <div className="me-auto">
-          <div className="fw-bold">
-            {p?.display_name || p?.name || cmn.formatNpubShort(pubkey)}
-          </div>
+          <div className="fw-bold">{name}</div>
           {!props.small && (
             <div>
               <small className="text-muted">{p?.nip05}</small>

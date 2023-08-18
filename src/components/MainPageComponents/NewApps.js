@@ -3,6 +3,7 @@ import { Col, Container, ListGroup, Row, Spinner } from 'react-bootstrap';
 import AppSelectItem from '../../elements/AppSelectItem';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import ApplicationItem from '../ApplicationItem';
 
 const NewApps = () => {
   const [allApps, setAllApps] = useState([]);
@@ -65,16 +66,16 @@ const NewApps = () => {
 
   return (
     <div>
-      <h2>New apps:</h2>
       <Container className="ps-0 pe-0">
+        <h2>New apps:</h2>
         <Row>
           <Col>
             {allApps.length === 0 && !loading && 'Nothing found on relays.'}
-            <ListGroup>
-              {allApps.map((a) => (
-                <AppSelectItem key={a.id} app={a} showAuthor={true} />
-              ))}
-            </ListGroup>
+            <div className="container-apps">
+              {allApps?.map((app) => {
+                return <ApplicationItem key={app.id} app={app} />;
+              })}
+            </div>
             {loading && !empty && <LoadingSpinner />}
           </Col>
         </Row>

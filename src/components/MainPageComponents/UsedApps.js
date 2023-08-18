@@ -5,8 +5,8 @@ import AppSelectItem from '../../elements/AppSelectItem';
 const UsedApps = ({ apps, onSelect }) => {
   return (
     <div>
-      <h2>Apps used on this device:</h2>
       <Container className="ps-0 pe-0">
+        <h2>Apps used on this device:</h2>
         <Row>
           <Col>
             {apps && (
