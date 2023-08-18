@@ -21,7 +21,7 @@ const NewApps = () => {
         const app = info.apps[name].handlers[0];
         newAppsData.push(app);
       }
-      if (newAppsData.length > 0) { 
+      if (newAppsData.length > 0) {
         const filteredApps = newAppsData.filter(
           (newApp) =>
             !allApps.some((existingApp) => existingApp.id === newApp.id)
@@ -66,8 +66,8 @@ const NewApps = () => {
 
   return (
     <div>
-      <h2>New apps:</h2>
       <Container className="ps-0 pe-0">
+        <h2>New apps:</h2>
         <Row>
           <Col>
             {allApps.length === 0 && !loading && 'Nothing found on relays.'}

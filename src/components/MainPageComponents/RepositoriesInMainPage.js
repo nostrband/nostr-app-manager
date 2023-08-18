@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as cmn from '../../common';
-import { ListGroup } from 'react-bootstrap';
+import { Container, ListGroup } from 'react-bootstrap';
 import RepositoryElement from '../../elements/RepositoryElement';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 
@@ -78,19 +78,21 @@ const Repositories = () => {
 
   return (
     <div>
-      <h2>Repositories:</h2>
-      <ListGroup>
-        {allRepositories.length > 0 ? (
-          allRepositories?.map((repo) => {
-            return (
-              <RepositoryElement key={repo.id} repo={repo} getUrl={getUrl} />
-            );
-          })
-        ) : (
-          <span>Nothing yet.</span>
-        )}
-      </ListGroup>
-      {loading && !empty && <LoadingSpinner />}
+      <Container>
+        <h2>Repositories:</h2>
+        <ListGroup>
+          {allRepositories.length > 0 ? (
+            allRepositories?.map((repo) => {
+              return (
+                <RepositoryElement key={repo.id} repo={repo} getUrl={getUrl} />
+              );
+            })
+          ) : (
+            <span>Nothing yet.</span>
+          )}
+        </ListGroup>
+        {loading && !empty && <LoadingSpinner />}
+      </Container>
     </div>
   );
 };
