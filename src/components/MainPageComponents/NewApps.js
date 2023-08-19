@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Container, ListGroup, Row, Spinner } from 'react-bootstrap';
-import AppSelectItem from '../../elements/AppSelectItem';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
+import { useAuth } from '../../context/AuthContext';
 
 const NewApps = () => {
-  const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const { pubkey } = useAuth();
+  console.log(pubkey);
   const [allApps, setAllApps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastCreatedAt, setLastCreatedAt] = useState(null);
@@ -14,6 +15,7 @@ const NewApps = () => {
   const [empty, setEmpty] = useState(false);
   const [followedPubkeys, setFollowedPubkeys] = useState([]);
   const [appAddrs, setAppAddrs] = useState([]);
+  const [appCountsState, setAppCountsState] = useState({});
 
   const fetchApps = async (created_at) => {
     setLoading(true);
@@ -97,7 +99,7 @@ const NewApps = () => {
   }, [pubkey]);
 
   useEffect(() => {
-    const fetchAppsCount = async () => {
+    const fetchRecommendedApps = async () => {
       const ndk = await cmn.getNDK();
       if (appAddrs.length > 0) {
         const filter = pubkey
@@ -111,10 +113,20 @@ const NewApps = () => {
         const recommendedApps = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, filter),
         ]);
-        console.log(recommendedApps, 'RECOMMONDED APPS IN NEW APPS');
+        const appCounts = {};
+        recommendedApps.forEach((recommendedApp) => {
+          const appAddrTags = recommendedApp.tags.filter(
+            (tag) => tag[0] === 'a'
+          );
+          appAddrTags.forEach((tag) => {
+            const addr = tag[1];
+            appCounts[addr] = (appCounts[addr] || 0) + 1;
+          });
+        });
+        setAppCountsState(appCounts);
       }
     };
-    fetchAppsCount();
+    fetchRecommendedApps();
   }, [appAddrs, followedPubkeys]);
 
   return (
@@ -126,9 +138,14 @@ const NewApps = () => {
             {allApps.length === 0 && !loading && 'Nothing found on relays.'}
             <div className="container-apps">
               {allApps?.map((app) => {
+                const appAddr = cmn.naddrToAddr(cmn.getNaddr(app));
                 return (
                   <div key={app.id}>
-                    <ApplicationItem app={app} />
+                    <ApplicationItem
+                      pubkey={pubkey}
+                      count={appCountsState[appAddr] || 0}
+                      app={app}
+                    />
                   </div>
                 );
               })}

@@ -3,7 +3,8 @@ import './Applications.scss';
 import { Link } from 'react-router-dom';
 import defaultImage from '../images/default.png';
 import * as cmn from '../common';
-import Profile from '../elements/Profile';
+import Users from '../icons/Users';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 const ApplicationItem = (props) => {
   let app = {};
@@ -25,13 +26,24 @@ const ApplicationItem = (props) => {
         )}
         <h5>{props.app?.profile?.display_name || props.app?.profile?.name}</h5>
         <p>{about}</p>
-        <div className="d-flex justify-content-end profile">
-          <Profile
-            shortName
-            profile={props.app?.meta}
-            small={true}
-            pubkey={props.app?.pubkey}
-          />
+
+        <div className="count-users">
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip className="tooltip-count-users">
+                {props.pubkey ? 'Used by profiles you follow' : 'New users'}
+              </Tooltip>
+            }
+          >
+            <div>
+              <Users />
+            </div>
+          </OverlayTrigger>
+          <span>
+            {props.pubkey ? '' : '+'}
+            {props.count}
+          </span>
         </div>
       </div>
     </Link>
