@@ -6,11 +6,14 @@ import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
 
 const NewApps = () => {
+  const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const [allApps, setAllApps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastCreatedAt, setLastCreatedAt] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [empty, setEmpty] = useState(false);
+  const [followedPubkeys, setFollowedPubkeys] = useState([]);
+  const [appAddrs, setAppAddrs] = useState([]);
 
   const fetchApps = async (created_at) => {
     setLoading(true);
@@ -30,6 +33,10 @@ const NewApps = () => {
           setEmpty(true);
         }
         setLastCreatedAt(filteredApps[filteredApps.length - 1].created_at);
+        const currentAppAddrs = filteredApps.map((app) =>
+          cmn.naddrToAddr(cmn.getNaddr(app))
+        );
+        setAppAddrs((prevAppAddrs) => [...prevAppAddrs, ...currentAppAddrs]);
         setAllApps((prevApps) => [...prevApps, ...filteredApps]);
       } else {
         setHasMore(false);
@@ -64,6 +71,52 @@ const NewApps = () => {
     };
   }, [hasMore, loading, lastCreatedAt]);
 
+  useEffect(() => {
+    const fetchFollowedPubkeys = async () => {
+      const ndk = await cmn.getNDK();
+      if (pubkey) {
+        try {
+          const filter = {
+            kinds: [3],
+            authors: [pubkey],
+          };
+          const events = await cmn.fetchAllEvents([
+            cmn.startFetch(ndk, filter),
+          ]);
+          const pubkeys = events.flatMap((event) =>
+            event.tags.filter((tag) => tag[0] === 'p').map((tag) => tag[1])
+          );
+          setFollowedPubkeys(pubkeys);
+        } catch (error) {
+          console.error('Error fetching user contacts:', error);
+        }
+      }
+    };
+
+    fetchFollowedPubkeys();
+  }, [pubkey]);
+
+  useEffect(() => {
+    const fetchAppsCount = async () => {
+      const ndk = await cmn.getNDK();
+      if (appAddrs.length > 0) {
+        const filter = pubkey
+          ? {
+              kinds: [31989],
+              '#a': appAddrs,
+              authors: followedPubkeys,
+              limit: 100,
+            }
+          : { kinds: [31989], '#a': appAddrs, limit: 100 };
+        const recommendedApps = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, filter),
+        ]);
+        console.log(recommendedApps, 'RECOMMONDED APPS IN NEW APPS');
+      }
+    };
+    fetchAppsCount();
+  }, [appAddrs, followedPubkeys]);
+
   return (
     <div>
       <Container className="ps-0 pe-0">
@@ -73,7 +126,11 @@ const NewApps = () => {
             {allApps.length === 0 && !loading && 'Nothing found on relays.'}
             <div className="container-apps">
               {allApps?.map((app) => {
-                return <ApplicationItem key={app.id} app={app} />;
+                return (
+                  <div key={app.id}>
+                    <ApplicationItem app={app} />
+                  </div>
+                );
               })}
             </div>
             {loading && !empty && <LoadingSpinner />}

@@ -13,9 +13,8 @@ const ApplicationItem = (props) => {
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
   let about = app?.about;
   if (about?.length > 40) about = about.substring(0, 40) + '...';
-
   return (
-    <Link key={props.key} to={props.app ? getUrl(props.app) : ''}>
+    <Link to={props.app ? getUrl(props.app) : ''}>
       <div className="card-app">
         {app?.picture?.length > 0 ? (
           <img className="app-logo-main" src={app?.picture} alt={app?.name} />
