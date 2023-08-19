@@ -7,7 +7,6 @@ import { useAuth } from '../../context/AuthContext';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
-  console.log(pubkey);
   const [allApps, setAllApps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [lastCreatedAt, setLastCreatedAt] = useState(null);
