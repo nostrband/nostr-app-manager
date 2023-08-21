@@ -16,6 +16,22 @@ const NewApps = () => {
   const [appAddrs, setAppAddrs] = useState([]);
   const [appCountsState, setAppCountsState] = useState({});
 
+  function generateAddr(event) {
+    const kind = event.kind;
+    const pubkey = event.pubkey;
+    const identifierTag = event.tags.find((tag) => tag[0] === 'd');
+    if (!identifierTag) {
+      console.error('Identifier tag not found for event:', event);
+      return null;
+    }
+    const identifier = identifierTag[1];
+    if (!kind || !pubkey || !identifier) {
+      console.error('Invalid or missing data for event:', event);
+      return null;
+    }
+    return `${kind}:${pubkey}:${identifier}`;
+  }
+
   const fetchApps = async (created_at) => {
     setLoading(true);
     try {
@@ -34,9 +50,7 @@ const NewApps = () => {
           setEmpty(true);
         }
         setLastCreatedAt(filteredApps[filteredApps.length - 1].created_at);
-        const currentAppAddrs = filteredApps.map((app) =>
-          cmn.naddrToAddr(cmn.getNaddr(app))
-        );
+        const currentAppAddrs = filteredApps.map((app) => generateAddr(app));
         setAppAddrs((prevAppAddrs) => [...prevAppAddrs, ...currentAppAddrs]);
         setAllApps((prevApps) => [...prevApps, ...filteredApps]);
       } else {
@@ -137,7 +151,7 @@ const NewApps = () => {
             {allApps.length === 0 && !loading && 'Nothing found on relays.'}
             <div className="container-apps">
               {allApps?.map((app) => {
-                const appAddr = cmn.naddrToAddr(cmn.getNaddr(app));
+                const appAddr = generateAddr(app);
                 return (
                   <div key={app.id}>
                     <ApplicationItem
