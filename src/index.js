@@ -5,8 +5,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ThemeProvider from 'react-bootstrap/ThemeProvider';
 import { IntlProvider } from './IntlProvider';
 import RepositoryPage from './pages/RepositoryPage';
-import About from './About';
-
 import './index.scss';
 import Root from './Root';
 import Recommendations from './Recommendations';
@@ -14,9 +12,10 @@ import Profile from './Profile';
 import AppInfo from './AppInfo';
 import AppEdit from './AppEdit';
 import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from './context/ShowModalContext';
+import { LoginModalProvider } from './context/ShowModalContext';
 import { ToastContainer } from 'react-toastify';
 import RepositoryInfo from './RepositoryInfo';
+import { AuthProvider } from './context/AuthContext';
 
 const HTTP = new QueryClient();
 
@@ -59,12 +58,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <QueryClientProvider client={HTTP}>
     <AuthProvider>
-      <IntlProvider>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-          <ToastContainer />
-        </ThemeProvider>
-      </IntlProvider>
+      <LoginModalProvider>
+        <IntlProvider>
+          <ThemeProvider>
+            <RouterProvider router={router} />
+            <ToastContainer />
+          </ThemeProvider>
+        </IntlProvider>
+      </LoginModalProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

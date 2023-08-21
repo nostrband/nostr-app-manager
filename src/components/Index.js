@@ -162,11 +162,10 @@ const Index = () => {
     apps: <NewApps />,
     codes: <Repositories />,
   };
-
   return (
     <main className="mt-3">
       <div className="d-flex justify-content-center pt-4 pb-5">
-        <ul class="nav nav-pills d-flex justify-content-center ">
+        <ul className="nav nav-pills d-flex justify-content-center ">
           {navs.map((nav) => {
             return (
               <li

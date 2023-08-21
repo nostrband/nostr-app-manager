@@ -5,8 +5,7 @@ const AuthContext = React.createContext();
 export function useAuthShowModal() {
   return useContext(AuthContext);
 }
-
-export function AuthProvider({ children }) {
+export function LoginModalProvider({ children }) {
   const [showLogin, setShowLogin] = useState(false);
 
   const value = {
