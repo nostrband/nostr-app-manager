@@ -111,89 +111,90 @@ const AppInfoView = () => {
       )}
       {info && (
         <div className="mt-5 app-info-view">
-          <AppInfo key={appInfo.name} app={appInfo} />
-          <h6 className="mt-3">Published by:</h6>
-          <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
+          <AppInfo key={appInfo.name} app={appInfo}>
+            <h6 className="mt-4">Published by:</h6>
+            <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
 
-          {app.kinds ? (
-            <>
-              <h6 className="mt-3">Event kinds:</h6>
-              {app.kinds.map((k) => {
-                return (
-                  <Button
-                    key={k}
-                    size="sm"
-                    variant="outline-primary"
-                    className="me-1"
-                  >
-                    {cmn.getKindLabel(k)}
-                  </Button>
-                );
-              })}
-            </>
-          ) : null}
-
-          {app.platforms.length > 0 ? (
-            <>
-              <h6 className="mt-3">Platforms:</h6>
-              {app.platforms.map((p) => {
-                return (
-                  <span key={p}>
+            {app.kinds ? (
+              <>
+                <h6 className="mt-3">Event kinds:</h6>
+                {app.kinds.map((k) => {
+                  return (
                     <Button
-                      key={p}
+                      key={k}
                       size="sm"
                       variant="outline-primary"
                       className="me-1"
                     >
-                      {p}
+                      {cmn.getKindLabel(k)}
                     </Button>
-                  </span>
-                );
-              })}
-            </>
-          ) : null}
-          {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
-          {tags.map((t) => {
-            return (
-              <span key={t}>
-                <Button
-                  key={t}
-                  size="sm"
-                  variant="outline-primary"
-                  className="me-1"
-                >
-                  {t}
-                </Button>
-              </span>
-            );
-          })}
+                  );
+                })}
+              </>
+            ) : null}
 
-          <h6 className="mt-3">Used by ({countUsers}) :</h6>
-          {!recomms && <>Loading...</>}
-          {recomms != null && !recomms.length && <>No one yet.</>}
-          {(function () {
-            if (recomms != null && recomms.length > 0) {
-              const profiles = {};
-              recomms.map((r) => (profiles[r.pubkey] = r));
-              let list = Object.values(profiles);
-              if (list.length > 10) list.length = 10;
-              return list.map((r) => {
-                return (
-                  <Profile
-                    key={r.id}
-                    profile={r}
-                    pubkey={r.pubkey}
-                    small={true}
-                  />
-                );
-              });
-            }
-          })()}
-          <div className="mt-2">
-            <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
-              Add app to my list
-            </Button>
-          </div>
+            {app.platforms.length > 0 ? (
+              <>
+                <h6 className="mt-3">Platforms:</h6>
+                {app.platforms.map((p) => {
+                  return (
+                    <span key={p}>
+                      <Button
+                        key={p}
+                        size="sm"
+                        variant="outline-primary"
+                        className="me-1"
+                      >
+                        {p}
+                      </Button>
+                    </span>
+                  );
+                })}
+              </>
+            ) : null}
+            {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
+            {tags.map((t) => {
+              return (
+                <span key={t}>
+                  <Button
+                    key={t}
+                    size="sm"
+                    variant="outline-primary"
+                    className="me-1"
+                  >
+                    {t}
+                  </Button>
+                </span>
+              );
+            })}
+
+            <h6 className="mt-3">Used by ({countUsers}) :</h6>
+            {!recomms && <>Loading...</>}
+            {recomms != null && !recomms.length && <>No one yet.</>}
+            {(function () {
+              if (recomms != null && recomms.length > 0) {
+                const profiles = {};
+                recomms.map((r) => (profiles[r.pubkey] = r));
+                let list = Object.values(profiles);
+                if (list.length > 10) list.length = 10;
+                return list.map((r) => {
+                  return (
+                    <Profile
+                      key={r.id}
+                      profile={r}
+                      pubkey={r.pubkey}
+                      small={true}
+                    />
+                  );
+                });
+              }
+            })()}
+            <div className="mt-2">
+              <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
+                Add app to my list
+              </Button>
+            </div>
+          </AppInfo>
         </div>
       )}
 
