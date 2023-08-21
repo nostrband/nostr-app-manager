@@ -201,6 +201,7 @@ const AppInfo = (props) => {
               </div>
             )}
           </div>
+          {props.children}
         </Col>
         <Col xs="auto">
           <div className="d-flex flex-column align-items-center">
