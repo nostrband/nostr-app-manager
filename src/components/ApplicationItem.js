@@ -28,22 +28,26 @@ const ApplicationItem = (props) => {
         <p>{about}</p>
 
         <div className="count-users">
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip className="tooltip-count-users">
-                {props.pubkey ? 'Used by profiles you follow' : 'New users'}
-              </Tooltip>
-            }
-          >
-            <div>
-              <Users />
-            </div>
-          </OverlayTrigger>
-          <span>
-            {props.pubkey ? '' : '+'}
-            {props.count}
-          </span>
+          {props.count !== 0 ? (
+            <>
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <Tooltip className="tooltip-count-users">
+                    {props.pubkey ? 'Used by people you follow' : 'New users'}
+                  </Tooltip>
+                }
+              >
+                <div>
+                  <Users />
+                </div>
+              </OverlayTrigger>
+              <span>
+                {props.pubkey ? '' : '+'}
+                {props.count}
+              </span>
+            </>
+          ) : null}
         </div>
       </div>
     </Link>
