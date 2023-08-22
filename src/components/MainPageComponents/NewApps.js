@@ -127,25 +127,25 @@ const NewApps = () => {
           cmn.startFetch(ndk, filter),
         ]);
 
-        const appAuthors = {};
+        const appUsers = {};
         recommendedApps.forEach((recommendedApp) => {
           const appAddrTags = recommendedApp.tags.filter(
             (tag) => tag[0] === 'a'
           );
           appAddrTags.forEach((tag) => {
             const addr = tag[1];
-            if (!appAuthors[addr]) {
-              appAuthors[addr] = new Set();
+
+            if (!appUsers[addr]) {
+              appUsers[addr] = new Set();
             }
-            appAuthors[addr].add(recommendedApp.pubkey);
+            appUsers[addr].add(recommendedApp.pubkey);
           });
         });
-
-        const appUniqueCounts = {};
-        for (const [addr, authorsSet] of Object.entries(appAuthors)) {
-          appUniqueCounts[addr] = authorsSet.size;
+        const appCounts = {};
+        for (const [addr, userSet] of Object.entries(appUsers)) {
+          appCounts[addr] = userSet.size;
         }
-        setAppCountsState(appUniqueCounts);
+        setAppCountsState(appCounts);
       }
     };
     fetchRecommendedApps();
