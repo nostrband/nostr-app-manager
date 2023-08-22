@@ -126,16 +126,25 @@ const NewApps = () => {
         const recommendedApps = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, filter),
         ]);
-        const appCounts = {};
+        const appUserMap = {};
         recommendedApps.forEach((recommendedApp) => {
           const appAddrTags = recommendedApp.tags.filter(
             (tag) => tag[0] === 'a'
           );
+          const author = recommendedApp.author;
+
           appAddrTags.forEach((tag) => {
             const addr = tag[1];
-            appCounts[addr] = (appCounts[addr] || 0) + 1;
+            if (!appUserMap[addr]) {
+              appUserMap[addr] = new Set();
+            }
+            appUserMap[addr].add(author);
           });
         });
+        const appCounts = {};
+        for (let addr in appUserMap) {
+          appCounts[addr] = appUserMap[addr].size;
+        }
         setAppCountsState(appCounts);
       }
     };
