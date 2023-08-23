@@ -119,7 +119,9 @@ const RepositoryView = () => {
   const descriptionTagValue = getTagValue('description');
   const linkTagValue = getTagValue('r');
   const licenseTagValue = getTagValue('license');
-
+  const processedDescription = descriptionTagValue
+    .replace(/<br><br>/g, '\n')
+    .replace(/<br>/g, '\n');
   return (
     <>
       {loading ? (
@@ -148,18 +150,16 @@ const RepositoryView = () => {
                 </a>
               </li>
             ) : null}
-            {descriptionTagValue ? (
+            {processedDescription ? (
               <p className="description-repository">
-                {descriptionTagValue.split('\n').map((str, index, array) =>
-                  index === array.length - 1 ? (
-                    str
-                  ) : (
-                    <>
-                      {str}
+                {processedDescription.split('\n').map((str, index) => (
+                  <>
+                    {str}
+                    {index !== processedDescription.split('\n').length - 1 && (
                       <br />
-                    </>
-                  )
-                )}
+                    )}
+                  </>
+                ))}
               </p>
             ) : null}
 
