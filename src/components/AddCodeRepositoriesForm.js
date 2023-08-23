@@ -36,12 +36,13 @@ const CodeRepositoryForm = () => {
       ? initialValues.published_at
       : Math.floor(Date.now() / 1000).toString();
 
-    const descriptionWithLineBreaks = values.description.replace(/\n/g, '<br>');
+    const description = values.description;
+
     const event = {
       kind: 30117,
       tags: [
         ['title', values.name],
-        ['description', descriptionWithLineBreaks],
+        ['description', description],
         ['r', values.link],
         ['license', values?.license?.value],
         ['d', d],

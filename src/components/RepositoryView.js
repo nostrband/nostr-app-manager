@@ -113,7 +113,6 @@ const RepositoryView = () => {
       setLoading(false);
     }
   };
-
   const getTagValue = (tagName) =>
     repository?.tags.find((tag) => tag[0] === tagName)?.[1] || '';
 
@@ -150,11 +149,20 @@ const RepositoryView = () => {
               </li>
             ) : null}
             {descriptionTagValue ? (
-              <p
-                className="description-repository"
-                dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
-              ></p>
+              <p className="description-repository">
+                {descriptionTagValue.split('\n').map((str, index, array) =>
+                  index === array.length - 1 ? (
+                    str
+                  ) : (
+                    <>
+                      {str}
+                      <br />
+                    </>
+                  )
+                )}
+              </p>
             ) : null}
+
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
