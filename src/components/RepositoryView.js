@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import ReasubleModal from '../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
 import GitHubIconWithStar from '../elements/GitHubIconWithStar';
+import './PublishedRepositories.scss';
 
 const dynamicTags = [
   {
@@ -113,14 +114,15 @@ const RepositoryView = () => {
       setLoading(false);
     }
   };
-
   const getTagValue = (tagName) =>
     repository?.tags.find((tag) => tag[0] === tagName)?.[1] || '';
 
   const descriptionTagValue = getTagValue('description');
   const linkTagValue = getTagValue('r');
   const licenseTagValue = getTagValue('license');
-
+  const processedDescription = descriptionTagValue
+    .replace(/<br><br>/g, '\n')
+    .replace(/<br>/g, '\n');
   return (
     <>
       {loading ? (
@@ -149,12 +151,16 @@ const RepositoryView = () => {
                 </a>
               </li>
             ) : null}
-            {descriptionTagValue ? (
-              <p
-                className="description-repository"
-                dangerouslySetInnerHTML={{ __html: descriptionTagValue }}
-              ></p>
+            {processedDescription ? (
+              <div className="description-repository">
+                {processedDescription.split('\n').map((str, index) => (
+                  <p className="description" key={index}>
+                    {str}
+                  </p>
+                ))}
+              </div>
             ) : null}
+
             {licenseTagValue ? (
               <li>
                 <strong>License: </strong>
