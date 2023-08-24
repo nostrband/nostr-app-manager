@@ -2,7 +2,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import Header from '../components/Header';
-import AppEditView from '../components/AppEditView';
+import AppEditView from '../components/App/AppEditView';
 import Footer from '../components/Footer';
 
 const AppEditPage = () => {

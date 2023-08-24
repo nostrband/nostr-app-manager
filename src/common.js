@@ -892,6 +892,7 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
+  console.log('done publish  event')
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }

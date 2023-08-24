@@ -8,10 +8,10 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import { Spinner } from 'react-bootstrap';
-import Profile from '../elements/Profile';
-import AppInfo from '../elements/AppInfo';
+import Profile from '../../elements/Profile';
+import AppInfo from './AppInfo';
 
-import * as cmn from '../common';
+import * as cmn from '../../common';
 
 const AppInfoView = () => {
   const params = useParams();

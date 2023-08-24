@@ -4,24 +4,30 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
-import * as cmn from '../common';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
-import Zap from '../icons/Zap';
+import * as cmn from '../../common';
+import ConfirmDeleteModal from '../../elements/ConfirmDeleteModal';
+import Zap from '../../icons/Zap';
 import { nip19 } from '@nostrband/nostr-tools';
-import Heart from '../icons/Heart';
-import LikedHeart from '../icons/LikedHeart';
-import Share from '../icons/Share';
-import { useAuthShowModal } from '../context/ShowModalContext';
+import Heart from '../../icons/Heart';
+import LikedHeart from '../../icons/LikedHeart';
+import Share from '../../icons/Share';
+import { useAuthShowModal } from '../../context/ShowModalContext';
 import ShareAppModal from './ShareAppModal';
 import './AppInfo.scss';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import errorToast from './ErrorToast';
+import errorToast from '../../elements/ErrorToast';
+import UnCheckedStar from '../../icons/UnCheckedStar';
+import ReviewModal from './ReviewModal';
+import CheckedStar from '../../icons/CheckedStar';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const { setShowLogin } = useAuthShowModal();
   const [liked, setLiked] = useState(false);
+  const [review, setReview] = useState(false);
+  const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
   const app = props.app.profile;
@@ -36,7 +42,6 @@ const AppInfo = (props) => {
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
-
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
 
   useEffect(() => {
@@ -111,9 +116,50 @@ const AppInfo = (props) => {
     }
   };
 
+  const getCountReview = (review) => {
+    if (review) {
+      const filteredTags = review?.tags?.filter((tagArray) =>
+        tagArray.includes('l')
+      );
+      const jsonString = filteredTags[0]?.find(
+        (item) =>
+          typeof item === 'string' && item.startsWith('{') && item.endsWith('}')
+      );
+      const jsonObj = JSON.parse(jsonString);
+      const quality = jsonObj.quality;
+      const originalReview = Math.round(quality * 5);
+      setCountReview(originalReview);
+    }
+  };
+
+  const hasReview = async () => {
+    const ndk = await cmn.getNDK();
+    if (cmn.isAuthed()) {
+      const addr = cmn.naddrToAddr(cmn.getNaddr(props.app));
+      const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+      const addrForFilter = {
+        kinds: [1985],
+        '#a': [addr],
+        authors: [loginPubkey],
+      };
+      try {
+        const result = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, addrForFilter),
+        ]);
+        if (result.length > 0) {
+          setReview(result[result.length - 1]);
+          getCountReview(result[result.length - 1]);
+        }
+      } catch (error) {
+        console.error('Error fetching liked status:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     checkIfLiked();
-  }, []);
+    hasReview();
+  }, [props.app]);
 
   const showZapError = () => {
     if (!app?.lud16) {
@@ -166,6 +212,14 @@ const AppInfo = (props) => {
     fetchCountsZap();
     fetchCountShared();
   }, []);
+
+  const openReviewModalHandler = () => {
+    if (cmn.localGet('loginPubkey')) {
+      setShowReviewModal(true);
+    } else {
+      setShowLogin(true);
+    }
+  };
 
   return (
     <div className="AppInfo">
@@ -261,6 +315,25 @@ const AppInfo = (props) => {
                 <Share onClick={openShareAppModalAndSetText} />
               </div>
             </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip className="tooltip-review">
+                  Review for this application
+                </Tooltip>
+              }
+            >
+              <div
+                onClick={openReviewModalHandler}
+                className="review count-block"
+              >
+                <span className="font-weight-bold" style={{ color: '#FFC700' }}>
+                  {review ? countReview : '+'}
+                </span>
+                {review ? <CheckedStar /> : <UnCheckedStar />}
+              </div>
+            </OverlayTrigger>
           </div>
 
           {allowEdit && (
@@ -301,6 +374,18 @@ const AppInfo = (props) => {
         selectedApp={props.app}
         textForShare={textForShare}
       />
+
+      {showReviewModal ? (
+        <ReviewModal
+          hasReview={hasReview}
+          countReview={countReview}
+          setCountReview={setCountReview}
+          review={review}
+          app={props.app}
+          showModal={showReviewModal}
+          handleCloseModal={() => setShowReviewModal(false)}
+        />
+      ) : null}
     </div>
   );
 };
