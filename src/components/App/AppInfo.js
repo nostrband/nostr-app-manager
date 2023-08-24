@@ -127,7 +127,7 @@ const AppInfo = (props) => {
       );
       const jsonObj = JSON.parse(jsonString);
       const quality = jsonObj.quality;
-      const originalReview = Math.round(1 / quality);
+      const originalReview = Math.round(quality * 5);
       setCountReview(originalReview);
     }
   };
@@ -147,10 +147,8 @@ const AppInfo = (props) => {
           cmn.startFetch(ndk, addrForFilter),
         ]);
         if (result.length > 0) {
-          setReview(result[0]);
-          getCountReview(result[0]);
-        } else {
-          setReview(false);
+          setReview(result[result.length - 1]);
+          getCountReview(result[result.length - 1]);
         }
       } catch (error) {
         console.error('Error fetching liked status:', error);
@@ -331,7 +329,7 @@ const AppInfo = (props) => {
                 className="review count-block"
               >
                 <span className="font-weight-bold" style={{ color: '#FFC700' }}>
-                  {countReview === 0 ? '+' : countReview}
+                  {review ? countReview : '+'}
                 </span>
                 {review ? <CheckedStar /> : <UnCheckedStar />}
               </div>

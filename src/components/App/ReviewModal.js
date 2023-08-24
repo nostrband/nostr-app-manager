@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { Rating } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Toast from '../../elements/Toast';
 import { toast } from 'react-toastify';
-import ReactStars from 'react-rating-stars-component';
 import * as cmn from '../../common';
 
 const ReviewModal = ({
@@ -31,13 +31,17 @@ const ReviewModal = ({
     setReviewText(review.content);
   }, [review]);
 
-  const ratingChanged = (newRating) => {
-    setCountReview(newRating);
+  const setRating = (event, newValue) => {
+    if (newValue === null) {
+      setCountReview(0);
+    } else {
+      setCountReview(newValue);
+    }
   };
 
   const sendReviewQuery = async () => {
     const toastId = toast('Loading...', { type: 'pending', autoClose: false });
-    const qualityValue = 1 / countReview;
+    const qualityValue = countReview / 5;
     const event = {
       kind: 1985,
       tags: [
@@ -100,8 +104,13 @@ const ReviewModal = ({
     }
   };
 
+  const cancelHandler = () => {
+    handleCloseModal(false);
+    hasReview();
+  };
+
   return (
-    <Modal show onHide={handleCloseModal}>
+    <Modal show onHide={cancelHandler}>
       <Toast
         animation
         delay={3}
@@ -115,17 +124,8 @@ const ReviewModal = ({
       </Modal.Header>
       <Modal.Body>
         <div class="form-group">
-          <div className="d-flex justify-content-center">
-            <ReactStars
-              count={5}
-              value={countReview}
-              onChange={ratingChanged}
-              size={30}
-              activeColor="#ffc700"
-            />
-          </div>
-
           <textarea
+            placeholder="Type your review here"
             ref={textRef}
             style={{ minHeight: '60px' }}
             onChange={(e) => setReviewText(e.target.value)}
@@ -134,13 +134,16 @@ const ReviewModal = ({
           >
             {reviewText}
           </textarea>
+          <div className="mt-3">
+            <Rating
+              name="review-rating"
+              value={countReview}
+              onChange={setRating}
+            />
+          </div>
         </div>
         <div className="d-flex justify-content-center mt-3">
-          <Button
-            onClick={handleCloseModal}
-            variant="secondary"
-            className="w-50"
-          >
+          <Button onClick={cancelHandler} variant="secondary" className="w-50">
             Cancel
           </Button>
           <Button
