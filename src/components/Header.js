@@ -12,6 +12,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import * as cmn from '../common';
 import { useAuthShowModal } from '../context/ShowModalContext';
 import { useAuth } from '../context/AuthContext';
+import SearchApp from './SearchApp';
+import { isTablet } from '../const';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -97,7 +99,12 @@ const Header = () => {
             </Link>
           </h4>
         </Col>
-        <Col xs="auto" className="d-flex align-items-center">
+        <Col
+          style={{ width: '60%' }}
+          xs="auto"
+          className={`d-flex ${isTablet ? 'w-100' : ''}`}
+        >
+          <SearchApp />
           {!pubkey && (
             <Button
               variant="outline-secondary"

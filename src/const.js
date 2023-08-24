@@ -152,3 +152,5 @@ export const optionsNips = [
   { value: 'NIP-98', label: 'NIP-98: HTTP Auth' },
   { value: 'NIP-99', label: 'NIP-99: Classified Listings' },
 ];
+
+export const isTablet = window.screen.width < 615;
