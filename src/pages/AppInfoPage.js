@@ -2,7 +2,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import Header from '../components/Header';
-import AppInfoView from '../components/AppInfoView';
+import AppInfoView from '../components/App/AppInfoView';
 import Footer from '../components/Footer';
 
 const AppInfoPage = () => {

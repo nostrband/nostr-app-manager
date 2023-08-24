@@ -8,8 +8,8 @@
 }
 
 .zap {
-  border: 1px solid #ffc600;
-  color: #ffc600;
+  border: 1px solid #9747ff;
+  color: #9747ff;
 }
 
 .like {
@@ -22,9 +22,12 @@
   color: #84b7ff;
 }
 
+.review {
+  border: 1px solid #ffc700;
+}
+
 .tooltip-inner {
-  background-color: #ffc600;
-  color: rgb(21, 20, 20);
+  background-color: #9747ff;
   border-radius: 4px;
   padding: 5px 10px;
   font-size: 14px;
@@ -38,5 +41,10 @@
 
 .tooltip-share .tooltip-inner {
   background-color: #84b7ff;
+  color: rgb(21, 20, 20);
+}
+
+.tooltip-review .tooltip-inner {
+  background-color: #ffc700;
   color: rgb(21, 20, 20);
 }

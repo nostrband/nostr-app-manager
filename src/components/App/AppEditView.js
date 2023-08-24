@@ -5,7 +5,7 @@ import { nip19 } from '@nostrband/nostr-tools';
 
 import AppEditForm from './AppEditForm';
 
-import * as cmn from '../common';
+import * as cmn from '../../common';
 
 const AppEditView = () => {
   const params = useParams();

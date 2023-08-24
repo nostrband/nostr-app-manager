@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Toast from './Toast';
-import * as cmn from '../common';
+import Toast from '../../elements/Toast';
+import * as cmn from '../../common';
 import { toast } from 'react-toastify';
 
 const ShareAppModal = ({
