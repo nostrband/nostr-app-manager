@@ -17,9 +17,11 @@ const SearchApp = () => {
   const [loading, setLoading] = useState(false);
 
   const transformData = (data) => {
+    console.log(data, 'DATA');
     return {
       id: data.id,
-      name: JSON.parse(data.content).name,
+      name:
+        JSON.parse(data.content).name || JSON.parse(data.content).display_name,
       picture: JSON.parse(data.content).picture,
       app: data,
     };
