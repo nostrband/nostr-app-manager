@@ -21,7 +21,7 @@ const SearchApp = () => {
     return {
       id: data.id,
       name:
-        JSON.parse(data.content).name || JSON.parse(data.content).display_name,
+        JSON.parse(data.content).display_name || JSON.parse(data.content).name,
       picture: JSON.parse(data.content).picture,
       app: data,
     };
