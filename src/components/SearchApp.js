@@ -17,7 +17,6 @@ const SearchApp = () => {
   const [loading, setLoading] = useState(false);
 
   const transformData = (data) => {
-    console.log(data, 'DATA');
     return {
       id: data.id,
       name: JSON.parse(data.content).name,
@@ -39,7 +38,7 @@ const SearchApp = () => {
       setLoading(false);
     }
   };
-
+  console.log(loading, 'LOADING');
   const searchFunction = useCallback(
     debounce((query) => {
       getAppsBySearchQuery(query);

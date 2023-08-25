@@ -90,7 +90,7 @@ const Header = () => {
     }, 0);
   };
   return (
-    <header>
+    <header className="pt-3">
       <Row>
         <Col className="d-flex align-items-center">
           <h4>
@@ -107,6 +107,7 @@ const Header = () => {
           <SearchApp />
           {!pubkey && (
             <Button
+              style={{ height: '40px' }}
               variant="outline-secondary"
               onClick={(e) => setShowLogin(true)}
             >
@@ -116,7 +117,10 @@ const Header = () => {
           {pubkey && (
             <div>
               <Dropdown drop="down-left">
-                <Dropdown.Toggle variant="outline-secondary">
+                <Dropdown.Toggle
+                  style={{ height: '40px' }}
+                  variant="outline-secondary"
+                >
                   Menu
                 </Dropdown.Toggle>
 
