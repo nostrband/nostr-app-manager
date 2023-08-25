@@ -1,5 +1,5 @@
 .search-button {
-  width: 70px;
+  width: 100%;
   height: 40px;
   margin-right: 10px;
 }
@@ -17,4 +17,9 @@
 
 .fade-in {
   animation: fadeIn 0.8s ease-out forwards;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
 }

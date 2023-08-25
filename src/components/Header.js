@@ -97,12 +97,12 @@ const Header = () => {
       <Row>
         <Col className="d-flex align-items-center">
           <h4>
-            <Link to="/" onClick={goHome}>
-              <Logo /> App Manager
+            <Link className="logo" to="/" onClick={goHome}>
+              <Logo /> <span className="logo-text">App Manager</span>
             </Link>
           </h4>
         </Col>
-        <Col style={{ width: '60%' }} xs="auto">
+        <Col style={{ width: isTablet ? '45%' : '60%' }} xs="auto">
           <div className="d-flex justify-content-end">
             {!isTablet ? (
               <SearchApp />
