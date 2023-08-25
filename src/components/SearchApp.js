@@ -17,7 +17,6 @@ const SearchApp = () => {
   const [loading, setLoading] = useState(false);
 
   const transformData = (data) => {
-    console.log(data, 'DATA');
     return {
       id: data.id,
       name:
