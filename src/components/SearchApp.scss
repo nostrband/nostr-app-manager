@@ -1,0 +1,30 @@
+.search-field-container {
+  width: 100%;
+  margin-right: 10px;
+}
+
+.app-logo-option {
+  width: 40px;
+  height: 40px;
+}
+.option-element {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  gap: 10px;
+  color: black;
+}
+
+.default-image-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+  background-color: rgb(225, 225, 225);
+  img {
+    width: 25px;
+    height: 25px;
+  }
+}

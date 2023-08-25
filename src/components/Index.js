@@ -163,7 +163,7 @@ const Index = () => {
     codes: <Repositories />,
   };
   return (
-    <main className="mt-3">
+    <main className="mt-1">
       <div className="d-flex justify-content-center pt-4 pb-5">
         <ul className="nav nav-pills d-flex justify-content-center ">
           {navs.map((nav) => {

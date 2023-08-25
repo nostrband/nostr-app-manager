@@ -8,10 +8,14 @@ import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import './Header.scss';
 
 import * as cmn from '../common';
 import { useAuthShowModal } from '../context/ShowModalContext';
 import { useAuth } from '../context/AuthContext';
+import SearchApp from './SearchApp';
+import { isTablet } from '../const';
+import SearchButton from '../elements/SearchButton';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,6 +24,7 @@ const Header = () => {
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showSearchField, setShowSearchField] = useState(false);
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -88,74 +93,94 @@ const Header = () => {
     }, 0);
   };
   return (
-    <header>
+    <header className="pt-3">
       <Row>
         <Col className="d-flex align-items-center">
           <h4>
-            <Link to="/" onClick={goHome}>
-              <Logo /> App Manager
+            <Link className="logo" to="/" onClick={goHome}>
+              <Logo /> <span className="logo-text">App Manager</span>
             </Link>
           </h4>
         </Col>
-        <Col xs="auto" className="d-flex align-items-center">
-          {!pubkey && (
-            <Button
-              variant="outline-secondary"
-              onClick={(e) => setShowLogin(true)}
-            >
-              Login
-            </Button>
-          )}
-          {pubkey && (
-            <div>
-              <Dropdown drop="down-left">
-                <Dropdown.Toggle variant="outline-secondary">
-                  Menu
-                </Dropdown.Toggle>
+        <Col style={{ width: isTablet ? '45%' : '60%' }} xs="auto">
+          <div className="d-flex justify-content-end">
+            {!isTablet ? (
+              <SearchApp />
+            ) : (
+              <SearchButton
+                onClick={() => setShowSearchField((prev) => !prev)}
+              />
+            )}
+            {!pubkey && (
+              <Button
+                style={{ height: '40px' }}
+                variant="outline-secondary"
+                onClick={(e) => setShowLogin(true)}
+              >
+                Login
+              </Button>
+            )}
+            {pubkey && (
+              <div>
+                <Dropdown drop="down-left">
+                  <Dropdown.Toggle
+                    style={{ height: '40px' }}
+                    variant="outline-secondary"
+                  >
+                    Menu
+                  </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  <Dropdown.ItemText>
-                    {profile
-                      ? profile.name ||
-                        profile.display_name ||
-                        cmn.formatNpubShort(pubkey)
-                      : cmn.formatNpubShort(pubkey)}
-                  </Dropdown.ItemText>
-                  <Dropdown.Divider></Dropdown.Divider>
-                  <Dropdown.Item
-                    href={appsUrl}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate(appsUrl);
-                    }}
-                  >
-                    My apps
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    href={createUrl}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate(createUrl);
-                    }}
-                  >
-                    Create app
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate(createUrlForAddRepo);
-                    }}
-                  >
-                    Create repository
-                  </Dropdown.Item>
-                  <Dropdown.Divider></Dropdown.Divider>
-                  <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          )}
+                  <Dropdown.Menu>
+                    <Dropdown.ItemText>
+                      {profile
+                        ? profile.name ||
+                          profile.display_name ||
+                          cmn.formatNpubShort(pubkey)
+                        : cmn.formatNpubShort(pubkey)}
+                    </Dropdown.ItemText>
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item
+                      href={appsUrl}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(appsUrl);
+                      }}
+                    >
+                      My apps
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      href={createUrl}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(createUrl);
+                      }}
+                    >
+                      Create app
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(createUrlForAddRepo);
+                      }}
+                    >
+                      Create repository
+                    </Dropdown.Item>
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+            )}
+          </div>
         </Col>
       </Row>
+      {isTablet && showSearchField ? (
+        <Col>
+          <div className="fade-in mt-2">
+            <SearchApp />
+          </div>
+        </Col>
+      ) : null}
 
       <Modal show={showLogin} onHide={(e) => setShowLogin(false)}>
         <Modal.Header closeButton>
