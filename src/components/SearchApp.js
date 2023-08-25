@@ -38,7 +38,6 @@ const SearchApp = () => {
       setLoading(false);
     }
   };
-  console.log(loading, 'LOADING');
   const searchFunction = useCallback(
     debounce((query) => {
       getAppsBySearchQuery(query);
