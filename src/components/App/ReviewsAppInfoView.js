@@ -13,44 +13,43 @@ const ReviewsAppInfoView = ({ app }) => {
   const getReviews = async () => {
     setLoading(true);
     const ndk = await cmn.getNDK();
-    if (cmn.isAuthed()) {
-      const addr = cmn.naddrToAddr(cmn.getNaddr(app));
-      const addrForFilter = {
-        kinds: [1985],
-        '#a': [addr],
-      };
-      try {
-        const response = await cmn.fetchAllEvents([
-          cmn.startFetch(ndk, addrForFilter),
-        ]);
-        if (response.length > 0) {
-          const reviewsData = await Promise.all(
-            response.map(async (review) => {
-              const filter = {
-                kinds: [0],
-                authors: [review.pubkey],
-              };
-              try {
-                const authorReview = await cmn.fetchAllEvents([
-                  cmn.startFetch(ndk, filter),
-                ]);
-                if (review.pubkey === authorReview[0].pubkey) {
-                  return { ...review, author: authorReview[0] };
-                } else {
-                  return review;
-                }
-              } catch (error) {
+
+    const addr = cmn.naddrToAddr(cmn.getNaddr(app));
+    const addrForFilter = {
+      kinds: [1985],
+      '#a': [addr],
+    };
+    try {
+      const response = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, addrForFilter),
+      ]);
+      if (response.length > 0) {
+        const reviewsData = await Promise.all(
+          response.map(async (review) => {
+            const filter = {
+              kinds: [0],
+              authors: [review.pubkey],
+            };
+            try {
+              const authorReview = await cmn.fetchAllEvents([
+                cmn.startFetch(ndk, filter),
+              ]);
+              if (review.pubkey === authorReview[0].pubkey) {
+                return { ...review, author: authorReview[0] };
+              } else {
                 return review;
               }
-            })
-          );
-          setReviews((prev) => ({ ...prev, reviewsData }));
-        }
-      } catch (error) {
-        console.error('Error fetching liked status:', error);
-      } finally {
-        setLoading(false);
+            } catch (error) {
+              return review;
+            }
+          })
+        );
+        setReviews((prev) => ({ ...prev, reviewsData }));
       }
+    } catch (error) {
+      console.error('Error fetching liked status:', error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
