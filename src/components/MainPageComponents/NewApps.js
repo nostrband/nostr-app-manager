@@ -4,6 +4,7 @@ import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
 import { useAuth } from '../../context/AuthContext';
+import { generateAddr } from '../../common';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
@@ -15,22 +16,6 @@ const NewApps = () => {
   const [followedPubkeys, setFollowedPubkeys] = useState([]);
   const [appAddrs, setAppAddrs] = useState([]);
   const [appCountsState, setAppCountsState] = useState({});
-
-  function generateAddr(event) {
-    const kind = event.kind;
-    const pubkey = event.pubkey;
-    const identifierTag = event.tags.find((tag) => tag[0] === 'd');
-    if (!identifierTag) {
-      console.error('Identifier tag not found for event:', event);
-      return null;
-    }
-    const identifier = identifierTag[1];
-    if (!kind || !pubkey || !identifier) {
-      console.error('Invalid or missing data for event:', event);
-      return null;
-    }
-    return `${kind}:${pubkey}:${identifier}`;
-  }
 
   const fetchApps = async (created_at) => {
     setLoading(true);

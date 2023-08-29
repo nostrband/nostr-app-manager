@@ -204,7 +204,7 @@ const AppInfo = (props) => {
   };
 
   const fetchCountsLike = () => fetchCounts(7, setLikeCount);
-  const fetchCountsZap = () => fetchCounts(9735, setZapCount);
+  const fetchCountsZap = () => fetchCounts(9734, setZapCount);
   const fetchCountShared = () => fetchCounts(1, setShareCount);
 
   useEffect(() => {
@@ -255,7 +255,6 @@ const AppInfo = (props) => {
               </div>
             )}
           </div>
-          {props.children}
         </Col>
         <Col xs="auto">
           <div className="d-flex flex-column align-items-center">
@@ -359,6 +358,7 @@ const AppInfo = (props) => {
             </div>
           )}
         </Col>
+        {props.children}
       </Row>
       {allowEdit ? (
         <ConfirmDeleteModal

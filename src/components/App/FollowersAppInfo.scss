@@ -1,0 +1,28 @@
+.followers-avatar-container {
+  display: flex;
+  justify-content: start;
+  position: relative;
+  .MuiAvatar-root {
+    margin-right: -10px;
+    -webkit-box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+    -moz-box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+    box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+  }
+}
+
+.count-rest-users {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  left: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(211, 212, 212);
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  -webkit-box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+  -moz-box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+  box-shadow: 1px 1px 8px 0px rgba(34, 60, 80, 0.2);
+}

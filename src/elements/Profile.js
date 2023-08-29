@@ -36,7 +36,7 @@ const Profile = (props) => {
           {!p?.picture && <Avatar className="profile" size={size} />}
         </Link>
       </Col>
-      <Col>
+      <Col className="d-flex align-items-center">
         <div className="me-auto">
           <div className="fw-bold">{name}</div>
           {!props.small && (

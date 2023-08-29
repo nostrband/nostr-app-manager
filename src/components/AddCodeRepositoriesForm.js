@@ -30,6 +30,7 @@ const CodeRepositoryForm = () => {
   const [identifier, setIdentifier] = useState('');
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
   const navigate = useNavigate();
+
   const handleSubmitHandler = async (values) => {
     const d = identifier ? identifier : '' + Date.now().toString();
     const published_at = initialValues.published_at
@@ -81,7 +82,6 @@ const CodeRepositoryForm = () => {
         const foundTag = repositoryData.tags.find((t) => t[0] === tag);
         return foundTag ? foundTag[1] : '';
       };
-
       const descriptionWithLineBreaks = findTagValue('description').replace(
         /<br>/g,
         '\n'

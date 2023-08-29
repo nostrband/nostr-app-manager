@@ -1,7 +1,7 @@
-const CheckedStar = ({ props, onClick }) => {
+const CheckedStar = ({ props, onClick, className }) => {
   return (
     <svg
-      className="pointer"
+      className={className}
       width="34"
       height="34"
       viewBox="0 0 36 36"

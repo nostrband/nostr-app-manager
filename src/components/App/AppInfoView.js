@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import { nip19 } from '@nostrband/nostr-tools';
 
@@ -12,6 +12,25 @@ import Profile from '../../elements/Profile';
 import AppInfo from './AppInfo';
 
 import * as cmn from '../../common';
+import FollowersAppInfoView from './FollowersAppInfoView';
+import ReviewsAppInfoView from './ReviewsAppInfoView';
+import ReacitonsAppInfoView from './ReactionsAppInfoView';
+import KindElement from '../../elements/KindElement';
+
+const tabs = [
+  {
+    title: 'Users',
+    path: 'users',
+  },
+  {
+    title: 'Reviews',
+    path: 'reviews',
+  },
+  {
+    title: 'Reactions',
+    path: 'reactions',
+  },
+];
 
 const AppInfoView = () => {
   const params = useParams();
@@ -26,6 +45,7 @@ const AppInfoView = () => {
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
+  const [activeComponent, setActiveComponent] = useState('users');
 
   const init = useCallback(async () => {
     const { type, data } = nip19.decode(naddr);
@@ -72,7 +92,6 @@ const AppInfoView = () => {
 
   const app = Object.values(info.apps)[0];
   const appInfo = app.addrHandler;
-
   const toggleAddKind = (kind, checked) => {
     setAddKinds((kinds) =>
       checked ? [...kinds, kind] : kinds.filter((k) => k !== kind)
@@ -102,6 +121,12 @@ const AppInfoView = () => {
     // update
     cmn.fetchRecomms(cmn.getEventAddr(appInfo)).then(setRecomms);
   }
+  const appInfoViewComponents = {
+    users: <FollowersAppInfoView app={appInfo} recomms={recomms} />,
+    reviews: <ReviewsAppInfoView app={appInfo} />,
+    reactions: <ReacitonsAppInfoView app={appInfo} />,
+  };
+
   return (
     <>
       {info === null && (
@@ -113,23 +138,21 @@ const AppInfoView = () => {
         <div className="mt-5 app-info-view">
           <AppInfo key={appInfo.name} app={appInfo}>
             <h6 className="mt-4">Published by:</h6>
-            <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
-
+            <div>
+              <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
+            </div>
             {app.kinds ? (
               <>
                 <h6 className="mt-3">Event kinds:</h6>
-                {app.kinds.map((k) => {
-                  return (
-                    <Button
-                      key={k}
-                      size="sm"
-                      variant="outline-primary"
-                      className="me-1"
-                    >
-                      {cmn.getKindLabel(k)}
-                    </Button>
-                  );
-                })}
+                <div>
+                  {app.kinds.map((k) => {
+                    return (
+                      <KindElement key={k} className="me-1">
+                        {cmn.getKindLabel(k)}
+                      </KindElement>
+                    );
+                  })}
+                </div>
               </>
             ) : null}
 
@@ -139,56 +162,46 @@ const AppInfoView = () => {
                 {app.platforms.map((p) => {
                   return (
                     <span key={p}>
-                      <Button
-                        key={p}
-                        size="sm"
-                        variant="outline-primary"
-                        className="me-1"
-                      >
+                      <KindElement key={p} className="me-1">
                         {p}
-                      </Button>
+                      </KindElement>
                     </span>
                   );
                 })}
               </>
             ) : null}
             {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
-            {tags.map((t) => {
-              return (
-                <span key={t}>
-                  <Button
-                    key={t}
-                    size="sm"
-                    variant="outline-primary"
-                    className="me-1"
-                  >
-                    {t}
-                  </Button>
-                </span>
-              );
-            })}
+            <div>
+              {tags.map((t) => {
+                return (
+                  <span key={t}>
+                    <KindElement key={t} className="me-1">
+                      {t}
+                    </KindElement>
+                  </span>
+                );
+              })}
+            </div>
 
-            <h6 className="mt-3">Used by ({countUsers}) :</h6>
-            {!recomms && <>Loading...</>}
-            {recomms != null && !recomms.length && <>No one yet.</>}
-            {(function () {
-              if (recomms != null && recomms.length > 0) {
-                const profiles = {};
-                recomms.map((r) => (profiles[r.pubkey] = r));
-                let list = Object.values(profiles);
-                if (list.length > 10) list.length = 10;
-                return list.map((r) => {
+            <div className="d-flex pt-4 pb-3">
+              <ul className="nav nav-pills d-flex justify-content-center ">
+                {tabs.map((nav) => {
                   return (
-                    <Profile
-                      key={r.id}
-                      profile={r}
-                      pubkey={r.pubkey}
-                      small={true}
-                    />
+                    <li
+                      onClick={() => {
+                        setActiveComponent(nav.path);
+                      }}
+                      className={`pointer nav-link nav-item ${
+                        activeComponent === nav.path ? 'active' : ''
+                      }`}
+                    >
+                      {nav.title}
+                    </li>
                   );
-                });
-              }
-            })()}
+                })}
+              </ul>
+            </div>
+            {appInfoViewComponents[activeComponent]}
             <div className="mt-2">
               <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
                 Add app to my list
@@ -197,7 +210,6 @@ const AppInfoView = () => {
           </AppInfo>
         </div>
       )}
-
       <Modal show={showAddApp} onHide={(e) => setShowAddApp(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add {appInfo.display_name || appInfo.name}</Modal.Title>
