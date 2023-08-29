@@ -1,7 +1,7 @@
 const LikedHeart = ({ props, onClick }) => {
   return (
     <svg
-      className="pointer"
+      className={`${onClick ? 'pointer' : ''}`}
       onClick={onClick}
       width="34"
       height="34"

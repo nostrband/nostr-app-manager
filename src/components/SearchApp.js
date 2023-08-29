@@ -54,7 +54,13 @@ const SearchApp = () => {
   }, [searchTerm, searchFunction]);
 
   return (
-    <div className="search-field-container w-100">
+    <div
+      style={{
+        zIndex: 10,
+        position: 'relative',
+      }}
+      className="search-field-container w-100"
+    >
       <Autocomplete
         open={isOpen}
         loading={loading}

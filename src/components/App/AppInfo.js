@@ -20,10 +20,11 @@ import errorToast from '../../elements/ErrorToast';
 import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
+import { useReviewModal } from '../../context/ShowReviewContext';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
-  const [showReviewModal, setShowReviewModal] = useState(false);
+  const { showReviewModal, setShowReviewModal } = useReviewModal();
   const { setShowLogin } = useAuthShowModal();
   const [liked, setLiked] = useState(false);
   const [review, setReview] = useState(false);
@@ -204,7 +205,7 @@ const AppInfo = (props) => {
   };
 
   const fetchCountsLike = () => fetchCounts(7, setLikeCount);
-  const fetchCountsZap = () => fetchCounts(9735, setZapCount);
+  const fetchCountsZap = () => fetchCounts(9734, setZapCount);
   const fetchCountShared = () => fetchCounts(1, setShareCount);
 
   useEffect(() => {
@@ -255,7 +256,6 @@ const AppInfo = (props) => {
               </div>
             )}
           </div>
-          {props.children}
         </Col>
         <Col xs="auto">
           <div className="d-flex flex-column align-items-center">
@@ -359,6 +359,7 @@ const AppInfo = (props) => {
             </div>
           )}
         </Col>
+        {props.children}
       </Row>
       {allowEdit ? (
         <ConfirmDeleteModal

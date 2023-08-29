@@ -9,6 +9,10 @@ a {
   text-decoration: none;
 }
 
+ul {
+  list-style: none;
+}
+
 img.profile {
   border: 1px solid #eee;
   border-radius: 50%;
@@ -57,7 +61,7 @@ img.banner {
   display: inline-block;
   text-align: center;
   padding: 5px 10px;
-  margin: 7px 10px 0 0;
+  margin: 5px 7px 0 0;
   border: 1px solid #0c6dfd;
   color: #0c6dfd;
   border-radius: 5px;
@@ -101,4 +105,9 @@ img.banner {
 .profile {
   display: flex;
   align-items: center;
+}
+
+.darked:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
 }

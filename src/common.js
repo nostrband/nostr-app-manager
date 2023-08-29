@@ -892,7 +892,7 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
-  console.log('done publish  event')
+  console.log('done publish  event');
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
@@ -1056,4 +1056,36 @@ export const fetchRepositoryByUser = async (naddr) => {
   ]);
 
   return { resultFetchAllEvents, pubkey, identifier };
+};
+
+export function generateAddr(event) {
+  const kind = event.kind;
+  const pubkey = event.pubkey;
+  const identifierTag = event.tags.find((tag) => tag[0] === 'd');
+  if (!identifierTag) {
+    console.error('Identifier tag not found for event:', event);
+    return null;
+  }
+  const identifier = identifierTag[1];
+  if (!kind || !pubkey || !identifier) {
+    console.error('Invalid or missing data for event:', event);
+    return null;
+  }
+  return `${kind}:${pubkey}:${identifier}`;
+}
+
+export const getCountReview = (review) => {
+  if (review) {
+    const filteredTags = review?.tags?.filter((tagArray) =>
+      tagArray.includes('l')
+    );
+    const jsonString = filteredTags[0]?.find(
+      (item) =>
+        typeof item === 'string' && item.startsWith('{') && item.endsWith('}')
+    );
+    const jsonObj = JSON.parse(jsonString);
+    const quality = jsonObj.quality;
+    const originalReview = Math.round(quality * 5);
+    return originalReview;
+  }
 };

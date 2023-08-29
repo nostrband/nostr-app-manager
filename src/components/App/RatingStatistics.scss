@@ -1,0 +1,36 @@
+.rating-container {
+  display: flex;
+  justify-content: center;
+  @media (max-width: 450px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.averate-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  svg {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+.rating-progressbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+.rating-progress-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.averate-rating-container {
+  display: flex;
+  align-items: center;
+}

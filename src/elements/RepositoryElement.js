@@ -21,7 +21,7 @@ const RepositoryElement = ({ repo, getUrl }) => {
   }
 
   return (
-    <ListGroup.Item className="repository-card ">
+    <ListGroup.Item className="repository-card">
       <Link className="card-link" to={getUrl(repo)}>
         <div>
           <strong>{titleTag && titleTag[1]}</strong>
