@@ -16,6 +16,7 @@ import { LoginModalProvider } from './context/ShowModalContext';
 import { ToastContainer } from 'react-toastify';
 import RepositoryInfo from './RepositoryInfo';
 import { AuthProvider } from './context/AuthContext';
+import { ReviewModalProvider } from './context/ShowReviewContext';
 
 const HTTP = new QueryClient();
 
@@ -59,12 +60,14 @@ root.render(
   <QueryClientProvider client={HTTP}>
     <AuthProvider>
       <LoginModalProvider>
-        <IntlProvider>
-          <ThemeProvider>
-            <RouterProvider router={router} />
-            <ToastContainer />
-          </ThemeProvider>
-        </IntlProvider>
+        <ReviewModalProvider>
+          <IntlProvider>
+            <ThemeProvider>
+              <RouterProvider router={router} />
+              <ToastContainer />
+            </ThemeProvider>
+          </IntlProvider>
+        </ReviewModalProvider>
       </LoginModalProvider>
     </AuthProvider>
   </QueryClientProvider>

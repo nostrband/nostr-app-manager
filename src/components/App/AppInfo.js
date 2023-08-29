@@ -20,10 +20,11 @@ import errorToast from '../../elements/ErrorToast';
 import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
+import { useReviewModal } from '../../context/ShowReviewContext';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
-  const [showReviewModal, setShowReviewModal] = useState(false);
+  const { showReviewModal, setShowReviewModal } = useReviewModal();
   const { setShowLogin } = useAuthShowModal();
   const [liked, setLiked] = useState(false);
   const [review, setReview] = useState(false);

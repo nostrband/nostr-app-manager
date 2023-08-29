@@ -202,11 +202,13 @@ const AppInfoView = () => {
               </ul>
             </div>
             {appInfoViewComponents[activeComponent]}
-            <div className="mt-2">
-              <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
-                Add app to my list
-              </Button>
-            </div>
+            {activeComponent !== 'reviews' ? (
+              <div className="mt-2">
+                <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
+                  Add app to my list
+                </Button>
+              </div>
+            ) : null}
           </AppInfo>
         </div>
       )}

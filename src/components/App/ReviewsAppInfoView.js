@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
 import * as cmn from '../../common';
-import { ListGroupItem, ListGroup } from 'react-bootstrap';
+import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
 import RatingStatistics from './RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import { useReviewModal } from '../../context/ShowReviewContext';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { showReviewModal, setShowReviewModal } = useReviewModal();
 
   const getReviews = async () => {
     setLoading(true);
@@ -56,8 +58,10 @@ const ReviewsAppInfoView = ({ app }) => {
   };
 
   useEffect(() => {
-    getReviews();
-  }, []);
+    if (!showReviewModal) {
+      getReviews();
+    }
+  }, [showReviewModal]);
 
   return (
     <div>
@@ -84,6 +88,14 @@ const ReviewsAppInfoView = ({ app }) => {
           })}
         </ListGroup>
       )}
+      <div className="mt-2">
+        <Button
+          onClick={() => setShowReviewModal(true)}
+          variant="outline-secondary"
+        >
+          Write review
+        </Button>
+      </div>
     </div>
   );
 };

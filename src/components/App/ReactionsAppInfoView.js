@@ -74,7 +74,6 @@ const ReacitonsAppInfoView = ({ app }) => {
         );
       }
     });
-
     return content;
   };
 
