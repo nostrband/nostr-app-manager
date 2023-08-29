@@ -32,7 +32,6 @@ const ReacitonsAppInfoView = ({ app }) => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filter),
           ]);
-          console.log(authors, 'AUTHORS');
           const data = response.map((item) => {
             const author = authors.find(
               (author) => author.pubkey === item.pubkey
@@ -60,6 +59,25 @@ const ReacitonsAppInfoView = ({ app }) => {
     getReactions(1, setReactionSharesData);
   }, []);
 
+  const emojifyContent = (content, tags) => {
+    if (!content.includes(':')) {
+      return content;
+    }
+
+    tags.forEach((tag) => {
+      if (tag[0] === 'emoji') {
+        const shortcode = `:${tag[1]}:`;
+        const imageUrl = tag[2];
+        content = content.replace(
+          shortcode,
+          `<img src="${imageUrl}" alt="${tag[1]}" style="width: 30px; height: 30px;" />`
+        );
+      }
+    });
+
+    return content;
+  };
+
   return (
     <div>
       {reactionLikesData?.data?.length > 0 ? <strong>Likes:</strong> : null}
@@ -72,13 +90,21 @@ const ReacitonsAppInfoView = ({ app }) => {
               const profile = like?.author?.content
                 ? JSON.parse(like?.author?.content)
                 : {};
+              const emojifiedContent = emojifyContent(like.content, like.tags);
               return (
                 <ListGroupItem
                   key={like.pubkey}
                   className="darked d-flex align-items-center justify-content-between"
                 >
-                  <Profile profile={{ profile }} pubkey={like.pubkey} />
-                  {like.content === '+' ? <LikedHeart /> : null}
+                  <Profile small profile={{ profile }} pubkey={like.pubkey} />
+                  {emojifiedContent === '+' ? (
+                    <LikedHeart />
+                  ) : (
+                    <div
+                      className="emojy"
+                      dangerouslySetInnerHTML={{ __html: emojifiedContent }}
+                    />
+                  )}
                 </ListGroupItem>
               );
             })}
@@ -96,7 +122,7 @@ const ReacitonsAppInfoView = ({ app }) => {
                   key={share.pubkey}
                   className="darked share-like-item "
                 >
-                  <Profile profile={{ profile }} pubkey={share.pubkey} />
+                  <Profile small profile={{ profile }} pubkey={share.pubkey} />
                   <p className="mb-0 mt-2 mx-2 limited-text">{share.content}</p>
                 </ListGroupItem>
               );
