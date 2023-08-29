@@ -32,6 +32,7 @@ const ReacitonsAppInfoView = ({ app }) => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filter),
           ]);
+          console.log(authors, 'AUTHORS');
           const data = response.map((item) => {
             const author = authors.find(
               (author) => author.pubkey === item.pubkey

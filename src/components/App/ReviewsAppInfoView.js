@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
 import * as cmn from '../../common';
-import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
+import { ListGroupItem, ListGroup } from 'react-bootstrap';
 import RatingStatistics from './RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 
@@ -32,6 +32,7 @@ const ReviewsAppInfoView = ({ app }) => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filter),
           ]);
+
           const reviewsData = response.map((review) => {
             const author = authors.find(
               (author) => author.pubkey === review.pubkey
@@ -57,8 +58,6 @@ const ReviewsAppInfoView = ({ app }) => {
   useEffect(() => {
     getReviews();
   }, []);
-
-  console.log(reviews, 'REVIEWS');
 
   return (
     <div>
