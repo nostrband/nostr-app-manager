@@ -6,6 +6,7 @@ import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
 import RatingStatistics from './RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useReviewModal } from '../../context/ShowReviewContext';
+import Profile from '../../elements/Profile';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState([]);
@@ -71,16 +72,15 @@ const ReviewsAppInfoView = ({ app }) => {
         <ListGroup className="reviews-container">
           <RatingStatistics reviews={reviews} />
           {reviews?.reviewsData?.map((review) => {
+            const profile = review?.author?.content
+              ? JSON.parse(review?.author?.content)
+              : {};
             let count = cmn.getCountReview(review);
             return (
               <ListGroupItem key={review.pubkey} className="review-item darked">
                 <p>{review.content}</p>
                 <div className="d-flex justify-content-between">
-                  {/* <div>
-                 <img className="avatar" src={review.avatar} />
-                 <span className="mx-2">{review.author}</span>
-               </div> */}
-                  <div></div>
+                  <Profile small profile={{ profile }} pubkey={review.pubkey} />
                   <Rating name="read-only" value={count} readOnly />
                 </div>
               </ListGroupItem>
@@ -89,12 +89,7 @@ const ReviewsAppInfoView = ({ app }) => {
         </ListGroup>
       )}
       <div className="mt-2">
-        <Button
-          onClick={() => setShowReviewModal(true)}
-          variant="outline-secondary"
-        >
-          Write review
-        </Button>
+        <Button onClick={() => setShowReviewModal(true)}>Write review</Button>
       </div>
     </div>
   );
