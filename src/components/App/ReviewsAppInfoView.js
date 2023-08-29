@@ -13,7 +13,6 @@ const ReviewsAppInfoView = ({ app }) => {
   const getReviews = async () => {
     setLoading(true);
     const ndk = await cmn.getNDK();
-
     const addr = cmn.naddrToAddr(cmn.getNaddr(app));
     const addrForFilter = {
       kinds: [1985],
@@ -24,37 +23,42 @@ const ReviewsAppInfoView = ({ app }) => {
         cmn.startFetch(ndk, addrForFilter),
       ]);
       if (response.length > 0) {
-        const reviewsData = await Promise.all(
-          response.map(async (review) => {
-            const filter = {
-              kinds: [0],
-              authors: [review.pubkey],
-            };
-            try {
-              const authorReview = await cmn.fetchAllEvents([
-                cmn.startFetch(ndk, filter),
-              ]);
-              if (review.pubkey === authorReview[0].pubkey) {
-                return { ...review, author: authorReview[0] };
-              } else {
-                return review;
-              }
-            } catch (error) {
+        const pubkeys = response.map((review) => review.pubkey);
+        const filter = {
+          kinds: [0],
+          authors: pubkeys,
+        };
+        try {
+          const authors = await cmn.fetchAllEvents([
+            cmn.startFetch(ndk, filter),
+          ]);
+          const reviewsData = response.map((review) => {
+            const author = authors.find(
+              (author) => author.pubkey === review.pubkey
+            );
+            if (author) {
+              return { ...review, author };
+            } else {
               return review;
             }
-          })
-        );
-        setReviews((prev) => ({ ...prev, reviewsData }));
+          });
+          setReviews((prev) => ({ ...prev, reviewsData }));
+        } catch (error) {
+          console.error('Error fetching authors:', error);
+        }
       }
     } catch (error) {
-      console.error('Error fetching liked status:', error);
+      console.error('Error fetching reviews:', error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     getReviews();
   }, []);
+
+  console.log(reviews, 'REVIEWS');
 
   return (
     <div>

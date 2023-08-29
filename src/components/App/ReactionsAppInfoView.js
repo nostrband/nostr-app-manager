@@ -23,27 +23,29 @@ const ReacitonsAppInfoView = ({ app }) => {
         cmn.startFetch(ndk, addrForFilter),
       ]);
       if (response.length > 0) {
-        const data = await Promise.all(
-          response.map(async (item) => {
-            const filter = {
-              kinds: [0],
-              authors: [item.pubkey],
-            };
-            try {
-              const author = await cmn.fetchAllEvents([
-                cmn.startFetch(ndk, filter),
-              ]);
-              if (item.pubkey === author[0].pubkey) {
-                return { ...item, author: author[0] };
-              } else {
-                return item;
-              }
-            } catch (error) {
+        const pubkeys = response.map((item) => item.pubkey);
+        const filter = {
+          kinds: [0],
+          authors: pubkeys,
+        };
+        try {
+          const authors = await cmn.fetchAllEvents([
+            cmn.startFetch(ndk, filter),
+          ]);
+          const data = response.map((item) => {
+            const author = authors.find(
+              (author) => author.pubkey === item.pubkey
+            );
+            if (author) {
+              return { ...item, author };
+            } else {
               return item;
             }
-          })
-        );
-        setState((prev) => ({ ...prev, data }));
+          });
+          setState((prev) => ({ ...prev, data }));
+        } catch (error) {
+          console.error('Error fetching authors:', error);
+        }
       }
     } catch (error) {
       console.error('Error fetching liked status:', error);
