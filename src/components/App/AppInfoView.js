@@ -47,7 +47,7 @@ const AppInfoView = () => {
   const [countUsers, setCountUsers] = useState(0);
   const [author, setAuthor] = useState({});
   const [activeComponent, setActiveComponent] = useState('users');
-
+ 
   const init = useCallback(async () => {
     const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
@@ -65,6 +65,7 @@ const AppInfoView = () => {
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
+    console.log(appInfo, 'APP INFO');
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
@@ -141,7 +142,7 @@ const AppInfoView = () => {
       {info && (
         <div className="mt-5 app-info-view">
           <AppInfo key={appInfo.name} app={appInfo}>
-            <div className="d-flex">
+            <div>
               <div>
                 <h6 className="mt-4">Published by:</h6>
                 <Profile
@@ -151,8 +152,8 @@ const AppInfoView = () => {
                 />
               </div>
               {author?.pubkey && (
-                <div className="mx-3">
-                  <h6 className="mt-4">Author:</h6>
+                <div>
+                  <h6 className="mt-3">Author:</h6>
                   <Profile
                     profile={{ profile: author }}
                     pubkey={author.pubkey}

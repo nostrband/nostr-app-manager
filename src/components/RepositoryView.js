@@ -32,6 +32,7 @@ const RepositoryView = () => {
   const [repository, setRepository] = useState({
     tags: [],
   });
+  console.log(repository, 'REPOSITORY');
   const [authorRepository, setAuthorRepository] = useState();
   const { naddr } = useParams();
   const editUrl = cmn.formatRepositoryEditUrl(naddr);
@@ -49,7 +50,6 @@ const RepositoryView = () => {
 
     const { resultFetchAllEvents, pubkey: pubkenFromServer } =
       await cmn.fetchRepositoryByUser(naddr);
-
     setPubKey(pubkenFromServer);
     const otherTags = resultFetchAllEvents[0]?.tags
       .filter((tag) => tag[0] === 't')
@@ -65,8 +65,10 @@ const RepositoryView = () => {
     const authorTag = resultFetchAllEvents[0]?.tags?.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-
-    const profile = await cmn.getProfile(authorTag[1]);
+    let profile;
+    if (authorTag) {
+      profile = await cmn.getProfile(authorTag[1]);
+    }
     const repositoryData = resultFetchAllEvents[0];
     setRepository({
       ...repositoryData,
@@ -199,7 +201,7 @@ const RepositoryView = () => {
               ) : null
             )}
 
-            <li className="mt-4 d-flex">
+            <li className="mt-4">
               <div className="mt-2">
                 <strong>Published by:</strong>
                 <Profile
@@ -209,7 +211,7 @@ const RepositoryView = () => {
                 />
               </div>
               {repository.profile ? (
-                <div className="mt-2 mx-3">
+                <div className="mt-2">
                   <strong>Author:</strong>
                   <Profile
                     profile={{ profile: repository.profile }}

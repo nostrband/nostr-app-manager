@@ -892,7 +892,6 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
-  console.log('done publish  event');
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
@@ -942,7 +941,6 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
-  console.log(lists, 'LISTS');
   const events = [];
   // add new kinds
   for (const k of kinds) {
@@ -1096,7 +1094,6 @@ export const convertContentToProfile = (event) => {
 };
 
 export const getProfile = async (pubkey) => {
-  console.log(pubkey, 'PUBKEY');
   const ndk = await getNDK();
   const filter = {
     kinds: [0],
