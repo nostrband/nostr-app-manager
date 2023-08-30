@@ -62,9 +62,19 @@ const RepositoryView = () => {
     const nips = resultFetchAllEvents[0].tags
       .filter((tag) => tag[0] === 'l' && tag[2] === 'NIP')
       .map((tag, index) => tag[1]);
+    const authorTag = resultFetchAllEvents[0]?.tags?.find(
+      (tag) => tag[0] === 'p' && tag[3] === 'author'
+    );
 
+    const profile = await cmn.getProfile(authorTag[1]);
     const repositoryData = resultFetchAllEvents[0];
-    setRepository({ ...repositoryData, otherTags, programmingLanguages, nips });
+    setRepository({
+      ...repositoryData,
+      otherTags,
+      programmingLanguages,
+      nips,
+      profile,
+    });
 
     const filter = {
       kinds: [0],
@@ -123,6 +133,7 @@ const RepositoryView = () => {
   const processedDescription = descriptionTagValue
     .replace(/<br><br>/g, '\n')
     .replace(/<br>/g, '\n');
+
   return (
     <>
       {loading ? (
@@ -188,15 +199,25 @@ const RepositoryView = () => {
               ) : null
             )}
 
-            <li className="mt-4">
-              <strong>Published by:</strong>
+            <li className="mt-4 d-flex">
               <div className="mt-2">
+                <strong>Published by:</strong>
                 <Profile
                   profile={authorRepository}
                   pubkey={pubkey}
                   small={true}
                 />
               </div>
+              {repository.profile ? (
+                <div className="mt-2 mx-3">
+                  <strong>Author:</strong>
+                  <Profile
+                    profile={{ profile: repository.profile }}
+                    pubkey={repository.profile.pubkey}
+                    small={true}
+                  />
+                </div>
+              ) : null}
             </li>
           </ul>
 

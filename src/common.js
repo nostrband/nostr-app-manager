@@ -1089,3 +1089,24 @@ export const getCountReview = (review) => {
     return originalReview;
   }
 };
+
+export const convertContentToProfile = (event) => {
+  let profile = event[0].content ? JSON.parse(event[0].content) : {};
+  return { ...profile, pubkey: event[0].pubkey };
+};
+
+export const getProfile = async (pubkey) => {
+  console.log(pubkey, 'PUBKEY');
+  const ndk = await getNDK();
+  const filter = {
+    kinds: [0],
+    authors: [pubkey],
+  };
+  try {
+    const authorFromServer = await fetchAllEvents([startFetch(ndk, filter)]);
+    const profile = convertContentToProfile(authorFromServer);
+    return profile;
+  } catch (error) {
+    return console.log(error);
+  }
+};

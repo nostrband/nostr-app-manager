@@ -45,10 +45,11 @@ const AppInfoView = () => {
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
-  const [authorTag, setAuthorTag] = useState(null);
+  const [author, setAuthor] = useState({});
   const [activeComponent, setActiveComponent] = useState('users');
 
   const init = useCallback(async () => {
+    const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
     if (type !== 'naddr') {
       setAddr(null);
@@ -67,16 +68,14 @@ const AppInfoView = () => {
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
-    const authorTag = appInfo.tags.find(
+    const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-    setAuthorTag(authorTag);
-
+    const profile = await cmn.getProfile(pubkey[1]);
+    setAuthor(profile);
     setTags(tags);
     setAddKinds(appInfo.kinds);
     setAddPlatforms(appInfo.platforms);
-
-    const ndk = await cmn.getNDK();
     const addrForGetCountUser = cmn.naddrToAddr(cmn.getNaddr(appInfo));
     const { count } = await ndk.fetchCount({
       kinds: [31989],
@@ -151,12 +150,12 @@ const AppInfoView = () => {
                   small={true}
                 />
               </div>
-              {authorTag && (
+              {author?.pubkey && (
                 <div className="mx-3">
                   <h6 className="mt-4">Author:</h6>
                   <Profile
-                    profile={info.meta}
-                    pubkey={authorTag[1]}
+                    profile={{ profile: author }}
+                    pubkey={author.pubkey}
                     small={true}
                   />
                 </div>
