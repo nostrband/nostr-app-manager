@@ -892,7 +892,6 @@ export function isAuthed() {
 }
 
 export async function publishEvent(event) {
-  console.log('done publish  event');
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
@@ -942,7 +941,6 @@ export async function publishRecomms(app, kinds, platforms, selectedKinds) {
   }
 
   const lists = await fetchUserRecomms(getLoginPubkey());
-  console.log(lists, 'LISTS');
   const events = [];
   // add new kinds
   for (const k of kinds) {
@@ -1087,5 +1085,25 @@ export const getCountReview = (review) => {
     const quality = jsonObj.quality;
     const originalReview = Math.round(quality * 5);
     return originalReview;
+  }
+};
+
+export const convertContentToProfile = (event) => {
+  let profile = event[0].content ? JSON.parse(event[0].content) : {};
+  return { ...profile, pubkey: event[0].pubkey };
+};
+
+export const getProfile = async (pubkey) => {
+  const ndk = await getNDK();
+  const filter = {
+    kinds: [0],
+    authors: [pubkey],
+  };
+  try {
+    const authorFromServer = await fetchAllEvents([startFetch(ndk, filter)]);
+    const profile = convertContentToProfile(authorFromServer);
+    return profile;
+  } catch (error) {
+    return console.log(error);
   }
 };

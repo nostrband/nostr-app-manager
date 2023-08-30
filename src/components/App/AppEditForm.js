@@ -33,6 +33,7 @@ const AppEditForm = (props) => {
   const [inherit, setInherit] = useState(false);
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [author, setAuthor] = useState('');
   const [nip05, setNip05] = useState('');
   const [picture, setPicture] = useState('');
   const [banner, setBanner] = useState('');
@@ -51,6 +52,7 @@ const AppEditForm = (props) => {
   const [naddr, setNaddr] = useState();
   const [textForShare, setTextForShare] = useState('');
   const [importedDataByManifest, setImportDataByManifest] = useState({});
+  const [allTags, setAllTags] = useState();
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -59,6 +61,7 @@ const AppEditForm = (props) => {
   const toggleInherit = (v) => {
     setInherit(v);
     const meta = v ? props.profileMeta : props.app ?? {};
+    console.log(meta, 'META');
     setName(meta.profile?.name || '');
     setDisplayName(meta.profile?.display_name || '');
     setNip05(meta.profile?.nip05 || '');
@@ -67,6 +70,14 @@ const AppEditForm = (props) => {
     setLN(meta.profile?.lud16 || '');
     setWebsite(meta.profile?.website || '');
     setAbout(meta.profile?.about || '');
+    const authorTag = meta?.tags?.find(
+      (tag) => tag[0] === 'p' && tag[3] === 'author'
+    );
+    if (authorTag) {
+      const npub = nip19.npubEncode(authorTag[1]);
+      setAuthor(npub);
+    }
+    setAllTags(meta?.tags);
   };
 
   useEffect(() => {
@@ -101,6 +112,7 @@ const AppEditForm = (props) => {
     const toastId = !props.app?.id
       ? toast('Loading...', { type: 'pending', autoClose: false })
       : null;
+
     if (
       urls.find((u) => u.url.trim() === '' || !u.url.includes('<bech32>')) !==
         undefined &&
@@ -121,6 +133,7 @@ const AppEditForm = (props) => {
     }
 
     setError(null);
+
     const event = {
       kind: cs.KIND_HANDLERS,
       content: '',
@@ -142,6 +155,7 @@ const AppEditForm = (props) => {
 
     const newApp = !props.app?.id;
     const d = '' + Date.now();
+
     if (newApp) {
       event.tags.push(['d', d]);
       event.tags.push(['published_at', '' + Math.floor(Date.now() / 1000)]);
@@ -152,12 +166,33 @@ const AppEditForm = (props) => {
         return true;
       });
     }
+
     if (website) {
+      event.tags = event.tags.filter((tag) => tag[0] !== 'r');
       event.tags.push(['r', website]);
     }
+
     if (name) {
+      event.tags = event.tags.filter((tag) => tag[0] !== 'alt');
       event.tags.push(['alt', `Nostr App: ${name}`]);
     }
+
+    if (author) {
+      const { type, data } = nip19.decode(author);
+      if (type === 'npub') {
+        const AUTHOR_PUBKEY = data;
+        event.tags = event.tags.filter((tag) => tag[0] !== 'zap');
+        event.tags.push(['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '1']);
+        event.tags = event.tags.filter((tag) => tag[0] !== 'p');
+        event.tags.push([
+          'p',
+          AUTHOR_PUBKEY,
+          'wss://relay.nostr.band',
+          'author',
+        ]);
+      }
+    }
+
     if (selectedTab === 'nostr') {
       kinds.map((k) => event.tags.push(['k', k]));
       urls.map((u) =>
@@ -205,7 +240,7 @@ const AppEditForm = (props) => {
         const naddrForBySelectedApp = cmn.getNaddr(info.apps[name].addrHandler);
         setTextForShare(
           `Check out ${info.apps[name].addrHandler.profile.display_name} - ${info.apps[name].addrHandler.profile.about}
-      https://nostrapp.link/a/${naddrForBySelectedApp}`
+        https://nostrapp.link/a/${naddrForBySelectedApp}`
         );
         // NOTE: right now publishEvent doesn't wait for the 'ok',
         // so we should give relays some time to accept and publish our event
@@ -217,6 +252,7 @@ const AppEditForm = (props) => {
       }
     }
   }
+
   useEffect(() => {
     if (kinds.length === 0 && urls.length === 0 && props?.app?.id) {
       setSelectedTab('other');
@@ -314,6 +350,7 @@ const AppEditForm = (props) => {
               How should people access the app
             </Form.Text>
           </Form.Group>
+
           {importedDataByManifest.name ? (
             <Button
               className="mb-1"
@@ -351,7 +388,15 @@ const AppEditForm = (props) => {
               Human-readable name of your app
             </Form.Text>
           </Form.Group>
-
+          <Form.Group className="mb-3" controlId="author">
+            <Form.Label>Author npub</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Author npub, or leave blank if you are the author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+            />
+          </Form.Group>
           <Form.Group className="mb-3" controlId="metaNip05">
             <Form.Label>Nip-05 identifier</Form.Label>
             <Form.Control

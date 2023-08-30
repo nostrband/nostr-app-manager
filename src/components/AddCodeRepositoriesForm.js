@@ -11,6 +11,7 @@ import CreatableSelect from 'react-select/creatable';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextAreaAutosize from 'react-textarea-autosize';
 import { optionsNips } from '../const';
+import { nip19 } from '@nostrband/nostr-tools';
 
 const CodeRepositoryForm = () => {
   const { naddr } = useParams();
@@ -25,6 +26,7 @@ const CodeRepositoryForm = () => {
     license: '',
     programmingLanguages: [],
     nips: [],
+    author: '',
   });
   const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const [identifier, setIdentifier] = useState('');
@@ -38,6 +40,9 @@ const CodeRepositoryForm = () => {
       : Math.floor(Date.now() / 1000).toString();
 
     const description = values.description;
+    const npub = values.author;
+
+    const { type, data } = npub ? nip19.decode(npub) : { type: null };
 
     const event = {
       kind: 30117,
@@ -61,6 +66,15 @@ const CodeRepositoryForm = () => {
       ],
       content: '',
     };
+
+    if (type === 'npub') {
+      const AUTHOR_PUBKEY = data;
+
+      event.tags.push(
+        ['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '1'],
+        ['p', AUTHOR_PUBKEY, 'wss://relay.nostr.band', 'author']
+      );
+    }
     event.tags = event.tags.filter((tag) => tag[1]);
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
@@ -86,9 +100,17 @@ const CodeRepositoryForm = () => {
         /<br>/g,
         '\n'
       );
+      const authorTag = repositoryData?.tags?.find(
+        (tag) => tag[0] === 'p' && tag[3] === 'author'
+      );
+      let author;
+      if (authorTag) {
+        author = nip19.npubEncode(authorTag[1]);
+      }
       const initialValuesInFunction = {
         name: repositoryData.tags.find((tag) => tag[0] === 'title')[1] || '',
         description: descriptionWithLineBreaks,
+        author,
         link: findTagValue('r'),
         published_at: findTagValue('published_at'),
         license: optionsLicensies.find(
@@ -181,7 +203,23 @@ const CodeRepositoryForm = () => {
                     }}
                   />
                 </Form.Group>
-
+                <Form.Group>
+                  <Form.Label className="mb-1 mt-3">Author</Form.Label>
+                  <Field
+                    id="author"
+                    itemID="author"
+                    as={Form.Control}
+                    type="text"
+                    name="author"
+                    placeholder="Author npub, or leave blank if you are the author"
+                    className={
+                      touched.author && errors.author ? 'is-invalid' : ''
+                    }
+                  />
+                  {errors?.author ? (
+                    <div className="text-danger mt-1">{errors?.author}</div>
+                  ) : null}
+                </Form.Group>
                 <Form.Group>
                   <Form.Label className="mb-1 mt-3">Link</Form.Label>
                   <Field

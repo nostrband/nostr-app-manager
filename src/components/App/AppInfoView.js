@@ -19,13 +19,14 @@ import KindElement from '../../elements/KindElement';
 
 const tabs = [
   {
-    title: 'Users',
-    path: 'users',
-  },
-  {
     title: 'Reviews',
     path: 'reviews',
   },
+  {
+    title: 'Users',
+    path: 'users',
+  },
+
   {
     title: 'Reactions',
     path: 'reactions',
@@ -45,9 +46,11 @@ const AppInfoView = () => {
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
-  const [activeComponent, setActiveComponent] = useState('users');
+  const [author, setAuthor] = useState({});
+  const [activeComponent, setActiveComponent] = useState('reviews');
 
   const init = useCallback(async () => {
+    const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
     if (type !== 'naddr') {
       setAddr(null);
@@ -66,12 +69,14 @@ const AppInfoView = () => {
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
-
+    const pubkey = appInfo.tags.find(
+      (tag) => tag[0] === 'p' && tag[3] === 'author'
+    );
+    const profile = await cmn.getProfile(pubkey[1]);
+    setAuthor(profile);
     setTags(tags);
     setAddKinds(appInfo.kinds);
     setAddPlatforms(appInfo.platforms);
-
-    const ndk = await cmn.getNDK();
     const addrForGetCountUser = cmn.naddrToAddr(cmn.getNaddr(appInfo));
     const { count } = await ndk.fetchCount({
       kinds: [31989],
@@ -137,10 +142,27 @@ const AppInfoView = () => {
       {info && (
         <div className="mt-5 app-info-view">
           <AppInfo key={appInfo.name} app={appInfo}>
-            <h6 className="mt-4">Published by:</h6>
             <div>
-              <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
+              <div>
+                <h6 className="mt-4">Published by:</h6>
+                <Profile
+                  profile={info.meta}
+                  pubkey={addr.pubkey}
+                  small={true}
+                />
+              </div>
+              {author?.pubkey && (
+                <div>
+                  <h6 className="mt-3">Author:</h6>
+                  <Profile
+                    profile={{ profile: author }}
+                    pubkey={author.pubkey}
+                    small={true}
+                  />
+                </div>
+              )}
             </div>
+
             {app.kinds ? (
               <>
                 <h6 className="mt-3">Event kinds:</h6>

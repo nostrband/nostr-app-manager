@@ -63,7 +63,6 @@ const ReviewsAppInfoView = ({ app }) => {
       getReviews();
     }
   }, [showReviewModal]);
-
   return (
     <div>
       {loading ? (
