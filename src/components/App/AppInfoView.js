@@ -19,13 +19,14 @@ import KindElement from '../../elements/KindElement';
 
 const tabs = [
   {
-    title: 'Users',
-    path: 'users',
-  },
-  {
     title: 'Reviews',
     path: 'reviews',
   },
+  {
+    title: 'Users',
+    path: 'users',
+  },
+
   {
     title: 'Reactions',
     path: 'reactions',
@@ -46,8 +47,8 @@ const AppInfoView = () => {
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
   const [author, setAuthor] = useState({});
-  const [activeComponent, setActiveComponent] = useState('users');
- 
+  const [activeComponent, setActiveComponent] = useState('reviews');
+
   const init = useCallback(async () => {
     const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
@@ -65,7 +66,6 @@ const AppInfoView = () => {
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
-    console.log(appInfo, 'APP INFO');
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
