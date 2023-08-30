@@ -45,6 +45,7 @@ const AppInfoView = () => {
   const [addPlatforms, setAddPlatforms] = useState([]);
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
+  const [authorTag, setAuthorTag] = useState(null);
   const [activeComponent, setActiveComponent] = useState('users');
 
   const init = useCallback(async () => {
@@ -66,6 +67,10 @@ const AppInfoView = () => {
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
+    const authorTag = appInfo.tags.find(
+      (tag) => tag[0] === 'p' && tag[3] === 'author'
+    );
+    setAuthorTag(authorTag);
 
     setTags(tags);
     setAddKinds(appInfo.kinds);
@@ -137,10 +142,27 @@ const AppInfoView = () => {
       {info && (
         <div className="mt-5 app-info-view">
           <AppInfo key={appInfo.name} app={appInfo}>
-            <h6 className="mt-4">Published by:</h6>
-            <div>
-              <Profile profile={info.meta} pubkey={addr.pubkey} small={true} />
+            <div className="d-flex">
+              <div>
+                <h6 className="mt-4">Published by:</h6>
+                <Profile
+                  profile={info.meta}
+                  pubkey={addr.pubkey}
+                  small={true}
+                />
+              </div>
+              {authorTag && (
+                <div className="mx-3">
+                  <h6 className="mt-4">Author:</h6>
+                  <Profile
+                    profile={info.meta}
+                    pubkey={authorTag[1]}
+                    small={true}
+                  />
+                </div>
+              )}
             </div>
+
             {app.kinds ? (
               <>
                 <h6 className="mt-3">Event kinds:</h6>

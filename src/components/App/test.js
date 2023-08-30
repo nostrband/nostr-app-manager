@@ -29,13 +29,8 @@ const tabs = [
 const AppEditForm = (props) => {
   const navigate = useNavigate();
   const noMeta = !Object.keys(props.app?.profile ?? {}).length;
-
   const [inherit, setInherit] = useState(false);
   const [name, setName] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [author, setAuthor] = useState('');
-  const [nip05, setNip05] = useState('');
-  const [picture, setPicture] = useState('');
   const [banner, setBanner] = useState('');
   const [ln, setLN] = useState('');
   const [website, setWebsite] = useState('');
@@ -44,8 +39,6 @@ const AppEditForm = (props) => {
   const [urls, setUrls] = useState(props.app?.urls || []);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
-  const [tags, setTags] = useState(props.app?.otherTags || []);
-  const [tempTag, setTempTag] = useState('');
   const [selectedTab, setSelectedTab] = useState('nostr');
   const [createdApp, setCreatedApp] = useState();
   const [showShareModal, setShowShareModal] = useState(false);
@@ -68,13 +61,6 @@ const AppEditForm = (props) => {
     setLN(meta.profile?.lud16 || '');
     setWebsite(meta.profile?.website || '');
     setAbout(meta.profile?.about || '');
-    const authorTag = meta?.tags?.find(
-      (tag) => tag[0] === 'p' && tag[3] === 'author'
-    );
-    if (authorTag) {
-      const npub = nip19.npubEncode(authorTag[1]);
-      setAuthor(npub);
-    }
   };
 
   useEffect(() => {
@@ -165,19 +151,6 @@ const AppEditForm = (props) => {
     }
     if (name) {
       event.tags.push(['alt', `Nostr App: ${name}`]);
-    }
-    if (author) {
-      const { type, data } = nip19.decode(author);
-      if (type === 'npub') {
-        const AUTHOR_PUBKEY = data;
-        event.tags.push(['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '1']);
-        event.tags.push([
-          'p',
-          AUTHOR_PUBKEY,
-          'wss://relay.nostr.band',
-          'author',
-        ]);
-      }
     }
     if (selectedTab === 'nostr') {
       kinds.map((k) => event.tags.push(['k', k]));
@@ -317,25 +290,6 @@ const AppEditForm = (props) => {
               ? 'Nostr apps can display, edit or process nostr events.'
               : "Other apps don't handle nostr events, but are still useful to nostr users."}
           </p>
-
-          <Form.Group
-            className={`${importedDataByManifest.name ? 'mb-2' : 'mb-3'}`}
-            controlId="metaLN"
-          >
-            <Form.Label>Website:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'https://app.com'}
-              disabled={inherit}
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              onBlur={handleImportFromManifest}
-            />
-            <Form.Text className="text-muted">
-              How should people access the app
-            </Form.Text>
-          </Form.Group>
-
           {importedDataByManifest.name ? (
             <Button
               className="mb-1"
@@ -346,140 +300,8 @@ const AppEditForm = (props) => {
               Import from PWA manifest
             </Button>
           ) : null}
-          <Form.Group className="mb-3" controlId="metaName">
-            <Form.Label className="mt-2">Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'myapp'}
-              disabled={inherit}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Short name of your app (use same name for other handlers of this
-              app)
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaName">
-            <Form.Label>Display name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'My App'}
-              disabled={inherit}
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Human-readable name of your app
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="author">
-            <Form.Label>Author npub</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Author npub, or leave blank if you are the author"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaNip05">
-            <Form.Label>Nip-05 identifier</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : '_@app.com'}
-              disabled={inherit}
-              value={nip05}
-              onChange={(e) => setNip05(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Preferably _@domain.com to make it trustworthy
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaPicture">
-            <Form.Label>Icon</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'URL of an image'}
-              disabled={inherit}
-              value={picture}
-              onChange={(e) => setPicture(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Could be a link to your favicon
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaPicture">
-            <Form.Label>Banner</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'URL of an image'}
-              disabled={inherit}
-              value={banner}
-              onChange={(e) => setBanner(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Could be a link to a screenshot
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaLN">
-            <Form.Label>LN address</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'name@provider.com'}
-              disabled={inherit}
-              value={ln}
-              onChange={(e) => setLN(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Let people zap this app!
-            </Form.Text>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="metaAbout">
-            <Form.Label>About</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : 'Describe your app'}
-              as="textarea"
-              rows={3}
-              disabled={inherit}
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Explain what the app does and why people should use it
-            </Form.Text>
-          </Form.Group>
         </Form>
       </div>
-
-      <Form.Group>
-        <Form.Label className="mt-2">Tags</Form.Label>
-        <CreatableSelect
-          isMulti
-          name="tags"
-          options={[]}
-          classNamePrefix="select"
-          value={tags}
-          onChange={(selectedOptions) => setTags(selectedOptions)}
-          className="basic-multi-select"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && e.target.value) {
-              e.preventDefault();
-              const newTagLabel = e.target.value;
-              if (!isDuplicate(newTagLabel, tags)) {
-                const tag = {
-                  value: newTagLabel,
-                  label: newTagLabel,
-                };
-                setTags([...tags, tag]);
-              }
-              setTempTag('');
-            }
-          }}
-          onInputChange={(newValue) => setTempTag(newValue)}
-          inputValue={tempTag}
-        />
-      </Form.Group>
 
       {selectedTab === 'nostr' ? (
         <>
