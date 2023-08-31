@@ -31,6 +31,10 @@ const AppInfo = (props) => {
   const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const npub = nip19?.npubEncode(props.app.pubkey);
+  const authorTag = props.app.tags.find(
+    (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
+  );
+  const npubAuthor = authorTag ? nip19.npubEncode(authorTag[1]) : null;
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const zapButtonRef = useRef(null);
@@ -44,7 +48,6 @@ const AppInfo = (props) => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
-  console.log(JSON.stringify(props.app.tags), 'APP FROM PROPS');
 
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
@@ -246,7 +249,7 @@ const AppInfo = (props) => {
             {app?.lud16 ? (
               <div
                 onClick={showZapError}
-                data-npub={npub}
+                data-npub={authorTag ? npubAuthor : npub}
                 ref={app?.lud16 ? zapButtonRefByEmail : null}
                 className="text-muted pointer lud-16"
               >
@@ -287,7 +290,7 @@ const AppInfo = (props) => {
                 <Zap
                   onClick={showZapError}
                   zapRef={app?.lud16 ? zapButtonRef : null}
-                  dataNpub={npub}
+                  dataNpub={authorTag ? npubAuthor : npub}
                 />
               </div>
             </OverlayTrigger>
