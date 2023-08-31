@@ -44,7 +44,6 @@ const AppInfo = (props) => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
-  console.log(JSON.stringify(props.app.tags), 'APP FROM PROPS');
 
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));

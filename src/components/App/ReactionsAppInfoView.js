@@ -5,6 +5,7 @@ import { ListGroupItem, ListGroup } from 'react-bootstrap';
 import Profile from '../../elements/Profile';
 import './ReactionAppInfo.scss';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const ReacitonsAppInfoView = ({ app }) => {
   const [reactionLikesData, setReactionLikesData] = useState();
@@ -91,20 +92,27 @@ const ReacitonsAppInfoView = ({ app }) => {
                 : {};
               const emojifiedContent = emojifyContent(like.content, like.tags);
               return (
-                <ListGroupItem
-                  key={like.pubkey}
-                  className="darked d-flex align-items-center justify-content-between"
-                >
-                  <Profile small profile={{ profile }} pubkey={like.pubkey} />
-                  {emojifiedContent === '+' ? (
-                    <LikedHeart />
-                  ) : (
-                    <div
-                      className="emojy"
-                      dangerouslySetInnerHTML={{ __html: emojifiedContent }}
+                <Link to={cmn.generateNoteLink(like.id)}>
+                  <ListGroupItem
+                    key={like.pubkey}
+                    className="darked d-flex align-items-center justify-content-between"
+                  >
+                    <Profile
+                      removeLink
+                      small
+                      profile={{ profile }}
+                      pubkey={like.pubkey}
                     />
-                  )}
-                </ListGroupItem>
+                    {emojifiedContent === '+' ? (
+                      <LikedHeart />
+                    ) : (
+                      <div
+                        className="emojy"
+                        dangerouslySetInnerHTML={{ __html: emojifiedContent }}
+                      />
+                    )}
+                  </ListGroupItem>
+                </Link>
               );
             })}
           </ListGroup>
@@ -117,13 +125,22 @@ const ReacitonsAppInfoView = ({ app }) => {
                 ? JSON.parse(share?.author?.content)
                 : {};
               return (
-                <ListGroupItem
-                  key={share.pubkey}
-                  className="darked share-like-item "
-                >
-                  <Profile small profile={{ profile }} pubkey={share.pubkey} />
-                  <p className="mb-0 mt-2 mx-2 limited-text">{share.content}</p>
-                </ListGroupItem>
+                <Link to={cmn.generateNoteLink(share.id)}>
+                  <ListGroupItem
+                    key={share.pubkey}
+                    className="darked share-like-item "
+                  >
+                    <Profile
+                      small
+                      removeLink
+                      profile={{ profile }}
+                      pubkey={share.pubkey}
+                    />
+                    <p className="mb-0 mt-2 mx-2 limited-text">
+                      {share.content}
+                    </p>
+                  </ListGroupItem>
+                </Link>
               );
             })}
           </ListGroup>

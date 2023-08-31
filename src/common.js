@@ -1107,3 +1107,8 @@ export const getProfile = async (pubkey) => {
     return console.log(error);
   }
 };
+
+export const generateNoteLink = (id) => {
+  let note = nip19.noteEncode(id);
+  return `/#${note}`;
+};

@@ -20,8 +20,8 @@ const Profile = (props) => {
     <Row className={'position-relative ' + (props.small ? 'gx-1' : '')}>
       <Col xs="auto">
         <Link
-          className="stretched-link"
-          to={getUrl(pubkey)}
+          className={!props.removeLink ? 'stretched-link' : null}
+          to={!props.removeLink ? getUrl(pubkey) : null}
           onClick={() => onSelect(pubkey)}
         >
           {p?.picture && (
