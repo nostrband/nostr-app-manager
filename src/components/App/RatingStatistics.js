@@ -29,11 +29,7 @@ const RatingStatistics = ({ reviews }) => {
         {ratingCounts.map((count, index) => {
           const percentage = totalReviews ? (count / totalReviews) * 100 : 0;
           return (
-            <div
-              key={index}
-              className="rating-progress-container"
-              style={{ width: '80px', height: '80px' }}
-            >
+            <div key={index} className="rating-progress-container">
               <label>{index + 1}</label>
               <CircularProgressbar
                 value={percentage}

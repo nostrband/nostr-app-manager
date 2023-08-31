@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
 import * as cmn from '../../common';
-import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
+import {
+  ListGroupItem,
+  ListGroup,
+  Button,
+  Container,
+  Col,
+} from 'react-bootstrap';
 import RatingStatistics from './RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useReviewModal } from '../../context/ShowReviewContext';
 import Profile from '../../elements/Profile';
+import { Link } from 'react-router-dom';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
@@ -89,13 +96,23 @@ const ReviewsAppInfoView = ({ app }) => {
               : {};
             let count = cmn.getCountReview(review);
             return (
-              <ListGroupItem key={review.pubkey} className="review-item darked">
-                <p>{review.content}</p>
-                <div className="d-flex justify-content-between">
-                  <Profile small profile={{ profile }} pubkey={review.pubkey} />
-                  <Rating name="read-only" value={count} readOnly />
-                </div>
-              </ListGroupItem>
+              <Link to={cmn.generateNoteLink(review.id)}>
+                <ListGroupItem
+                  key={review.pubkey}
+                  className="review-item darked"
+                >
+                  <p>{review.content}</p>
+                  <div className="d-flex justify-content-between">
+                    <Profile
+                      removeLink
+                      small
+                      profile={{ profile }}
+                      pubkey={review.pubkey}
+                    />
+                    <Rating name="read-only" value={count} readOnly />
+                  </div>
+                </ListGroupItem>
+              </Link>
             );
           })}
         </ListGroup>
