@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Rating } from '@mui/material';
+import { Menu, Rating } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Toast from '../../elements/Toast';
 import { toast } from 'react-toastify';
 import * as cmn from '../../common';
+import { useReviewModal } from '../../context/ShowReviewContext';
 
 const ReviewModal = ({
   showModal,
@@ -12,12 +13,23 @@ const ReviewModal = ({
   app,
   review,
   countReview,
+  setReview,
   setCountReview,
   hasReview,
 }) => {
   const textRef = useRef();
   const [showToast, setShowToast] = useState(false);
   const [reviewText, setReviewText] = useState(review.content || '');
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const { reviewAction, setReviewAction } = useReviewModal();
+
+  const handleClick = () => {
+    setShowConfirmDeleteModal(true);
+  };
+
+  const handleClose = () => {
+    setShowConfirmDeleteModal(false);
+  };
 
   useEffect(() => {
     if (textRef && textRef.current) {
@@ -69,6 +81,10 @@ const ReviewModal = ({
         });
         handleCloseModal();
         hasReview();
+        setReviewAction(
+          review ? { type: 'EDIT', pubkey: review.id } : { type: 'CREATE' }
+        );
+        handleClose();
       }
     } catch (error) {
       toast.update(toastId, {
@@ -79,7 +95,7 @@ const ReviewModal = ({
     }
   };
 
-  const editReviewQuery = async () => {
+  const editReviewQuery = async (edit) => {
     const event = {
       kind: 5,
       pubkey: review.pubkey,
@@ -88,8 +104,12 @@ const ReviewModal = ({
     };
     try {
       const result = await cmn.publishEvent(event);
-      if (result) {
+      if (result && edit) {
         sendReviewQuery();
+      } else if (result) {
+        handleCloseModal();
+        setReview(false);
+        setReviewAction({ type: 'DELETE', pubkey: review.pubkey });
       }
     } catch (error) {
       console.log(error);
@@ -98,7 +118,7 @@ const ReviewModal = ({
 
   const addReviewOrEdit = () => {
     if (review) {
-      editReviewQuery();
+      editReviewQuery(true);
     } else {
       sendReviewQuery();
     }
@@ -110,52 +130,83 @@ const ReviewModal = ({
   };
 
   return (
-    <Modal show onHide={cancelHandler}>
-      <Toast
-        animation
-        delay={3}
-        show={showToast}
-        onClose={() => setShowToast(false)}
-      >
-        <p className="text-sucess">Sent!</p>
-      </Toast>
-      <Modal.Header closeButton>
-        <Modal.Title>Leave a review</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div class="form-group">
-          <textarea
-            placeholder="Type your review here"
-            ref={textRef}
-            style={{ minHeight: '60px' }}
-            onChange={(e) => setReviewText(e.target.value)}
-            class="form-control"
-            id="exampleFormControlTextarea1"
-          >
-            {reviewText}
-          </textarea>
-          <div className="mt-3">
-            <Rating
-              name="review-rating"
-              value={countReview}
-              onChange={setRating}
+    <>
+      <Modal show onHide={cancelHandler}>
+        <Toast
+          animation
+          delay={3}
+          show={showToast}
+          onClose={() => setShowToast(false)}
+        >
+          <p className="text-success">Sent!</p>
+        </Toast>
+        <Modal.Header closeButton>
+          <Modal.Title>Leave a review</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="form-group">
+            <textarea
+              placeholder="Type your review here"
+              ref={textRef}
+              style={{ minHeight: '60px' }}
+              onChange={(e) => setReviewText(e.target.value)}
+              className="form-control"
+              id="exampleFormControlTextarea1"
+              value={reviewText}
             />
+            <div className="mt-3">
+              <Rating
+                name="review-rating"
+                value={countReview}
+                onChange={setRating}
+              />
+            </div>
           </div>
-        </div>
-        <div className="d-flex justify-content-center mt-3">
-          <Button onClick={cancelHandler} variant="secondary" className="w-50">
-            Cancel
-          </Button>
-          <Button
-            onClick={addReviewOrEdit}
-            variant="primary"
-            className="w-50 ms-3 "
-          >
-            {review ? 'Edit' : 'Submit'}
-          </Button>
-        </div>
-      </Modal.Body>
-    </Modal>
+          {review ? (
+            <button className="delete-review-button" onClick={handleClick}>
+              Delete this review?
+            </button>
+          ) : null}
+          <div className="d-flex justify-content-center mt-3">
+            <Button
+              onClick={cancelHandler}
+              variant="secondary"
+              className="w-50"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={addReviewOrEdit}
+              variant="primary"
+              className="w-50 ms-3"
+            >
+              {review ? 'Edit' : 'Submit'}
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal show={showConfirmDeleteModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Do you want to delete the review?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="confirm-modal">
+            <div className="container-button ">
+              <Button
+                onClick={handleClose}
+                className="w-100"
+                variant="outline-secondary"
+              >
+                Cancel
+              </Button>
+              <Button onClick={() => editReviewQuery(false)} className="w-100">
+                Delete
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 };
 

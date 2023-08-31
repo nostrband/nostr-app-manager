@@ -380,6 +380,7 @@ const AppInfo = (props) => {
         <ReviewModal
           hasReview={hasReview}
           countReview={countReview}
+          setReview={setReview}
           setCountReview={setCountReview}
           review={review}
           app={props.app}
