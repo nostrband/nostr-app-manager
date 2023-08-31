@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
 import * as cmn from '../../common';
-import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
+import {
+  ListGroupItem,
+  ListGroup,
+  Button,
+  Container,
+  Col,
+} from 'react-bootstrap';
 import RatingStatistics from './RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useReviewModal } from '../../context/ShowReviewContext';
 import Profile from '../../elements/Profile';
 import { Link } from 'react-router-dom';
-import { nip19 } from '@nostrband/nostr-tools';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });

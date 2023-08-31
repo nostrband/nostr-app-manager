@@ -204,34 +204,33 @@ const AppInfoView = () => {
                 );
               })}
             </div>
-
-            <div className="d-flex pt-4 pb-3">
-              <ul className="nav nav-pills d-flex justify-content-center ">
-                {tabs.map((nav) => {
-                  return (
-                    <li
-                      onClick={() => {
-                        setActiveComponent(nav.path);
-                      }}
-                      className={`pointer nav-link nav-item ${
-                        activeComponent === nav.path ? 'active' : ''
-                      }`}
-                    >
-                      {nav.title}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            {appInfoViewComponents[activeComponent]}
-            {activeComponent !== 'reviews' ? (
-              <div className="mt-2">
-                <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
-                  Add app to my list
-                </Button>
-              </div>
-            ) : null}
           </AppInfo>
+          <div className="d-flex  justify-content-center pt-4 pb-3">
+            <ul className="nav nav-pills d-flex justify-content-center">
+              {tabs.map((nav) => {
+                return (
+                  <li
+                    onClick={() => {
+                      setActiveComponent(nav.path);
+                    }}
+                    className={`pointer nav-link nav-item ${
+                      activeComponent === nav.path ? 'active' : ''
+                    }`}
+                  >
+                    {nav.title}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          {appInfoViewComponents[activeComponent]}
+          {activeComponent !== 'reviews' ? (
+            <div className="mt-2">
+              <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
+                Add app to my list
+              </Button>
+            </div>
+          ) : null}
         </div>
       )}
       <Modal show={showAddApp} onHide={(e) => setShowAddApp(false)}>

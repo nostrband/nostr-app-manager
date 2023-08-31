@@ -1,6 +1,7 @@
 .rating-container {
   display: flex;
   justify-content: center;
+  margin: 0;
   @media (max-width: 450px) {
     flex-direction: column;
     align-items: center;
@@ -24,10 +25,16 @@
   padding: 15px;
 }
 .rating-progress-container {
+  width: 80px;
+  height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  @media (max-width: 450px) {
+    width: 70px;
+    height: 70px;
+  }
 }
 
 .averate-rating-container {
