@@ -48,3 +48,19 @@
   background-color: #ffc700;
   color: rgb(21, 20, 20);
 }
+
+.delete-review-button {
+  border: none;
+  outline: none;
+  background: none;
+  font-weight: 600;
+  padding: 0 0 0 4px;
+  color: red;
+}
+
+.container-button {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  padding: 10px 0;
+}

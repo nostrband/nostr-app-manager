@@ -9,9 +9,10 @@ import { useReviewModal } from '../../context/ShowReviewContext';
 import Profile from '../../elements/Profile';
 
 const ReviewsAppInfoView = ({ app }) => {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState({ reviewsData: [] });
   const [loading, setLoading] = useState(false);
-  const { showReviewModal, setShowReviewModal } = useReviewModal();
+  const { showReviewModal, setShowReviewModal, reviewAction } =
+    useReviewModal();
 
   const getReviews = async () => {
     setLoading(true);
@@ -25,6 +26,8 @@ const ReviewsAppInfoView = ({ app }) => {
       const response = await cmn.fetchAllEvents([
         cmn.startFetch(ndk, addrForFilter),
       ]);
+
+      console.log(response, 'RESPONSE');
       if (response.length > 0) {
         const pubkeys = response.map((review) => review.pubkey);
         const filter = {
@@ -58,11 +61,25 @@ const ReviewsAppInfoView = ({ app }) => {
     }
   };
 
+  // useEffect(() => {
+  //   if (reviewAction.type === 'EDIT') {
+  //     getReviews();
+  //   } else if (reviewAction.type === 'DELETE' && reviewAction.pubkey) {
+  //     setReviews((prev) => {
+  //       const updatedReviews = prev.reviewsData.filter(
+  //         (review) => review.pubkey !== reviewAction.pubkey
+  //       );
+  //       return { ...prev, reviewsData: updatedReviews };
+  //     });
+  //   } else if (reviewAction.type === 'GET' || reviewAction.type === 'CREATE') {
+  //     getReviews();
+  //   }
+  // }, [reviewAction]);
+
   useEffect(() => {
-    if (!showReviewModal) {
-      getReviews();
-    }
-  }, [showReviewModal]);
+    getReviews();
+  }, [reviewAction]);
+
   return (
     <div>
       {loading ? (

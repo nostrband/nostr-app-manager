@@ -8,10 +8,13 @@ export const useReviewModal = () => {
 
 export const ReviewModalProvider = ({ children }) => {
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewAction, setReviewAction] = useState();
 
   const value = {
     showReviewModal,
     setShowReviewModal,
+    setReviewAction,
+    reviewAction,
   };
 
   return (
