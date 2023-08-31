@@ -32,7 +32,6 @@ const RepositoryView = () => {
   const [repository, setRepository] = useState({
     tags: [],
   });
-  console.log(repository, 'REPOSITORY');
   const [authorRepository, setAuthorRepository] = useState();
   const { naddr } = useParams();
   const editUrl = cmn.formatRepositoryEditUrl(naddr);

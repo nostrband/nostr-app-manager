@@ -81,7 +81,9 @@ const ReviewModal = ({
         });
         handleCloseModal();
         hasReview();
-        setReviewAction('CREATE');
+        setReviewAction(
+          review ? { type: 'EDIT', pubkey: review.id } : { type: 'CREATE' }
+        );
         handleClose();
       }
     } catch (error) {
@@ -107,7 +109,7 @@ const ReviewModal = ({
       } else if (result) {
         handleCloseModal();
         setReview(false);
-        // setReviewAction('DELETE');
+        setReviewAction({ type: 'DELETE', pubkey: review.pubkey });
       }
     } catch (error) {
       console.log(error);
@@ -188,7 +190,7 @@ const ReviewModal = ({
           <Modal.Title>Do you want to delete the review?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className=" confirm-modal">
+          <div className="confirm-modal">
             <div className="container-button ">
               <Button
                 onClick={handleClose}
@@ -197,7 +199,7 @@ const ReviewModal = ({
               >
                 Cancel
               </Button>
-              <Button onClick={() => editReviewQuery(false)} className="w-50">
+              <Button onClick={() => editReviewQuery(false)} className="w-100">
                 Delete
               </Button>
             </div>

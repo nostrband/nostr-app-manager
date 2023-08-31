@@ -14,7 +14,7 @@ const ReviewsAppInfoView = ({ app }) => {
   const { showReviewModal, setShowReviewModal, reviewAction } =
     useReviewModal();
 
-  const getReviews = async () => {
+  const getReviews = async (id) => {
     setLoading(true);
     const ndk = await cmn.getNDK();
     const addr = cmn.naddrToAddr(cmn.getNaddr(app));
@@ -26,8 +26,6 @@ const ReviewsAppInfoView = ({ app }) => {
       const response = await cmn.fetchAllEvents([
         cmn.startFetch(ndk, addrForFilter),
       ]);
-
-      console.log(response, 'RESPONSE');
       if (response.length > 0) {
         const pubkeys = response.map((review) => review.pubkey);
         const filter = {
@@ -39,16 +37,18 @@ const ReviewsAppInfoView = ({ app }) => {
             cmn.startFetch(ndk, filter),
           ]);
 
-          const reviewsData = response.map((review) => {
-            const author = authors.find(
-              (author) => author.pubkey === review.pubkey
-            );
-            if (author) {
-              return { ...review, author };
-            } else {
-              return review;
-            }
-          });
+          const reviewsData = response
+            .map((review) => {
+              const author = authors.find(
+                (author) => author.pubkey === review.pubkey
+              );
+              if (author) {
+                return { ...review, author };
+              } else {
+                return review;
+              }
+            })
+            .filter((review) => review.id !== id);
           setReviews((prev) => ({ ...prev, reviewsData }));
         } catch (error) {
           console.error('Error fetching authors:', error);
@@ -61,23 +61,19 @@ const ReviewsAppInfoView = ({ app }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (reviewAction.type === 'EDIT') {
-  //     getReviews();
-  //   } else if (reviewAction.type === 'DELETE' && reviewAction.pubkey) {
-  //     setReviews((prev) => {
-  //       const updatedReviews = prev.reviewsData.filter(
-  //         (review) => review.pubkey !== reviewAction.pubkey
-  //       );
-  //       return { ...prev, reviewsData: updatedReviews };
-  //     });
-  //   } else if (reviewAction.type === 'GET' || reviewAction.type === 'CREATE') {
-  //     getReviews();
-  //   }
-  // }, [reviewAction]);
-
   useEffect(() => {
-    getReviews();
+    if (reviewAction.type === 'EDIT') {
+      getReviews(reviewAction.pubkey);
+    } else if (reviewAction.type === 'DELETE' && reviewAction.pubkey) {
+      setReviews((prev) => {
+        const updatedReviews = prev.reviewsData.filter(
+          (review) => review.pubkey !== reviewAction.pubkey
+        );
+        return { ...prev, reviewsData: updatedReviews };
+      });
+    } else if (reviewAction.type === 'GET' || reviewAction.type === 'CREATE') {
+      getReviews();
+    }
   }, [reviewAction]);
 
   return (
