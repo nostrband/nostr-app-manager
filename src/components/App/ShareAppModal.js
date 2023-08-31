@@ -23,7 +23,6 @@ const ShareAppModal = ({
       textRef.current.style.height = taHeight + 'px';
     }
   }, [textForShare, showModal]);
-
   const shareApp = async () => {
     const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     const event = {
@@ -34,6 +33,13 @@ const ShareAppModal = ({
       ],
       content: textForShare,
     };
+
+    const authorTag = selectedApp.tags.find(
+      (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
+    );
+    if (authorTag) {
+      event.tags.push(['p', authorTag[1], authorTag[2]]);
+    }
     const result = await cmn.publishEvent(event);
     if (result) {
       toast.update(toastId, {
