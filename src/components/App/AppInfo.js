@@ -44,6 +44,7 @@ const AppInfo = (props) => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
+  console.log(JSON.stringify(props.app.tags), 'APP FROM PROPS');
 
   useEffect(() => {
     cmn.addOnNostr(() => setAllowEdit(isAllowEdit()));
@@ -60,6 +61,10 @@ const AppInfo = (props) => {
           ],
           content: '+',
         };
+        const authorTag = props.app.tags.find((tag) => tag.includes('author'));
+        if (authorTag) {
+          event.tags.push(['p', authorTag[1], authorTag[2]]);
+        }
         try {
           const response = await cmn.publishEvent(event);
           if (response) {
