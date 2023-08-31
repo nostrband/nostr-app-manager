@@ -34,7 +34,9 @@ const ShareAppModal = ({
       content: textForShare,
     };
 
-    const authorTag = selectedApp.tags.find((tag) => tag.includes('author'));
+    const authorTag = selectedApp.tags.find(
+      (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
+    );
     if (authorTag) {
       event.tags.push(['p', authorTag[1], authorTag[2]]);
     }
