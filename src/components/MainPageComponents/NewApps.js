@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Col, Container, ListGroup, Row, Spinner } from 'react-bootstrap';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
 import { useAuth } from '../../context/AuthContext';
 import { generateAddr } from '../../common';
+import { NewAppsContext } from '../../context/NewAppsContext';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
   const [allApps, setAllApps] = useState([]);
+  const { appsList, setAppsList, scrollPosition, setScrollPosition } =
+    useContext(NewAppsContext);
   const [loading, setLoading] = useState(false);
   const [lastCreatedAt, setLastCreatedAt] = useState(null);
   const [hasMore, setHasMore] = useState(true);
@@ -33,11 +36,18 @@ const NewApps = () => {
         );
         if (filteredApps.length === 0) {
           setEmpty(true);
+        } else {
+          setLastCreatedAt(filteredApps[filteredApps.length - 1].created_at);
+          const currentAppAddrs = filteredApps.map((app) => generateAddr(app));
+          setAppAddrs((prevAppAddrs) => [...prevAppAddrs, ...currentAppAddrs]);
+          setAllApps((prevApps) => {
+            const newApps = filteredApps.filter(
+              (newApp) =>
+                !prevApps.some((existingApp) => existingApp.id === newApp.id)
+            );
+            return [...prevApps, ...newApps];
+          });
         }
-        setLastCreatedAt(filteredApps[filteredApps.length - 1].created_at);
-        const currentAppAddrs = filteredApps.map((app) => generateAddr(app));
-        setAppAddrs((prevAppAddrs) => [...prevAppAddrs, ...currentAppAddrs]);
-        setAllApps((prevApps) => [...prevApps, ...filteredApps]);
       } else {
         setHasMore(false);
       }
@@ -135,6 +145,22 @@ const NewApps = () => {
     };
     fetchRecommendedApps();
   }, [appAddrs, followedPubkeys]);
+
+  useEffect(() => {
+    if (appsList.length > 0) {
+      setAllApps(appsList);
+      window.scrollTo(0, scrollPosition);
+    } else {
+      fetchApps();
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      setAppsList(allApps);
+      setScrollPosition(window.scrollY);
+    };
+  }, [allApps]);
 
   return (
     <div>
