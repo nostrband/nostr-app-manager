@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Col, Container, ListGroup, Row, Spinner } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Col, Container, Row } from 'react-bootstrap';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
@@ -13,6 +13,7 @@ const NewApps = () => {
   const {
     allApps,
     loading,
+    scrollPosition,
     appAddrs,
     appCountsState,
     hasMore,
@@ -20,7 +21,9 @@ const NewApps = () => {
     followedPubkeys,
   } = appListState;
 
-  console.log({ allApps, empty, hasMore, lastCreatedAt }, 'ALL DATA');
+  useEffect(() => {
+    window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+  }, []);
 
   const updateState = (changes) => {
     setAppListState((prevState) => ({ ...prevState, ...changes }));
@@ -41,7 +44,6 @@ const NewApps = () => {
           (newApp) =>
             !currentApps.some((existingApp) => existingApp.id === newApp.id)
         );
-        console.log(filteredApps, 'FILTERED APPS');
         if (filteredApps.length === 0) {
           setEmpty(true);
         }
@@ -69,6 +71,7 @@ const NewApps = () => {
         document.documentElement.scrollHeight -
           (window.innerHeight + document.documentElement.scrollTop)
       );
+      updateState({ scrollPosition: window.scrollY });
       if (scrollBottom < 10 && !empty) {
         fetchApps(lastCreatedAt);
       }
