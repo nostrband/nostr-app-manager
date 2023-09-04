@@ -76,7 +76,11 @@ const NewApps = () => {
   };
 
   useEffect(() => {
-    fetchApps();
+    if (allApps.length > 0) {
+      fetchApps(lastCreatedAt);
+    } else {
+      fetchApps();
+    }
   }, []);
 
   useEffect(() => {
@@ -107,7 +111,6 @@ const NewApps = () => {
         }
       }
     };
-
     fetchFollowedPubkeys();
   }, [pubkey]);
 
