@@ -1111,3 +1111,8 @@ export const generateNoteLink = (id) => {
   let note = nip19.noteEncode(id);
   return `/#${note}`;
 };
+
+export const getRepositoryUrl = (event) => {
+  const viewUrl = '/r/' + getNaddr(event);
+  return viewUrl;
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { nip19 } from '@nostrband/nostr-tools';
 
@@ -48,6 +48,7 @@ const AppInfoView = () => {
   const [countUsers, setCountUsers] = useState(0);
   const [author, setAuthor] = useState({});
   const [activeComponent, setActiveComponent] = useState('reviews');
+  const navigate = useNavigate();
 
   const init = useCallback(async () => {
     const ndk = await cmn.getNDK();
@@ -131,7 +132,6 @@ const AppInfoView = () => {
     reviews: <ReviewsAppInfoView app={appInfo} />,
     reactions: <ReacitonsAppInfoView app={appInfo} />,
   };
-
   return (
     <>
       {info === null && (
@@ -183,11 +183,9 @@ const AppInfoView = () => {
                 <h6 className="mt-3">Platforms:</h6>
                 {app.platforms.map((p) => {
                   return (
-                    <span key={p}>
-                      <KindElement key={p} className="me-1">
-                        {p}
-                      </KindElement>
-                    </span>
+                    <KindElement key={p} className="me-1">
+                      {p}
+                    </KindElement>
                   );
                 })}
               </>
@@ -196,11 +194,13 @@ const AppInfoView = () => {
             <div>
               {tags.map((t) => {
                 return (
-                  <span key={t}>
-                    <KindElement key={t} className="me-1">
-                      {t}
-                    </KindElement>
-                  </span>
+                  <button
+                    class="btn btn-outline-primary mx-1"
+                    onClick={() => navigate(`/tags/${t}`)}
+                    key={t}
+                  >
+                    {t}
+                  </button>
                 );
               })}
             </div>

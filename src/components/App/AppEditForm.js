@@ -236,7 +236,7 @@ const AppEditForm = (props) => {
         setShowShareModal(true);
         const { type, data } = nip19.decode(naddr);
         const info = await cmn.fetchApps(data.pubkey, data);
-        setCreatedApp(info.apps[name].addrHandler);
+        setCreatedApp(info.apps[name]?.addrHandler);
         const naddrForBySelectedApp = cmn.getNaddr(info.apps[name].addrHandler);
         setTextForShare(
           `Check out ${info.apps[name].addrHandler.profile.display_name} - ${info.apps[name].addrHandler.profile.about}

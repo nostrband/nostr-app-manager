@@ -5,7 +5,6 @@ import GitHubIconWithStar from './GitHubIconWithStar';
 
 const RepositoryElement = ({ repo, getUrl }) => {
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
-
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
 
   const link = repo.tags.find((tag) => tag[0] === 'r');

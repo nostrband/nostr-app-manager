@@ -2,7 +2,7 @@ import React from 'react';
 
 const KindElement = ({ children, props }) => {
   return (
-    <div {...props} className="kind-element">
+    <div {...props} className="kind-element mx-1">
       {children}
     </div>
   );

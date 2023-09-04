@@ -71,11 +71,6 @@ const Repositories = () => {
     };
   }, [hasMore, loading, lastCreatedAt]);
 
-  const getUrl = (event) => {
-    const viewUrl = '/r/' + cmn.getNaddr(event);
-    return viewUrl;
-  };
-
   return (
     <div>
       <Container>
@@ -84,7 +79,11 @@ const Repositories = () => {
           {allRepositories.length > 0 ? (
             allRepositories?.map((repo) => {
               return (
-                <RepositoryElement key={repo.id} repo={repo} getUrl={getUrl} />
+                <RepositoryElement
+                  key={repo.id}
+                  repo={repo}
+                  getUrl={cmn.getRepositoryUrl}
+                />
               );
             })
           ) : (
