@@ -1061,7 +1061,6 @@ export function generateAddr(event) {
   const pubkey = event.pubkey;
   const identifierTag = event.tags.find((tag) => tag[0] === 'd');
   if (!identifierTag) {
-    console.error('Identifier tag not found for event:', event);
     return null;
   }
   const identifier = identifierTag[1];

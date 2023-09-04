@@ -5,20 +5,29 @@ import LoadingSpinner from '../../elements/LoadingSpinner';
 import ApplicationItem from '../ApplicationItem';
 import { useAuth } from '../../context/AuthContext';
 import { generateAddr } from '../../common';
+import { useAppState } from '../../context/AppContext';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
-  const [allApps, setAllApps] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [lastCreatedAt, setLastCreatedAt] = useState(null);
-  const [hasMore, setHasMore] = useState(true);
-  const [empty, setEmpty] = useState(false);
-  const [followedPubkeys, setFollowedPubkeys] = useState([]);
-  const [appAddrs, setAppAddrs] = useState([]);
-  const [appCountsState, setAppCountsState] = useState({});
+  const { appListState, setAppListState, empty, setEmpty } = useAppState();
+  const {
+    allApps,
+    loading,
+    appAddrs,
+    appCountsState,
+    hasMore,
+    lastCreatedAt,
+    followedPubkeys,
+  } = appListState;
+
+  console.log({ allApps, empty, hasMore, lastCreatedAt }, 'ALL DATA');
+
+  const updateState = (changes) => {
+    setAppListState((prevState) => ({ ...prevState, ...changes }));
+  };
 
   const fetchApps = async (created_at) => {
-    setLoading(true);
+    updateState({ loading: true });
     try {
       const info = await cmn.fetchAppsByKinds(null, created_at, 'MAIN_PAGE');
       const newAppsData = [];
@@ -26,25 +35,31 @@ const NewApps = () => {
         const app = info.apps[name].handlers[0];
         newAppsData.push(app);
       }
+      const currentApps = appListState.allApps;
       if (newAppsData.length > 0) {
         const filteredApps = newAppsData.filter(
           (newApp) =>
-            !allApps.some((existingApp) => existingApp.id === newApp.id)
+            !currentApps.some((existingApp) => existingApp.id === newApp.id)
         );
+        console.log(filteredApps, 'FILTERED APPS');
         if (filteredApps.length === 0) {
           setEmpty(true);
         }
-        setLastCreatedAt(filteredApps[filteredApps.length - 1].created_at);
-        const currentAppAddrs = filteredApps.map((app) => generateAddr(app));
-        setAppAddrs((prevAppAddrs) => [...prevAppAddrs, ...currentAppAddrs]);
-        setAllApps((prevApps) => [...prevApps, ...filteredApps]);
+        updateState({
+          allApps: [...currentApps, ...filteredApps],
+          lastCreatedAt: filteredApps[filteredApps.length - 1].created_at,
+          appAddrs: [
+            ...appListState.appAddrs,
+            ...filteredApps.map((app) => cmn.generateAddr(app)),
+          ],
+        });
       } else {
-        setHasMore(false);
+        updateState({ hasMore: false });
       }
     } catch (error) {
       console.error('Error fetching apps:', error);
     } finally {
-      setLoading(false);
+      updateState({ loading: false });
     }
   };
 
@@ -86,7 +101,7 @@ const NewApps = () => {
           const pubkeys = events.flatMap((event) =>
             event.tags.filter((tag) => tag[0] === 'p').map((tag) => tag[1])
           );
-          setFollowedPubkeys(pubkeys);
+          updateState({ followedPubkeys: pubkeys });
         } catch (error) {
           console.error('Error fetching user contacts:', error);
         }
@@ -99,7 +114,7 @@ const NewApps = () => {
   useEffect(() => {
     const fetchRecommendedApps = async () => {
       const ndk = await cmn.getNDK();
-      if (appAddrs.length > 0) {
+      if (appAddrs?.length > 0) {
         const filter = pubkey
           ? {
               kinds: [31989],
@@ -130,7 +145,7 @@ const NewApps = () => {
         for (const [addr, userSet] of Object.entries(appUsers)) {
           appCounts[addr] = userSet.size;
         }
-        setAppCountsState(appCounts);
+        updateState({ appCountsState: appCounts });
       }
     };
     fetchRecommendedApps();
