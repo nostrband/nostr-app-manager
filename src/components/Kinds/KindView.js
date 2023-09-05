@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import { ListGroup } from 'react-bootstrap';
 import AppSelectItem from '../../elements/AppSelectItem';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import { reversedKinds } from '../../const';
 import KindElement from '../../elements/KindElement';
 
 const KindView = () => {
@@ -12,17 +11,13 @@ const KindView = () => {
   const [appsByKind, setAppsByKind] = useState([]);
   const { kind } = useParams();
 
-  const getKind = (k) => {
-    return reversedKinds[k].toString();
-  };
-
   useEffect(() => {
     const getAppsByTag = async () => {
       setLoading(true);
       const ndk = await cmn.getNDK();
       const filter = {
         kinds: [31990],
-        '#k': [getKind(kind)],
+        '#k': [kind.toString()],
       };
       try {
         const response = await cmn.fetchAllEvents([
@@ -40,7 +35,7 @@ const KindView = () => {
   return (
     <>
       <h5 className="mt-2 mx-1">
-        Apps by kind : <KindElement> {kind} </KindElement>
+        Apps by kind : <KindElement> {cmn.getKindLabel(kind)} </KindElement>
       </h5>
       <ListGroup>
         {loading ? (

@@ -169,14 +169,13 @@ const AppInfoView = () => {
                 <h6 className="mt-3">Event kinds:</h6>
                 <div>
                   {app.kinds.map((k) => {
-                    const kindValue = kinds[k];
                     return (
                       <button
                         class="btn btn-outline-primary mx-1"
-                        onClick={() => navigate(`/kind/${kinds[k]}`)}
+                        onClick={() => navigate(`/kind/${k}`)}
                         key={k}
                       >
-                        {kinds[k]}
+                        {cmn.getKindLabel(k)}
                       </button>
                     );
                   })}
