@@ -1,59 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import * as cmn from '../../common';
-import RepositoryElement from '../../elements/RepositoryElement';
+import { useParams } from 'react-router-dom';
 import { ListGroup } from 'react-bootstrap';
+import AppSelectItem from '../../elements/AppSelectItem';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import KindElement from '../../elements/KindElement';
 
-const RepositoriesByTag = () => {
+const KindView = () => {
   const [loading, setLoading] = useState(false);
-  const [repositoriesByTag, setRepositoriesByTag] = useState([]);
-  const { tag } = useParams();
+  const [appsByKind, setAppsByKind] = useState([]);
+  const { kind } = useParams();
 
   useEffect(() => {
-    const getRepositoriesByTag = async () => {
+    const getAppsByTag = async () => {
       setLoading(true);
       const ndk = await cmn.getNDK();
       const filter = {
-        kinds: [30117],
-        '#t': [tag],
+        kinds: [31990],
+        '#k': [kind.toString()],
       };
       try {
         const response = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, filter),
         ]);
-        setRepositoriesByTag(response);
+        setAppsByKind(response);
       } catch (error) {
       } finally {
         setLoading(false);
       }
     };
-    getRepositoriesByTag();
+    getAppsByTag();
   }, []);
 
   return (
     <>
-      <h5>
-        Repositories by tag :<KindElement>{tag}</KindElement>
+      <h5 className="mt-2 mx-1">
+        Apps by kind : <KindElement> {cmn.getKindLabel(kind)} </KindElement>
       </h5>
       <ListGroup>
         {loading ? (
           <LoadingSpinner />
         ) : (
-          repositoriesByTag.map((repo) => {
+          appsByKind.map((app) => {
+            const content = cmn.convertContentToProfile([app]);
             return (
-              <RepositoryElement
-                key={repo.id}
-                repo={repo}
-                getUrl={cmn.getRepositoryUrl}
+              <AppSelectItem
+                key={app.id}
+                app={{ ...app, profile: content }}
+                pubkey={content.pubkey}
               />
             );
           })
         )}
       </ListGroup>
       <p className="d-flex justify-content-center">
-        {repositoriesByTag.length === 0 && !loading
+        {appsByKind.length === 0 && !loading
           ? 'Sorry, nothing was found.'
           : null}
       </p>
@@ -61,4 +62,4 @@ const RepositoriesByTag = () => {
   );
 };
 
-export default RepositoriesByTag;
+export default KindView;

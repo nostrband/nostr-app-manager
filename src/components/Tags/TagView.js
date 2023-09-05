@@ -18,9 +18,8 @@ const components = {
   repositories: <RepositoriesByTag />,
 };
 
-const Tags = () => {
+const TagView = () => {
   const [activeNav, setActiveNav] = useState('apps');
-
   return (
     <div className="mt-3">
       <ul className="nav nav-pills d-flex justify-content-center mb-3">
@@ -44,4 +43,4 @@ const Tags = () => {
   );
 };
 
-export default Tags;
+export default TagView;

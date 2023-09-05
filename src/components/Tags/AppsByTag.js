@@ -5,6 +5,7 @@ import * as cs from '../../const';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import AppSelectItem from '../../elements/AppSelectItem';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import KindElement from '../../elements/KindElement';
 
 const AppsByTag = () => {
   const [loading, setLoading] = useState(false);
@@ -35,6 +36,9 @@ const AppsByTag = () => {
 
   return (
     <>
+      <h5>
+        Apps by tag :<KindElement>{tag}</KindElement>
+      </h5>
       <ListGroup>
         {loading ? (
           <LoadingSpinner />
