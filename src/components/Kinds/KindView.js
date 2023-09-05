@@ -1,31 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import * as cmn from '../../common';
 import { useParams } from 'react-router-dom';
-import * as cs from '../../const';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import AppSelectItem from '../../elements/AppSelectItem';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import { reversedKinds } from '../../const';
 import KindElement from '../../elements/KindElement';
 
-const AppsByTag = () => {
+const KindView = () => {
   const [loading, setLoading] = useState(false);
-  const [apps, setApps] = useState([]);
+  const [appsByKind, setAppsByKind] = useState([]);
+  const { kind } = useParams();
 
-  const { tag } = useParams();
+  const getKind = (k) => {
+    return reversedKinds[k].toString();
+  };
 
   useEffect(() => {
     const getAppsByTag = async () => {
       setLoading(true);
       const ndk = await cmn.getNDK();
       const filter = {
-        kinds: [cs.KIND_HANDLERS],
-        '#t': [tag],
+        kinds: [31990],
+        '#k': [getKind(kind)],
       };
       try {
         const response = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, filter),
         ]);
-        setApps(response);
+        setAppsByKind(response);
       } catch (error) {
       } finally {
         setLoading(false);
@@ -36,14 +39,14 @@ const AppsByTag = () => {
 
   return (
     <>
-      <h5>
-        Apps by tag :<KindElement>{tag}</KindElement>
+      <h5 className="mt-2 mx-1">
+        Apps by kind : <KindElement> {kind} </KindElement>
       </h5>
       <ListGroup>
         {loading ? (
           <LoadingSpinner />
         ) : (
-          apps.map((app) => {
+          appsByKind.map((app) => {
             const content = cmn.convertContentToProfile([app]);
             return (
               <AppSelectItem
@@ -56,10 +59,12 @@ const AppsByTag = () => {
         )}
       </ListGroup>
       <p className="d-flex justify-content-center">
-        {apps.length === 0 && !loading ? 'Sorry, nothing was found.' : null}
+        {appsByKind.length === 0 && !loading
+          ? 'Sorry, nothing was found.'
+          : null}
       </p>
     </>
   );
 };
 
-export default AppsByTag;
+export default KindView;

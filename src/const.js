@@ -46,6 +46,33 @@ export const kinds = {
   31337: 'Audio track',
 };
 
+export const reversedKinds = {
+  Profiles: 0,
+  Notes: 1,
+  'Contact list': 3,
+  DM: 4,
+  Repost: 6,
+  Like: 7,
+  'Badge award': 8,
+  'File metadata': 1063,
+  Report: 1984,
+  Zap: 9735,
+  Highlight: 9802,
+  'Mute list': 10000,
+  'Pin list': 10001,
+  'Wallet info': 13194,
+  'Profile list': 30000,
+  'Bookmark list': 30001,
+  'Profile badges': 30008,
+  'Badge definition': 30009,
+  Stall: 30017,
+  Product: 30018,
+  'Long-form post': 30023,
+  'Used apps': 31989,
+  'App handlers': 31990,
+  'Audio track': 31337,
+};
+
 export const validationSchemaForFormAddApp = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   link: Yup.string().matches(

@@ -182,7 +182,7 @@ const RepositoryView = () => {
                 return (
                   <button
                     class="btn btn-outline-primary mx-1"
-                    onClick={() => navigate(`/tags/${item}`)}
+                    onClick={() => navigate(`/tag/${item}`)}
                     key={item}
                   >
                     {item}

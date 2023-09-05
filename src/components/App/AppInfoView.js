@@ -16,6 +16,7 @@ import FollowersAppInfoView from './FollowersAppInfoView';
 import ReviewsAppInfoView from './ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
+import { kinds } from '../../const';
 
 const tabs = [
   {
@@ -132,6 +133,7 @@ const AppInfoView = () => {
     reviews: <ReviewsAppInfoView app={appInfo} />,
     reactions: <ReacitonsAppInfoView app={appInfo} />,
   };
+
   return (
     <>
       {info === null && (
@@ -162,16 +164,20 @@ const AppInfoView = () => {
                 </div>
               )}
             </div>
-
             {app.kinds ? (
               <>
                 <h6 className="mt-3">Event kinds:</h6>
                 <div>
                   {app.kinds.map((k) => {
+                    const kindValue = kinds[k];
                     return (
-                      <KindElement key={k} className="me-1">
-                        {cmn.getKindLabel(k)}
-                      </KindElement>
+                      <button
+                        class="btn btn-outline-primary mx-1"
+                        onClick={() => navigate(`/kind/${kinds[k]}`)}
+                        key={k}
+                      >
+                        {kinds[k]}
+                      </button>
                     );
                   })}
                 </div>
@@ -196,7 +202,7 @@ const AppInfoView = () => {
                 return (
                   <button
                     class="btn btn-outline-primary mx-1"
-                    onClick={() => navigate(`/tags/${t}`)}
+                    onClick={() => navigate(`/tag/${t}`)}
                     key={t}
                   >
                     {t}

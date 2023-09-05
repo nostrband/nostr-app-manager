@@ -19,7 +19,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ReviewModalProvider } from './context/ShowReviewContext';
 import { AppStateProvider } from './context/AppContext';
 import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
-import Tags from './components/Tags/Tags';
+import KindView from './components/Kinds/KindView';
+import TagView from './components/Tags/TagView';
 
 const HTTP = new QueryClient();
 
@@ -57,10 +58,18 @@ export const router = createBrowserRouter([
     element: <RepositoryInfo />,
   },
   {
-    path: '/tags/:tag',
+    path: '/tag/:tag',
     element: (
       <ContainerWithHeaderFooter>
-        <Tags />
+        <TagView />
+      </ContainerWithHeaderFooter>
+    ),
+  },
+  {
+    path: '/kind/:kind',
+    element: (
+      <ContainerWithHeaderFooter>
+        <KindView />
       </ContainerWithHeaderFooter>
     ),
   },

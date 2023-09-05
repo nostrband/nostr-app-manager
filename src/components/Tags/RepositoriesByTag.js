@@ -4,6 +4,7 @@ import * as cmn from '../../common';
 import RepositoryElement from '../../elements/RepositoryElement';
 import { ListGroup } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import KindElement from '../../elements/KindElement';
 
 const RepositoriesByTag = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,6 @@ const RepositoriesByTag = () => {
         const response = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, filter),
         ]);
-        console.log(response, 'RESPONSE');
         setRepositoriesByTag(response);
       } catch (error) {
       } finally {
@@ -34,6 +34,9 @@ const RepositoriesByTag = () => {
 
   return (
     <>
+      <h5>
+        Repositories by tag :<KindElement>{tag}</KindElement>
+      </h5>
       <ListGroup>
         {loading ? (
           <LoadingSpinner />
