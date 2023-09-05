@@ -18,10 +18,6 @@ const dynamicTags = [
     key: 'programmingLanguages',
   },
   {
-    title: 'Tags',
-    key: 'otherTags',
-  },
-  {
     title: 'Supported NIPs',
     key: 'nips',
   },
@@ -179,6 +175,21 @@ const RepositoryView = () => {
                 {licenseTagValue}
               </li>
             ) : null}
+
+            <li className="mt-3">
+              <strong className="d-block">Tags </strong>
+              {repository.otherTags.map((item) => {
+                return (
+                  <button
+                    class="btn btn-outline-primary mx-1"
+                    onClick={() => navigate(`/tags/${item}`)}
+                    key={item}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+            </li>
 
             {dynamicTags.map(({ title, key }) =>
               repository[key]?.length > 0 ? (

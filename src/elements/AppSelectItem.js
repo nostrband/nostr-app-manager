@@ -8,6 +8,7 @@ import Profile from './Profile';
 import Edit from '../icons/Edit';
 
 const AppSelectItem = (props) => {
+  console.log(props, 'PROPS');
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
   const onSelect = props.onSelect || (() => {});

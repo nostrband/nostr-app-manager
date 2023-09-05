@@ -18,6 +18,8 @@ import RepositoryInfo from './RepositoryInfo';
 import { AuthProvider } from './context/AuthContext';
 import { ReviewModalProvider } from './context/ShowReviewContext';
 import { AppStateProvider } from './context/AppContext';
+import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
+import Tags from './components/Tags/Tags';
 
 const HTTP = new QueryClient();
 
@@ -53,6 +55,14 @@ export const router = createBrowserRouter([
   {
     path: '/r/:naddr',
     element: <RepositoryInfo />,
+  },
+  {
+    path: '/tags/:tag',
+    element: (
+      <ContainerWithHeaderFooter>
+        <Tags />
+      </ContainerWithHeaderFooter>
+    ),
   },
 ]);
 
