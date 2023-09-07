@@ -1109,7 +1109,8 @@ export const getProfile = async (pubkey) => {
 
 export const generateNoteLink = (id) => {
   let note = nip19.noteEncode(id);
-  return `/#${note}`;
+  let link = '/#' + note;
+  return link;
 };
 
 export const getRepositoryUrl = (event) => {

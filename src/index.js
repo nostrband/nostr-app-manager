@@ -21,6 +21,8 @@ import { AppStateProvider } from './context/AppContext';
 import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
 import KindView from './components/Kinds/KindView';
 import TagView from './components/Tags/TagView';
+import { NewReviewStateProvider } from './context/NewReviesContext';
+import EventApps from './components/EventApps';
 
 const HTTP = new QueryClient();
 
@@ -28,6 +30,10 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
+  },
+  {
+    path: '/review',
+    element: <EventApps />,
   },
   {
     path: '/about',
@@ -80,16 +86,18 @@ root.render(
   <QueryClientProvider client={HTTP}>
     <AuthProvider>
       <AppStateProvider>
-        <LoginModalProvider>
-          <ReviewModalProvider>
-            <IntlProvider>
-              <ThemeProvider>
-                <RouterProvider router={router} />
-                <ToastContainer />
-              </ThemeProvider>
-            </IntlProvider>
-          </ReviewModalProvider>
-        </LoginModalProvider>
+        <NewReviewStateProvider>
+          <LoginModalProvider>
+            <ReviewModalProvider>
+              <IntlProvider>
+                <ThemeProvider>
+                  <RouterProvider router={router} />
+                  <ToastContainer />
+                </ThemeProvider>
+              </IntlProvider>
+            </ReviewModalProvider>
+          </LoginModalProvider>
+        </NewReviewStateProvider>
       </AppStateProvider>
     </AuthProvider>
   </QueryClientProvider>
