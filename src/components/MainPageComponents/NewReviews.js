@@ -169,27 +169,25 @@ const NewReviews = () => {
             : {};
 
           return (
-            <Link to={cmn.generateNoteLink(review.id)}>
-              <ListGroupItem key={review.pubkey} className="review-item darked">
-                {convertApp.pubkey ? (
-                  <Profile
-                    removeLink
-                    profile={{ profile: convertApp }}
-                    pubkey={convertApp.pubkey}
-                  />
-                ) : null}
-                <div className="d-flex justify-content-between mx-1 mt-2">
-                  <p>{review.content}</p>
-                  <Rating name="read-only" value={count} readOnly />
-                </div>
+            <ListGroupItem key={review.pubkey} className="review-item darked">
+              {convertApp.pubkey ? (
                 <Profile
                   removeLink
-                  small
-                  profile={{ profile }}
-                  pubkey={review.pubkey}
+                  profile={{ profile: convertApp }}
+                  pubkey={convertApp.pubkey}
                 />
-              </ListGroupItem>
-            </Link>
+              ) : null}
+              <div className="d-flex justify-content-between mx-1 mt-2">
+                <p>{review.content}</p>
+                <Rating name="read-only" value={count} readOnly />
+              </div>
+              <Profile
+                removeLink
+                small
+                profile={{ profile }}
+                pubkey={review.pubkey}
+              />
+            </ListGroupItem>
           );
         })}
         {loading && !empty && <LoadingSpinner />}
