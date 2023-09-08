@@ -3,48 +3,68 @@ import * as cmn from '../../common';
 import { useNewReviewState } from '../../context/NewReviesContext';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import Profile from '../../elements/Profile';
-import { Link } from 'react-router-dom';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import './NewReviews.scss';
+import { Link } from 'react-router-dom';
 
 const NewReviews = () => {
   const { newReview, setNewReview, empty, setEmpty } = useNewReviewState();
   const { reviews, loading, apps, lastCreatedAt, hasMore } = newReview;
+
   const updateState = (changes) => {
     setNewReview((prevState) => ({ ...prevState, ...changes }));
   };
 
-  const getAppTagsFromReview = (reviews) => {
-    let pubkeys = [];
-    let identifiers = [];
-
-    reviews.forEach((review) => {
-      const appTag = review.tags.find(
-        (tag) => tag[0] === 'a' && tag[1].startsWith('31990:')
-      );
-      if (appTag) {
-        const splitTag = appTag[1].split(':');
-        pubkeys.push(splitTag[1]);
-        identifiers.push(splitTag[2]);
-      }
-    });
-
-    return { pubkeys, identifiers };
+  const extractPubkey = (tags) => {
+    const pubkeyTag = tags.find(
+      (tag) => tag[0] === 'a' && tag[1].startsWith('31990:')
+    );
+    if (pubkeyTag) {
+      return pubkeyTag[1].split(':')[1];
+    }
+    return null;
   };
 
-  const fetchApps = async (pubkeys, identifiers) => {
-    const ndk = await cmn.getNDK();
-    try {
-      const filter = {
-        kinds: [31990],
-        authors: pubkeys,
-        '#d': identifiers,
-      };
-      const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
-      return response;
-    } catch (error) {
-      return console.log(error);
+  const extractIdentifier = (tags) => {
+    const identifierTag = tags.find(
+      (tag) => tag[0] === 'a' && tag[1].startsWith('31990:')
+    );
+    if (identifierTag) {
+      return identifierTag[1].split(':')[2];
     }
+    return null;
+  };
+
+  const extractPTag = (tags) => {
+    const pTag = tags.find((tag) => tag[0] === 'p');
+    return pTag ? pTag[1] : null;
+  };
+
+  const extractPTagValueFromReview = (tags) => {
+    const pTag = tags.find((tag) => {
+      return tag[0] === 'p' && tag.length > 2;
+    });
+    if (pTag && pTag[1]) {
+      return pTag[1];
+    }
+    return null;
+  };
+
+  const associateAuthorsWithReviews = (reviews, authors) => {
+    return reviews.map((review) => {
+      const reviewPubkey = extractPubkey(review.tags);
+      const author = authors.find((author) => author.pubkey === reviewPubkey);
+      return { ...review, author: author || null };
+    });
+  };
+
+  const associateAppsWithReviews = (reviews, apps) => {
+    return reviews.map((review) => {
+      const reviewPTagValue = extractPTagValueFromReview(review.tags);
+      const app = apps.find((app) => extractPTag(app.tags) === reviewPTagValue);
+      return { ...review, app: app || null };
+    });
   };
 
   const fetchReviews = async (created_at) => {
@@ -71,40 +91,66 @@ const NewReviews = () => {
         if (filteredReviews.length === 0) {
           setEmpty(true);
         } else {
-          updateState({
-            reviews: [...currentApps, ...filteredReviews],
-            lastCreatedAt:
-              filteredReviews[filteredReviews.length - 1].created_at,
-          });
+          const extractedPubkeys = filteredReviews
+            .map((review) => extractPubkey(review.tags))
+            .filter(Boolean);
+          const extractedIdentifiers = filteredReviews.map((review) =>
+            extractIdentifier(review.tags)
+          );
 
-          const { pubkeys, identifiers } =
-            getAppTagsFromReview(filteredReviews);
-          const newApps = await fetchApps(pubkeys, identifiers);
-          updateState({ apps: [...apps, ...newApps] });
-          const missingAppPubkeys = newApps
-            .filter((app) => !app.content)
-            .map((app) => app.pubkey);
-          if (missingAppPubkeys.length > 0) {
-            const filterForMissingContent = {
+          // Fetch authors
+          const filterForGetAuthorsReview = {
+            kinds: [0],
+            authors: extractedPubkeys,
+          };
+          const authors = await cmn.fetchAllEvents([
+            cmn.startFetch(ndk, filterForGetAuthorsReview),
+          ]);
+
+          // Fetch apps
+          const filterForGetApps = {
+            kinds: [31990],
+            authors: extractedPubkeys,
+            '#d': extractedIdentifiers,
+          };
+          const apps = await cmn.fetchAllEvents([
+            cmn.startFetch(ndk, filterForGetApps),
+          ]);
+          const appsWithEmptyContent = apps.filter((app) => !app.content);
+          if (appsWithEmptyContent.length) {
+            const pubkeysForEmptyContentApps = appsWithEmptyContent.map(
+              (app) => app.pubkey
+            );
+            const filterForAuthorsOfEmptyContentApps = {
               kinds: [0],
-              authors: missingAppPubkeys,
+              authors: pubkeysForEmptyContentApps,
             };
-            const authorsContentResponse = await cmn.fetchAllEvents([
-              cmn.startFetch(ndk, filterForMissingContent),
+            const authorsOfEmptyContentApps = await cmn.fetchAllEvents([
+              cmn.startFetch(ndk, filterForAuthorsOfEmptyContentApps),
             ]);
-            const updatedApps = newApps.map((app) => {
-              if (!app.content) {
-                const matchedAuthor = authorsContentResponse.find(
-                  (author) => author.pubkey === app.pubkey
-                );
-                if (matchedAuthor && matchedAuthor.content) {
-                  app.content = matchedAuthor.content;
-                }
+            authorsOfEmptyContentApps.forEach((updatedApp) => {
+              const index = apps.findIndex(
+                (app) => app.pubkey === updatedApp.pubkey
+              );
+              if (index !== -1) {
+                apps[index] = updatedApp;
               }
-              return app;
             });
-            updateState({ apps: [...apps, ...updatedApps] });
           }
+          const reviewsWithAuthors = associateAuthorsWithReviews(
+            filteredReviews,
+            authors
+          );
+          const reviewsWithAuthorsAndApps = associateAppsWithReviews(
+            reviewsWithAuthors,
+            apps
+          );
+          updateState({
+            reviews: [...currentApps, ...reviewsWithAuthorsAndApps],
+            lastCreatedAt:
+              reviewsWithAuthorsAndApps[reviewsWithAuthorsAndApps.length - 1]
+                .created_at,
+          });
         }
       } else {
         updateState({ hasMore: false });
@@ -143,50 +189,48 @@ const NewReviews = () => {
     };
   }, [hasMore, loading, lastCreatedAt]);
 
+  const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
+
   return (
     <>
       <ListGroup className="reviews-container">
         {reviews?.map((review) => {
-          const profile = review?.author?.content
-            ? JSON.parse(review?.author?.content)
+          let count = cmn.getCountReview(review);
+
+          let appProfile = review.app?.content
+            ? cmn.convertContentToProfile([review.app])
             : {};
 
-          const appTag = review.tags?.find(
-            (tag) => tag[0] === 'a' && tag[1]?.startsWith('31990:')
-          );
-
-          let app;
-          if (appTag && appTag.length > 1) {
-            const splitTag = appTag[1].split(':');
-            if (splitTag.length > 1) {
-              const appPubkey = splitTag[1];
-              app = apps.find((app) => app.pubkey === appPubkey);
-            }
-          }
-          let count = cmn.getCountReview(review);
-          const convertApp = app?.content
-            ? cmn.convertContentToProfile([app])
+          let authorProfile = review.author?.content
+            ? cmn.convertContentToProfile([review.author])
             : {};
 
           return (
-            <ListGroupItem key={review.pubkey} className="review-item darked">
-              {convertApp.pubkey ? (
-                <Profile
-                  removeLink
-                  profile={{ profile: convertApp }}
-                  pubkey={convertApp.pubkey}
-                />
-              ) : null}
+            <ListGroupItem key={review.id} className="review-item darked">
+              <div className="app-profile">
+                <Link to={review.app ? getUrl(review.app) : ''}>
+                  {appProfile.pubkey ? (
+                    <Profile
+                      small
+                      removeLink
+                      profile={{ profile: appProfile }}
+                      pubkey={appProfile.pubkey}
+                    />
+                  ) : null}
+                </Link>
+              </div>
+
               <div className="d-flex justify-content-between mx-1 mt-2">
                 <p>{review.content}</p>
                 <Rating name="read-only" value={count} readOnly />
               </div>
-              <Profile
-                removeLink
-                small
-                profile={{ profile }}
-                pubkey={review.pubkey}
-              />
+              {authorProfile.pubkey ? (
+                <Profile
+                  small
+                  profile={{ profile: authorProfile }}
+                  pubkey={authorProfile.pubkey}
+                />
+              ) : null}
             </ListGroupItem>
           );
         })}
