@@ -2,8 +2,16 @@
   font-size: 1.2rem;
   display: flex;
   align-items: center;
+  a {
+    color: black !important;
+  }
   img {
-    width: 35px;
-    height: 35px;
+    width: 45px;
+    height: 45px;
+  }
+  svg {
+    width: 45px;
+    height: 45px;
+    padding: 3px;
   }
 }
