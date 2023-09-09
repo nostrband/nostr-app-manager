@@ -36,33 +36,25 @@ const NewReviews = () => {
     return null;
   };
 
-  const extractPTag = (tags) => {
-    const pTag = tags.find((tag) => tag[0] === 'p');
-    return pTag ? pTag[1] : null;
-  };
-
-  const extractPTagValueFromReview = (tags) => {
-    const pTag = tags.find((tag) => {
-      return tag[0] === 'p' && tag.length > 2;
-    });
-    if (pTag && pTag[1]) {
-      return pTag[1];
-    }
-    return null;
-  };
-
   const associateAuthorsWithReviews = (reviews, authors) => {
     return reviews.map((review) => {
-      const reviewPubkey = extractPubkey(review.tags);
-      const author = authors.find((author) => author.pubkey === reviewPubkey);
+      const author = authors.find((author) => author.pubkey === review.pubkey);
       return { ...review, author: author || null };
     });
   };
 
   const associateAppsWithReviews = (reviews, apps) => {
     return reviews.map((review) => {
-      const reviewPTagValue = extractPTagValueFromReview(review.tags);
-      const app = apps.find((app) => extractPTag(app.tags) === reviewPTagValue);
+      const reviewPTagValue = extractPubkey(review.tags);
+      const reviewIdentifier = extractIdentifier(review.tags);
+
+      const app = apps.find(
+        (app) =>
+          app.pubkey === reviewPTagValue &&
+          app.tags &&
+          app.tags.find((tag) => tag[0] === 'd' && tag[1] === reviewIdentifier)
+      );
+
       return { ...review, app: app || null };
     });
   };
