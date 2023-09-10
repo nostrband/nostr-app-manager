@@ -37,6 +37,7 @@ const NewReviews = () => {
   };
 
   const associateAuthorsWithReviews = (reviews, authors) => {
+    console.log({ authors, reviews });
     return reviews.map((review) => {
       const author = authors.find((author) => author.pubkey === review.pubkey);
       return { ...review, author: author || null };
