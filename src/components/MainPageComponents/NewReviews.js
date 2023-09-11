@@ -100,6 +100,7 @@ const NewReviews = () => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filterForGetAuthorsReview),
           ]);
+          console.log(authors, 'AUTHORS REVIEW');
           // Fetch apps
           const filterForGetApps = {
             kinds: [31990],
@@ -126,7 +127,7 @@ const NewReviews = () => {
                 (app) => app.pubkey === updatedApp.pubkey
               );
               if (index !== -1) {
-                apps[index] = updatedApp;
+                apps[index].content = updatedApp.content;
               }
             });
           }
@@ -183,7 +184,7 @@ const NewReviews = () => {
   }, [hasMore, loading, lastCreatedAt]);
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
-
+  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">
@@ -217,13 +218,11 @@ const NewReviews = () => {
                 <p>{review.content}</p>
                 <Rating name="read-only" value={count} readOnly />
               </div>
-              {authorProfile.pubkey ? (
-                <Profile
-                  small
-                  profile={{ profile: authorProfile }}
-                  pubkey={authorProfile.pubkey}
-                />
-              ) : null}
+              <Profile
+                small
+                profile={{ profile: authorProfile }}
+                pubkey={review.pubkey}
+              />
             </ListGroupItem>
           );
         })}
