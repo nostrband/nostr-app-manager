@@ -87,19 +87,19 @@ const NewReviews = () => {
           const extractedPubkeys = filteredReviews
             .map((review) => extractPubkey(review.tags))
             .filter(Boolean);
+
+          const pubkeysReview = filteredReviews.map((review) => review.pubkey);
           const extractedIdentifiers = filteredReviews.map((review) =>
             extractIdentifier(review.tags)
           );
-
           // Fetch authors
           const filterForGetAuthorsReview = {
             kinds: [0],
-            authors: extractedPubkeys,
+            authors: pubkeysReview,
           };
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filterForGetAuthorsReview),
           ]);
-
           // Fetch apps
           const filterForGetApps = {
             kinds: [31990],
