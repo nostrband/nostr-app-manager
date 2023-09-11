@@ -33,11 +33,10 @@ const NewReviews = () => {
     if (identifierTag) {
       return identifierTag[1].split(':')[2];
     }
-    return null;
+    return '';
   };
 
   const associateAuthorsWithReviews = (reviews, authors) => {
-    console.log({ authors, reviews });
     return reviews.map((review) => {
       const author = authors.find((author) => author.pubkey === review.pubkey);
       return { ...review, author: author || null };
@@ -89,9 +88,10 @@ const NewReviews = () => {
             .filter(Boolean);
 
           const pubkeysReview = filteredReviews.map((review) => review.pubkey);
-          const extractedIdentifiers = filteredReviews.map((review) =>
-            extractIdentifier(review.tags)
-          );
+          const extractedIdentifiers = filteredReviews
+            .map((review) => extractIdentifier(review.tags))
+            .filter(Boolean);
+
           // Fetch authors
           const filterForGetAuthorsReview = {
             kinds: [0],
@@ -100,7 +100,6 @@ const NewReviews = () => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filterForGetAuthorsReview),
           ]);
-          console.log(authors, 'AUTHORS REVIEW');
           // Fetch apps
           const filterForGetApps = {
             kinds: [31990],
@@ -184,48 +183,49 @@ const NewReviews = () => {
   }, [hasMore, loading, lastCreatedAt]);
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
-  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">
-        {reviews?.map((review) => {
-          let count = cmn.getCountReview(review);
+        {reviews
+          ?.filter((review) => review.app)
+          .map((review) => {
+            let count = cmn.getCountReview(review);
 
-          let appProfile = review.app?.content
-            ? cmn.convertContentToProfile([review.app])
-            : {};
+            let appProfile = review.app?.content
+              ? cmn.convertContentToProfile([review.app])
+              : {};
 
-          let authorProfile = review.author?.content
-            ? cmn.convertContentToProfile([review.author])
-            : {};
+            let authorProfile = review.author?.content
+              ? cmn.convertContentToProfile([review.author])
+              : {};
 
-          return (
-            <ListGroupItem key={review.id} className="review-item darked">
-              <div className="app-profile">
-                <Link to={review.app ? getUrl(review.app) : ''}>
-                  {appProfile.pubkey ? (
-                    <Profile
-                      small
-                      removeLink
-                      profile={{ profile: appProfile }}
-                      pubkey={appProfile.pubkey}
-                    />
-                  ) : null}
-                </Link>
-              </div>
+            return (
+              <ListGroupItem key={review.id} className="review-item darked">
+                <div className="app-profile">
+                  <Link to={review.app ? getUrl(review.app) : ''}>
+                    {appProfile.pubkey ? (
+                      <Profile
+                        small
+                        removeLink
+                        profile={{ profile: appProfile }}
+                        pubkey={appProfile.pubkey}
+                      />
+                    ) : null}
+                  </Link>
+                </div>
 
-              <div className="d-flex justify-content-between mx-1 mt-2">
-                <p>{review.content}</p>
-                <Rating name="read-only" value={count} readOnly />
-              </div>
-              <Profile
-                small
-                profile={{ profile: authorProfile }}
-                pubkey={review.pubkey}
-              />
-            </ListGroupItem>
-          );
-        })}
+                <div className="d-flex justify-content-between mx-1 mt-2">
+                  <p>{review.content}</p>
+                  <Rating name="read-only" value={count} readOnly />
+                </div>
+                <Profile
+                  small
+                  profile={{ profile: authorProfile }}
+                  pubkey={review.pubkey}
+                />
+              </ListGroupItem>
+            );
+          })}
         {loading && !empty && <LoadingSpinner />}
       </ListGroup>
     </>
