@@ -17,6 +17,7 @@ import UsedApps from './MainPageComponents/UsedApps';
 import NewApps from './MainPageComponents/NewApps';
 import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
+import NewReviews from './MainPageComponents/NewReviews';
 
 const navs = [
   {
@@ -34,6 +35,10 @@ const navs = [
   {
     title: 'Find app for event ',
     path: 'search',
+  },
+  {
+    title: 'Reviews',
+    path: 'reviews',
   },
 ];
 
@@ -161,7 +166,9 @@ const Index = () => {
     'used-apps': <UsedApps apps={apps} onSelect={onSelect} />,
     apps: <NewApps />,
     codes: <Repositories />,
+    reviews: <NewReviews />,
   };
+
   return (
     <main className="mt-1">
       <div className="d-flex justify-content-center pt-4 pb-5">
