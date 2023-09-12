@@ -1134,3 +1134,19 @@ export const fetchLikes = async (allReviewIds, pubkey) => {
     }
   }
 };
+
+export const fetchAllLikes = async (allReviewIds) => {
+  const ndk = await getNDK();
+  if (isAuthed()) {
+    const filter = {
+      kinds: [7],
+      '#e': [...allReviewIds],
+    };
+    try {
+      const result = await fetchAllEvents([startFetch(ndk, filter)]);
+      return result;
+    } catch (error) {
+      console.error('Error fetching liked status:', error);
+    }
+  }
+};

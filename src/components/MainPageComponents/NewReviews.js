@@ -151,10 +151,18 @@ const NewReviews = () => {
             );
             return { ...review, like: likeObject || false };
           });
+
+          const allLikes = await cmn.fetchAllLikes(allReviewIds);
+          const reviewsWithAllLikes = reviewsWithLikes.map((review) => {
+            const likesForThisReview = allLikes.filter((like) =>
+              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+            );
+            return { ...review, countLikes: likesForThisReview.length };
+          });
           updateState({
-            reviews: [...currentApps, ...reviewsWithLikes],
+            reviews: [...currentApps, ...reviewsWithAllLikes],
             lastCreatedAt:
-              reviewsWithLikes[reviewsWithLikes.length - 1].created_at,
+              reviewsWithAllLikes[reviewsWithAllLikes.length - 1].created_at,
           });
         }
       } else {
@@ -236,7 +244,11 @@ const NewReviews = () => {
                     pubkey={review.pubkey}
                   />
                   <div className="container-actions-icon">
-                    <ReviewLike review={review} />
+                    <ReviewLike
+                      lastCreatedAt={lastCreatedAt}
+                      fetchReviews={fetchReviews}
+                      review={review}
+                    />
                     <Zap />
                     <AnswerIcon />
                   </div>

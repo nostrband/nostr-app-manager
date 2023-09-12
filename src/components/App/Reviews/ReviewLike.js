@@ -6,9 +6,9 @@ import LikedHeart from '../../../icons/LikedHeart';
 
 const ReviewLike = ({ review }) => {
   const [like, setLike] = useState(review.like);
+  const [countLikes, setCountLikes] = useState(review.countLikes);
   const { setShowLogin } = useAuthShowModal();
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
-
   const handleLike = async () => {
     if (cmn.isAuthed()) {
       if (!like) {
@@ -23,7 +23,8 @@ const ReviewLike = ({ review }) => {
         try {
           const response = await cmn.publishEvent(event);
           if (response) {
-            setLike(true);
+            setLike({ id: review.id });
+            setCountLikes((prev) => prev + 1);
           }
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -39,6 +40,7 @@ const ReviewLike = ({ review }) => {
           const result = await cmn.publishEvent(eventForDelete);
           if (result) {
             setLike(false);
+            setCountLikes((prev) => prev - 1);
           }
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -51,6 +53,9 @@ const ReviewLike = ({ review }) => {
 
   return (
     <>
+      <span className="count-likes">
+        {countLikes !== 0 ? countLikes : null}
+      </span>
       {like ? (
         <LikedHeart onClick={handleLike} />
       ) : (
