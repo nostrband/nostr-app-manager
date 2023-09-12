@@ -64,6 +64,7 @@ const ReviewLike = ({ review, appInfo }) => {
                   return {
                     ...r,
                     like: false,
+                    countLikes: r.countLikes - 1,
                   };
                 }
                 return r;
