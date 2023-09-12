@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
-import * as cmn from '../../common';
-import {
-  ListGroupItem,
-  ListGroup,
-  Button,
-  Container,
-  Col,
-} from 'react-bootstrap';
-import RatingStatistics from './RatingStatistics';
-import LoadingSpinner from '../../elements/LoadingSpinner';
-import { useReviewModal } from '../../context/ShowReviewContext';
-import Profile from '../../elements/Profile';
+import * as cmn from '../../../common';
+import { ListGroupItem, ListGroup, Button } from 'react-bootstrap';
+import RatingStatistics from '../RatingStatistics';
+import LoadingSpinner from '../../../elements/LoadingSpinner';
+import { useReviewModal } from '../../../context/ShowReviewContext';
+import Profile from '../../../elements/Profile';
 import { Link } from 'react-router-dom';
+import LikedHeart from '../../../icons/LikedHeart';
+import Zap from '../../../icons/Zap';
+import AnswerIcon from '../../../icons/AnswerIcon';
+import ReviewLike from './ReviewLike';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
@@ -96,23 +94,22 @@ const ReviewsAppInfoView = ({ app }) => {
               : {};
             let count = cmn.getCountReview(review);
             return (
-              <Link to={cmn.generateNoteLink(review.id)}>
-                <ListGroupItem
-                  key={review.pubkey}
-                  className="review-item darked"
-                >
-                  <p>{review.content}</p>
-                  <div className="d-flex justify-content-between">
-                    <Profile
-                      removeLink
-                      small
-                      profile={{ profile }}
-                      pubkey={review.pubkey}
-                    />
+              <ListGroupItem key={review.pubkey} className="review-item darked">
+                <Link key={review.id} to={cmn.generateNoteLink(review.id)}>
+                  <div className="rating-content-container">
+                    <p className="mx-1">{review.content}</p>
                     <Rating name="read-only" value={count} readOnly />
                   </div>
-                </ListGroupItem>
-              </Link>
+                </Link>
+                <div className="d-flex justify-content-between">
+                  <Profile small profile={{ profile }} pubkey={review.pubkey} />
+                  <div className="container-actions-icon">
+                    <ReviewLike review={review} />
+                    <Zap />
+                    <AnswerIcon />
+                  </div>
+                </div>
+              </ListGroupItem>
             );
           })}
         </ListGroup>

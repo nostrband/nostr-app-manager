@@ -190,15 +190,12 @@ const NewReviews = () => {
           ?.filter((review) => review.app)
           .map((review) => {
             let count = cmn.getCountReview(review);
-
             let appProfile = review.app?.content
               ? cmn.convertContentToProfile([review.app])
               : {};
-
             let authorProfile = review.author?.content
               ? cmn.convertContentToProfile([review.author])
               : {};
-
             return (
               <ListGroupItem key={review.id} className="review-item darked">
                 <div className="app-profile">
@@ -214,7 +211,7 @@ const NewReviews = () => {
                   </Link>
                 </div>
 
-                <div className="d-flex justify-content-between mx-1 mt-2">
+                <div className="rating-content-container">
                   <p>{review.content}</p>
                   <Rating name="read-only" value={count} readOnly />
                 </div>
