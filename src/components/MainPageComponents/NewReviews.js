@@ -7,10 +7,14 @@ import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
 import { Link } from 'react-router-dom';
+import ReviewLike from '../App/Reviews/ReviewLike';
+import Zap from '../../icons/Zap';
+import AnswerIcon from '../../icons/AnswerIcon';
 
 const NewReviews = () => {
   const { newReview, setNewReview, empty, setEmpty } = useNewReviewState();
   const { reviews, loading, apps, lastCreatedAt, hasMore } = newReview;
+  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
   const updateState = (changes) => {
     setNewReview((prevState) => ({ ...prevState, ...changes }));
@@ -88,10 +92,10 @@ const NewReviews = () => {
             .filter(Boolean);
 
           const pubkeysReview = filteredReviews.map((review) => review.pubkey);
+
           const extractedIdentifiers = filteredReviews
             .map((review) => extractIdentifier(review.tags))
             .filter(Boolean);
-
           // Fetch authors
           const filterForGetAuthorsReview = {
             kinds: [0],
@@ -138,11 +142,19 @@ const NewReviews = () => {
             reviewsWithAuthors,
             apps
           );
+          // fetch likes
+          const allReviewIds = reviewsWithAuthorsAndApps.map((r) => r.id);
+          const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
+          const reviewsWithLikes = reviewsWithAuthorsAndApps.map((review) => {
+            const likeObject = resultLikes?.find((like) =>
+              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+            );
+            return { ...review, like: likeObject || false };
+          });
           updateState({
-            reviews: [...currentApps, ...reviewsWithAuthorsAndApps],
+            reviews: [...currentApps, ...reviewsWithLikes],
             lastCreatedAt:
-              reviewsWithAuthorsAndApps[reviewsWithAuthorsAndApps.length - 1]
-                .created_at,
+              reviewsWithLikes[reviewsWithLikes.length - 1].created_at,
           });
         }
       } else {
@@ -183,6 +195,8 @@ const NewReviews = () => {
   }, [hasMore, loading, lastCreatedAt]);
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
+
+  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">
@@ -215,11 +229,18 @@ const NewReviews = () => {
                   <p>{review.content}</p>
                   <Rating name="read-only" value={count} readOnly />
                 </div>
-                <Profile
-                  small
-                  profile={{ profile: authorProfile }}
-                  pubkey={review.pubkey}
-                />
+                <div className="d-flex justify-content-between">
+                  <Profile
+                    small
+                    profile={{ profile: authorProfile }}
+                    pubkey={review.pubkey}
+                  />
+                  <div className="container-actions-icon">
+                    <ReviewLike review={review} />
+                    <Zap />
+                    <AnswerIcon />
+                  </div>
+                </div>
               </ListGroupItem>
             );
           })}

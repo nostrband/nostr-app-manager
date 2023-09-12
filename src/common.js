@@ -1117,3 +1117,20 @@ export const getRepositoryUrl = (event) => {
   const viewUrl = '/r/' + getNaddr(event);
   return viewUrl;
 };
+
+export const fetchLikes = async (allReviewIds, pubkey) => {
+  const ndk = await getNDK();
+  if (isAuthed()) {
+    const filter = {
+      kinds: [7],
+      '#e': [...allReviewIds],
+      authors: [pubkey],
+    };
+    try {
+      const result = await fetchAllEvents([startFetch(ndk, filter)]);
+      return result;
+    } catch (error) {
+      console.error('Error fetching liked status:', error);
+    }
+  }
+};

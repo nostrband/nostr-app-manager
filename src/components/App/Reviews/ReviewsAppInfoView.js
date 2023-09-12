@@ -16,6 +16,7 @@ import ReviewLike from './ReviewLike';
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
   const [loading, setLoading] = useState(false);
+  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const { showReviewModal, setShowReviewModal, reviewAction } =
     useReviewModal();
 
@@ -54,7 +55,16 @@ const ReviewsAppInfoView = ({ app }) => {
               }
             })
             .filter((review) => review.id !== id);
-          setReviews((prev) => ({ ...prev, reviewsData }));
+
+          const allReviewIds = reviewsData.map((r) => r.id);
+          const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
+          const reviewsWithLikes = reviewsData.map((review) => {
+            const likeObject = resultLikes?.find((like) =>
+              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+            );
+            return { ...review, like: likeObject || false };
+          });
+          setReviews((prev) => ({ ...prev, reviewsData: reviewsWithLikes }));
         } catch (error) {
           console.error('Error fetching authors:', error);
         }
