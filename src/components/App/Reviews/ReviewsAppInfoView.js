@@ -12,6 +12,7 @@ import LikedHeart from '../../../icons/LikedHeart';
 import Zap from '../../../icons/Zap';
 import AnswerIcon from '../../../icons/AnswerIcon';
 import ReviewLike from './ReviewLike';
+import { useNewReviewState } from '../../../context/NewReviesContext';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
@@ -64,7 +65,15 @@ const ReviewsAppInfoView = ({ app }) => {
             );
             return { ...review, like: likeObject || false };
           });
-          setReviews((prev) => ({ ...prev, reviewsData: reviewsWithLikes }));
+          const allLikes = await cmn.fetchAllLikes(allReviewIds);
+          const reviewsWithAllLikes = reviewsWithLikes.map((review) => {
+            const likesForThisReview = allLikes.filter((like) =>
+              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+            );
+            return { ...review, countLikes: likesForThisReview.length };
+          });
+
+          setReviews((prev) => ({ ...prev, reviewsData: reviewsWithAllLikes }));
         } catch (error) {
           console.error('Error fetching authors:', error);
         }
@@ -114,7 +123,7 @@ const ReviewsAppInfoView = ({ app }) => {
                 <div className="d-flex justify-content-between">
                   <Profile small profile={{ profile }} pubkey={review.pubkey} />
                   <div className="container-actions-icon">
-                    <ReviewLike review={review} />
+                    <ReviewLike review={review} appInfo />
                     <Zap />
                     <AnswerIcon />
                   </div>

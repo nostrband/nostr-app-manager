@@ -3,12 +3,15 @@ import Heart from '../../../icons/Heart';
 import * as cmn from '../../../common';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
 import LikedHeart from '../../../icons/LikedHeart';
+import { useNewReviewState } from '../../../context/NewReviesContext';
 
-const ReviewLike = ({ review }) => {
+const ReviewLike = ({ review, appInfo }) => {
   const [like, setLike] = useState(review.like);
   const [countLikes, setCountLikes] = useState(review.countLikes);
   const { setShowLogin } = useAuthShowModal();
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const { newReview, updateState } = useNewReviewState();
+
   const handleLike = async () => {
     if (cmn.isAuthed()) {
       if (!like) {
@@ -25,6 +28,20 @@ const ReviewLike = ({ review }) => {
           if (response) {
             setLike({ id: review.id });
             setCountLikes((prev) => prev + 1);
+            if (appInfo) {
+              const updatedReviews = newReview.reviews.map((r) => {
+                if (r.id === review.id) {
+                  return {
+                    ...r,
+                    like: { id: review.id },
+                    countLikes: r.countLikes + 1,
+                  };
+                }
+                return r;
+              });
+
+              updateState({ reviews: updatedReviews });
+            }
           }
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -41,6 +58,19 @@ const ReviewLike = ({ review }) => {
           if (result) {
             setLike(false);
             setCountLikes((prev) => prev - 1);
+            if (appInfo) {
+              const updatedReviews = newReview.reviews.map((r) => {
+                if (r.id === review.id) {
+                  return {
+                    ...r,
+                    like: false,
+                  };
+                }
+                return r;
+              });
+
+              updateState({ reviews: updatedReviews });
+            }
           }
         } catch (error) {
           console.error('Error publishing like:', error);
