@@ -58,20 +58,25 @@ const ReviewsAppInfoView = ({ app }) => {
             .filter((review) => review.id !== id);
 
           const allReviewIds = reviewsData.map((r) => r.id);
-          const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
-          const reviewsWithLikes = reviewsData.map((review) => {
-            const likeObject = resultLikes?.find((like) =>
-              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-            );
-            return { ...review, like: likeObject || false };
-          });
-          const allLikes = await cmn.fetchAllLikes(allReviewIds);
-          const reviewsWithAllLikes = reviewsWithLikes.map((review) => {
-            const likesForThisReview = allLikes.filter((like) =>
-              like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-            );
-            return { ...review, countLikes: likesForThisReview.length };
-          });
+
+          let reviewsWithAllLikes = reviewsData;
+
+          if (loginPubkey) {
+            const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
+            const reviewsWithLikes = reviewsData.map((review) => {
+              const likeObject = resultLikes?.find((like) =>
+                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+              );
+              return { ...review, like: likeObject || false };
+            });
+            const allLikes = await cmn.fetchAllLikes(allReviewIds);
+            reviewsWithAllLikes = reviewsWithLikes.map((review) => {
+              const likesForThisReview = allLikes.filter((like) =>
+                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+              );
+              return { ...review, countLikes: likesForThisReview.length };
+            });
+          }
 
           setReviews((prev) => ({ ...prev, reviewsData: reviewsWithAllLikes }));
         } catch (error) {
