@@ -16,11 +16,9 @@ export const NewReviewStateProvider = ({ children }) => {
     hasMore: true,
     loading: false,
   });
-
   const [empty, setEmpty] = useState(false);
-  const [reloadedReviewsData, setReloadedReviewsData] = useState(false);
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
-  console.log(loginPubkey, 'LOGIN PUB KEY');
+
   const updateState = (changes) => {
     setNewReview((prevState) => ({ ...prevState, ...changes }));
   };
@@ -56,7 +54,6 @@ export const NewReviewStateProvider = ({ children }) => {
     return reviews.map((review) => {
       const reviewPTagValue = extractPubkey(review.tags);
       const reviewIdentifier = extractIdentifier(review.tags);
-
       const app = apps.find(
         (app) =>
           app.pubkey === reviewPTagValue &&
@@ -71,7 +68,6 @@ export const NewReviewStateProvider = ({ children }) => {
   const fetchReviews = async (created_at) => {
     const ndk = await cmn.getNDK();
     updateState({ loading: true });
-
     const filter = {
       kinds: [1985],
       '#l': ['review/app'],
@@ -81,7 +77,6 @@ export const NewReviewStateProvider = ({ children }) => {
 
     try {
       const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
-      console.log(response, 'RESPONSE');
       const currentApps = newReview.reviews;
 
       if (response.length > 0) {
@@ -148,25 +143,9 @@ export const NewReviewStateProvider = ({ children }) => {
             reviewsWithAuthors,
             apps
           );
-          // fetch likes
-          const allReviewIds = reviewsWithAuthorsAndApps.map((r) => r.id);
-          let reviewsWithAllLikes = reviewsWithAuthorsAndApps;
-          if (loginPubkey) {
-            const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
-            const reviewsWithLikes = reviewsWithAuthorsAndApps.map((review) => {
-              const likeObject = resultLikes?.find((like) =>
-                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-              );
-              return { ...review, like: likeObject || false };
-            });
-            const allLikes = await cmn.fetchAllLikes(allReviewIds);
-            reviewsWithAllLikes = reviewsWithLikes.map((review) => {
-              const likesForThisReview = allLikes.filter((like) =>
-                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-              );
-              return { ...review, countLikes: likesForThisReview.length };
-            });
-          }
+          const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
+            reviewsWithAuthorsAndApps
+          );
 
           updateState({
             reviews: [...currentApps, ...reviewsWithAllLikes],
@@ -191,8 +170,6 @@ export const NewReviewStateProvider = ({ children }) => {
         setNewReview,
         empty,
         setEmpty,
-        setReloadedReviewsData,
-        reloadedReviewsData,
         fetchReviews,
         updateState,
       }}

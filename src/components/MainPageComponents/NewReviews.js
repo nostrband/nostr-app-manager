@@ -10,11 +10,13 @@ import { Link } from 'react-router-dom';
 import ReviewLike from '../App/Reviews/ReviewLike';
 import Zap from '../../icons/Zap';
 import AnswerIcon from '../../icons/AnswerIcon';
+import { useAuth } from '../../context/AuthContext';
 
 const NewReviews = () => {
-  const { newReview, empty, reloadedReviewsData, fetchReviews } =
+  const { newReview, empty, fetchReviews, updateState, setNewReview } =
     useNewReviewState();
   const { reviews, loading, lastCreatedAt, hasMore } = newReview;
+  const { pubkey } = useAuth();
 
   const handleScroll = useCallback(() => {
     if (!loading && hasMore && lastCreatedAt) {
@@ -29,12 +31,29 @@ const NewReviews = () => {
   }, [loading, hasMore, lastCreatedAt, fetchReviews]);
 
   useEffect(() => {
+    async function handleLikesUpdate() {
+      let updatedReviews;
+      if (pubkey) {
+        updatedReviews = await cmn.associateLikesWithReviews(reviews);
+      } else {
+        updatedReviews = reviews.map((review) => ({
+          ...review,
+          countLikes: 0,
+          like: null,
+        }));
+      }
+      setNewReview({ ...newReview, reviews: updatedReviews });
+    }
+    handleLikesUpdate();
+  }, [pubkey]);
+
+  useEffect(() => {
     if (reviews.length > 0) {
       fetchReviews(lastCreatedAt);
     } else {
       fetchReviews();
     }
-  }, [reloadedReviewsData]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -45,6 +64,7 @@ const NewReviews = () => {
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
+  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">

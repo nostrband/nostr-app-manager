@@ -12,14 +12,14 @@ import LikedHeart from '../../../icons/LikedHeart';
 import Zap from '../../../icons/Zap';
 import AnswerIcon from '../../../icons/AnswerIcon';
 import ReviewLike from './ReviewLike';
-import { useNewReviewState } from '../../../context/NewReviesContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
   const [loading, setLoading] = useState(false);
+  const { pubkey } = useAuth();
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
-  const { showReviewModal, setShowReviewModal, reviewAction } =
-    useReviewModal();
+  const { setShowReviewModal, reviewAction } = useReviewModal();
 
   const getReviews = async (id) => {
     setLoading(true);
@@ -57,27 +57,9 @@ const ReviewsAppInfoView = ({ app }) => {
             })
             .filter((review) => review.id !== id);
 
-          const allReviewIds = reviewsData.map((r) => r.id);
-
-          let reviewsWithAllLikes = reviewsData;
-
-          if (loginPubkey) {
-            const resultLikes = await cmn.fetchLikes(allReviewIds, loginPubkey);
-            const reviewsWithLikes = reviewsData.map((review) => {
-              const likeObject = resultLikes?.find((like) =>
-                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-              );
-              return { ...review, like: likeObject || false };
-            });
-            const allLikes = await cmn.fetchAllLikes(allReviewIds);
-            reviewsWithAllLikes = reviewsWithLikes.map((review) => {
-              const likesForThisReview = allLikes.filter((like) =>
-                like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-              );
-              return { ...review, countLikes: likesForThisReview.length };
-            });
-          }
-
+          const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
+            reviewsData
+          );
           setReviews((prev) => ({ ...prev, reviewsData: reviewsWithAllLikes }));
         } catch (error) {
           console.error('Error fetching authors:', error);
@@ -104,6 +86,25 @@ const ReviewsAppInfoView = ({ app }) => {
       getReviews();
     }
   }, [reviewAction]);
+
+  useEffect(() => {
+    async function handleLikesUpdate() {
+      let updatedReviews;
+      if (pubkey) {
+        updatedReviews = await cmn.associateLikesWithReviews(
+          reviews.reviewsData
+        );
+      } else {
+        updatedReviews = reviews.reviewsData?.map((review) => ({
+          ...review,
+          countLikes: 0,
+          like: null,
+        }));
+      }
+      setReviews((prev) => ({ ...prev, reviewsData: updatedReviews }));
+    }
+    handleLikesUpdate();
+  }, [pubkey]);
 
   return (
     <div>

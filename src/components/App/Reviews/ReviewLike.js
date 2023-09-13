@@ -11,6 +11,11 @@ const ReviewLike = ({ review, appInfo }) => {
   const { setShowLogin } = useAuthShowModal();
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const { newReview, updateState } = useNewReviewState();
+  console.log(newReview, 'NEW REVIEW');
+  useEffect(() => {
+    setLike(review.like);
+    setCountLikes(review.countLikes);
+  }, [review]);
 
   const handleLike = async () => {
     if (cmn.isAuthed()) {
@@ -28,20 +33,18 @@ const ReviewLike = ({ review, appInfo }) => {
           if (response) {
             setLike({ id: review.id });
             setCountLikes((prev) => prev + 1);
-            if (appInfo) {
-              const updatedReviews = newReview.reviews.map((r) => {
-                if (r.id === review.id) {
-                  return {
-                    ...r,
-                    like: { id: review.id },
-                    countLikes: r.countLikes + 1,
-                  };
-                }
-                return r;
-              });
 
-              updateState({ reviews: updatedReviews });
-            }
+            const updatedReviews = newReview.reviews.map((r) => {
+              if (r.id === review.id) {
+                return {
+                  ...r,
+                  like: { id: review.id },
+                  countLikes: r.countLikes + 1,
+                };
+              }
+              return r;
+            });
+            updateState({ reviews: updatedReviews });
           }
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -58,20 +61,18 @@ const ReviewLike = ({ review, appInfo }) => {
           if (result) {
             setLike(false);
             setCountLikes((prev) => prev - 1);
-            if (appInfo) {
-              const updatedReviews = newReview.reviews.map((r) => {
-                if (r.id === review.id) {
-                  return {
-                    ...r,
-                    like: false,
-                    countLikes: r.countLikes - 1,
-                  };
-                }
-                return r;
-              });
+            const updatedReviews = newReview.reviews.map((r) => {
+              if (r.id === review.id) {
+                return {
+                  ...r,
+                  like: false,
+                  countLikes: r.countLikes - 1,
+                };
+              }
+              return r;
+            });
 
-              updateState({ reviews: updatedReviews });
-            }
+            updateState({ reviews: updatedReviews });
           }
         } catch (error) {
           console.error('Error publishing like:', error);
