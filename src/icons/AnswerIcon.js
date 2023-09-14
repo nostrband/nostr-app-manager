@@ -1,6 +1,8 @@
 const AnswerIcon = ({ props, onClick }) => {
   return (
     <svg
+      onClick={onClick}
+      className="pointer"
       width="34"
       height="34"
       viewBox="0 0 24 24"

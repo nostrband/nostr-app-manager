@@ -9,9 +9,10 @@ import './NewReviews.scss';
 import { Link } from 'react-router-dom';
 import AnswerIcon from '../../icons/AnswerIcon';
 import { useAuth } from '../../context/AuthContext';
-import ReviewLike from '../App/Reviews/ReviewLike';
+import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
-import ZapFunctional from './ZapFunctional';
+import ZapFunctional from './ReviewsActions/ZapFunctional';
+import AnswerReviewFunctional from './ReviewsActions/AnswerReviewFunctional';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -140,7 +141,7 @@ const NewReviews = () => {
                       npub={nip19?.npubEncode(review.pubkey)}
                       noteId={nip19.noteEncode(review.id)}
                     />
-                    <AnswerIcon />
+                    <AnswerReviewFunctional review={review} />
                   </div>
                 </div>
               </ListGroupItem>

@@ -10,10 +10,11 @@ import Profile from '../../../elements/Profile';
 import { Link } from 'react-router-dom';
 import Zap from '../../../icons/Zap';
 import AnswerIcon from '../../../icons/AnswerIcon';
-import ReviewLike from './ReviewLike';
+import ReviewLike from '../../MainPageComponents/ReviewsActions/ReviewLike';
 import { useAuth } from '../../../context/AuthContext';
-import ZapFunctional from '../../MainPageComponents/ZapFunctional';
+import ZapFunctional from '../../MainPageComponents/ReviewsActions/ZapFunctional';
 import { nip19 } from '@nostrband/nostr-tools';
+import AnswerReviewFunctional from '../../MainPageComponents/ReviewsActions/AnswerReviewFunctional';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -151,7 +152,7 @@ const ReviewsAppInfoView = ({ app }) => {
                       npub={nip19?.npubEncode(review.pubkey)}
                       noteId={nip19.noteEncode(review.id)}
                     />
-                    <AnswerIcon />
+                    <AnswerReviewFunctional review={review} />
                   </div>
                 </div>
               </ListGroupItem>
