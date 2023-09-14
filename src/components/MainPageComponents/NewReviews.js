@@ -7,7 +7,6 @@ import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
 import { Link } from 'react-router-dom';
-import Zap from '../../icons/Zap';
 import AnswerIcon from '../../icons/AnswerIcon';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from '../App/Reviews/ReviewLike';
@@ -105,7 +104,6 @@ const NewReviews = () => {
             let authorProfile = review.author?.content
               ? cmn.convertContentToProfile([review.author])
               : {};
-
             return (
               <ListGroupItem key={review.id} className="review-item darked">
                 <div className="app-profile">
