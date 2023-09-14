@@ -12,6 +12,8 @@ import Zap from '../../../icons/Zap';
 import AnswerIcon from '../../../icons/AnswerIcon';
 import ReviewLike from './ReviewLike';
 import { useAuth } from '../../../context/AuthContext';
+import ZapFunctional from '../../MainPageComponents/ZapFunctional';
+import { nip19 } from '@nostrband/nostr-tools';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -145,7 +147,10 @@ const ReviewsAppInfoView = ({ app }) => {
                       reviews={reviews}
                       appInfo
                     />
-                    <Zap />
+                    <ZapFunctional
+                      npub={nip19?.npubEncode(review.pubkey)}
+                      noteId={nip19.noteEncode(review.id)}
+                    />
                     <AnswerIcon />
                   </div>
                 </div>
