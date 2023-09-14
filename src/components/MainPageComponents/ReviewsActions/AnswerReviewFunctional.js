@@ -48,7 +48,9 @@ const AnswerReviewFunctional = ({ review }) => {
       if (result) {
         handleCloseModal();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
