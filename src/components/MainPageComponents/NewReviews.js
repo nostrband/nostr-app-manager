@@ -11,6 +11,8 @@ import Zap from '../../icons/Zap';
 import AnswerIcon from '../../icons/AnswerIcon';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from '../App/Reviews/ReviewLike';
+import { nip19 } from '@nostrband/nostr-tools';
+import ZapFunctional from './ZapFunctional';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -30,6 +32,7 @@ const NewReviews = () => {
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
   const [updateLike, setUpdateLike] = useState('FALSE');
+  const zapButtonRef = useRef(null);
 
   useEffect(() => {
     window.scrollTo({ top: scrollPosition, behavior: 'instant' });
@@ -83,6 +86,12 @@ const NewReviews = () => {
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
+  useEffect(() => {
+    if (zapButtonRef.current) {
+      window.nostrZap.initTarget(zapButtonRef.current);
+    }
+  }, []);
+
   return (
     <>
       <ListGroup className="reviews-container">
@@ -96,6 +105,7 @@ const NewReviews = () => {
             let authorProfile = review.author?.content
               ? cmn.convertContentToProfile([review.author])
               : {};
+
             return (
               <ListGroupItem key={review.id} className="review-item darked">
                 <div className="app-profile">
@@ -128,7 +138,10 @@ const NewReviews = () => {
                       setUpdateLike={setUpdateLike}
                       review={review}
                     />
-                    <Zap />
+                    <ZapFunctional
+                      npub={nip19?.npubEncode(review.pubkey)}
+                      noteId={nip19.noteEncode(review.id)}
+                    />
                     <AnswerIcon />
                   </div>
                 </div>

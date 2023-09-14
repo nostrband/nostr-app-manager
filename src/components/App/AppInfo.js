@@ -199,7 +199,6 @@ const AppInfo = (props) => {
       setShowLogin(true);
     }
   };
-
   const fetchCounts = async (kind, setStateFunction) => {
     try {
       const ndk = await cmn.getNDK();
