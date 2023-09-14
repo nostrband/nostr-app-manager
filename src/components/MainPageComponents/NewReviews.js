@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as cmn from '../../common';
 import { useNewReviewState } from '../../context/NewReviesContext';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
@@ -7,23 +7,41 @@ import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
 import { Link } from 'react-router-dom';
-import ReviewLike from '../App/Reviews/ReviewLike';
 import Zap from '../../icons/Zap';
 import AnswerIcon from '../../icons/AnswerIcon';
 import { useAuth } from '../../context/AuthContext';
+import ReviewLike from '../App/Reviews/ReviewLike';
+
+function usePrevious(value) {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+}
 
 const NewReviews = () => {
-  const { newReview, empty, fetchReviews, updateState, setNewReview } =
+  const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
-  const { reviews, loading, lastCreatedAt, hasMore } = newReview;
+  const { reviews, loading, lastCreatedAt, hasMore, scrollPosition } =
+    newReview;
   const { pubkey } = useAuth();
+  const prevPubkey = usePrevious(pubkey);
+  const [updateLike, setUpdateLike] = useState('FALSE');
+
+  useEffect(() => {
+    window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+  }, []);
 
   const handleScroll = useCallback(() => {
-    if (!loading && hasMore && lastCreatedAt) {
+    if (hasMore && lastCreatedAt) {
       const scrollBottom = Math.abs(
         document.documentElement.scrollHeight -
           (window.innerHeight + document.documentElement.scrollTop)
       );
+      updateState({ scrollPosition: window.scrollY });
       if (scrollBottom < 10 && !empty) {
         fetchReviews(lastCreatedAt);
       }
@@ -44,8 +62,10 @@ const NewReviews = () => {
       }
       setNewReview({ ...newReview, reviews: updatedReviews });
     }
-    handleLikesUpdate();
-  }, [pubkey]);
+    if (prevPubkey !== undefined && (pubkey !== prevPubkey || updateLike)) {
+      handleLikesUpdate();
+    }
+  }, [pubkey, prevPubkey, updateLike]);
 
   useEffect(() => {
     if (reviews.length > 0) {
@@ -64,7 +84,6 @@ const NewReviews = () => {
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
-  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">
@@ -104,7 +123,12 @@ const NewReviews = () => {
                     pubkey={review.pubkey}
                   />
                   <div className="container-actions-icon">
-                    <ReviewLike review={review} />
+                    <ReviewLike
+                      like={review.like}
+                      countLikes={review.countLikes}
+                      setUpdateLike={setUpdateLike}
+                      review={review}
+                    />
                     <Zap />
                     <AnswerIcon />
                   </div>

@@ -55,6 +55,7 @@ const ShareAppModal = ({
     }
     handleCloseModal();
   };
+
   return (
     <Modal show={showModal} onHide={handleCloseModal}>
       <Toast

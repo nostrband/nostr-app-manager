@@ -1,25 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Heart from '../../../icons/Heart';
 import * as cmn from '../../../common';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
 import LikedHeart from '../../../icons/LikedHeart';
 import { useNewReviewState } from '../../../context/NewReviesContext';
+import { toast } from 'react-toastify';
 
-const ReviewLike = ({ review, appInfo }) => {
-  const [like, setLike] = useState(review.like);
-  const [countLikes, setCountLikes] = useState(review.countLikes);
+const ReviewLike = ({
+  review,
+  setUpdateLike,
+  countLikes,
+  like,
+  setReviews,
+  reviews,
+  appInfo,
+}) => {
   const { setShowLogin } = useAuthShowModal();
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const { newReview, updateState } = useNewReviewState();
-  console.log(newReview, 'NEW REVIEW');
-  useEffect(() => {
-    setLike(review.like);
-    setCountLikes(review.countLikes);
-  }, [review]);
+
+  const updateLikeReviews = (reviews, key, setState) => {
+    const updatedReviews = reviews.map((r) => {
+      if (r.id === review.id) {
+        return {
+          ...r,
+          like: false,
+          countLikes: r.countLikes - 1,
+        };
+      }
+      return r;
+    });
+    setState({ [key]: updatedReviews });
+  };
 
   const handleLike = async () => {
     if (cmn.isAuthed()) {
       if (!like) {
+        const toastId = toast('Loading...', {
+          type: 'pending',
+          autoClose: false,
+        });
         const event = {
           kind: 7,
           tags: [
@@ -31,20 +51,27 @@ const ReviewLike = ({ review, appInfo }) => {
         try {
           const response = await cmn.publishEvent(event);
           if (response) {
-            setLike({ id: review.id });
-            setCountLikes((prev) => prev + 1);
-
-            const updatedReviews = newReview.reviews.map((r) => {
-              if (r.id === review.id) {
-                return {
-                  ...r,
-                  like: { id: review.id },
-                  countLikes: r.countLikes + 1,
-                };
-              }
-              return r;
-            });
-            updateState({ reviews: updatedReviews });
+            setUpdateLike((prev) => (prev === 'FALSE' ? 'TRUE' : 'FALSE'));
+            if (appInfo) {
+              const updatedReviews = newReview.reviews.map((r) => {
+                if (r.id === review.id) {
+                  return {
+                    ...r,
+                    like: { id: review.id },
+                    countLikes: r.countLikes + 1,
+                  };
+                }
+                return r;
+              });
+              updateState({ reviews: updatedReviews });
+            }
+            setTimeout(() => {
+              toast.update(toastId, {
+                render: 'You liked!',
+                type: 'success',
+                autoClose: 2000,
+              });
+            }, 1300);
           }
         } catch (error) {
           console.error('Error publishing like:', error);
@@ -59,20 +86,10 @@ const ReviewLike = ({ review, appInfo }) => {
         try {
           const result = await cmn.publishEvent(eventForDelete);
           if (result) {
-            setLike(false);
-            setCountLikes((prev) => prev - 1);
-            const updatedReviews = newReview.reviews.map((r) => {
-              if (r.id === review.id) {
-                return {
-                  ...r,
-                  like: false,
-                  countLikes: r.countLikes - 1,
-                };
-              }
-              return r;
-            });
-
-            updateState({ reviews: updatedReviews });
+            if (appInfo) {
+              updateLikeReviews(reviews.reviewsData, 'reviewsData', setReviews);
+            }
+            updateLikeReviews(newReview.reviews, 'reviews', updateState);
           }
         } catch (error) {
           console.error('Error publishing like:', error);

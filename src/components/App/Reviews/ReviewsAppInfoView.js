@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './ReviewsAppInfoView.scss';
 import { Rating } from '@mui/material';
 import * as cmn from '../../../common';
@@ -8,17 +8,25 @@ import LoadingSpinner from '../../../elements/LoadingSpinner';
 import { useReviewModal } from '../../../context/ShowReviewContext';
 import Profile from '../../../elements/Profile';
 import { Link } from 'react-router-dom';
-import LikedHeart from '../../../icons/LikedHeart';
 import Zap from '../../../icons/Zap';
 import AnswerIcon from '../../../icons/AnswerIcon';
 import ReviewLike from './ReviewLike';
 import { useAuth } from '../../../context/AuthContext';
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+
 const ReviewsAppInfoView = ({ app }) => {
   const [reviews, setReviews] = useState({ reviewsData: [] });
   const [loading, setLoading] = useState(false);
   const { pubkey } = useAuth();
-  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const prevPubkey = usePrevious(pubkey);
+  const [updateLike, setUpdateLike] = useState(false);
   const { setShowReviewModal, reviewAction } = useReviewModal();
 
   const getReviews = async (id) => {
@@ -43,7 +51,6 @@ const ReviewsAppInfoView = ({ app }) => {
           const authors = await cmn.fetchAllEvents([
             cmn.startFetch(ndk, filter),
           ]);
-
           const reviewsData = response
             .map((review) => {
               const author = authors.find(
@@ -56,7 +63,6 @@ const ReviewsAppInfoView = ({ app }) => {
               }
             })
             .filter((review) => review.id !== id);
-
           const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
             reviewsData
           );
@@ -103,8 +109,11 @@ const ReviewsAppInfoView = ({ app }) => {
       }
       setReviews((prev) => ({ ...prev, reviewsData: updatedReviews }));
     }
-    handleLikesUpdate();
-  }, [pubkey]);
+
+    if (prevPubkey !== undefined && (pubkey !== prevPubkey || updateLike)) {
+      handleLikesUpdate();
+    }
+  }, [pubkey, prevPubkey, updateLike]);
 
   return (
     <div>
@@ -129,7 +138,15 @@ const ReviewsAppInfoView = ({ app }) => {
                 <div className="d-flex justify-content-between">
                   <Profile small profile={{ profile }} pubkey={review.pubkey} />
                   <div className="container-actions-icon">
-                    <ReviewLike review={review} appInfo />
+                    <ReviewLike
+                      like={review.like}
+                      countLikes={review.countLikes}
+                      setUpdateLike={setUpdateLike}
+                      review={review}
+                      setReviews={setReviews}
+                      reviews={reviews}
+                      appInfo
+                    />
                     <Zap />
                     <AnswerIcon />
                   </div>

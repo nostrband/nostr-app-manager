@@ -66,15 +66,14 @@ export const NewReviewStateProvider = ({ children }) => {
   };
 
   const fetchReviews = async (created_at) => {
-    const ndk = await cmn.getNDK();
     updateState({ loading: true });
+    const ndk = await cmn.getNDK();
     const filter = {
       kinds: [1985],
       '#l': ['review/app'],
       limit: 10,
       ...(created_at ? { until: created_at } : {}),
     };
-
     try {
       const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
       const currentApps = newReview.reviews;
@@ -158,8 +157,6 @@ export const NewReviewStateProvider = ({ children }) => {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      updateState({ loading: false });
     }
   };
 
