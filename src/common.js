@@ -1137,40 +1137,39 @@ export const fetchLikes = async (allReviewIds, pubkey) => {
 
 export const fetchAllLikes = async (allReviewIds) => {
   const ndk = await getNDK();
-  if (isAuthed()) {
-    const filter = {
-      kinds: [7],
-      '#e': [...allReviewIds],
-    };
-    try {
-      const result = await fetchAllEvents([startFetch(ndk, filter)]);
-      return result;
-    } catch (error) {
-      console.error('Error fetching liked status:', error);
-    }
+  const filter = {
+    kinds: [7],
+    '#e': [...allReviewIds],
+  };
+  try {
+    const result = await fetchAllEvents([startFetch(ndk, filter)]);
+    return result;
+  } catch (error) {
+    console.error('Error fetching liked status:', error);
   }
 };
 
 export const associateLikesWithReviews = async (reviews) => {
   const allReviewIds = reviews.map((r) => r.id);
   let reviewsWithAllLikes = reviews;
-  if (getLoginPubkey()) {
-    const resultLikes = await fetchLikes(allReviewIds, getLoginPubkey());
-    const reviewsWithLikes = reviews.map((review) => {
-      const likeObject = resultLikes?.find((like) =>
-        like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
-      );
-      return { ...review, like: likeObject || false };
-    });
-    const allLikes = await fetchAllLikes(allReviewIds);
-    console.log(allLikes, 'ALL LIKES FOR THIS REVIEW');
-    reviewsWithAllLikes = reviewsWithLikes.map((review) => {
-      let likesForThisReview = allLikes.filter((like) =>
+  const allLikes = await fetchAllLikes(allReviewIds);
+  if (allLikes) {
+    reviewsWithAllLikes = reviews.map((review) => {
+      const likesForThisReview = allLikes.filter((like) =>
         like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
       );
       return { ...review, countLikes: likesForThisReview.length };
     });
   }
 
+  if (getLoginPubkey()) {
+    const resultLikes = await fetchLikes(allReviewIds, getLoginPubkey());
+    reviewsWithAllLikes = reviewsWithAllLikes.map((review) => {
+      const likeObject = resultLikes?.find((like) =>
+        like.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+      );
+      return { ...review, like: likeObject || false };
+    });
+  }
   return reviewsWithAllLikes;
 };

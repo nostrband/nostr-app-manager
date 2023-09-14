@@ -103,14 +103,12 @@ const ReviewsAppInfoView = ({ app }) => {
       } else {
         updatedReviews = reviews.reviewsData?.map((review) => ({
           ...review,
-          countLikes: 0,
-          like: null,
+          like: false,
         }));
       }
       setReviews((prev) => ({ ...prev, reviewsData: updatedReviews }));
     }
-
-    if (prevPubkey !== undefined && (pubkey !== prevPubkey || updateLike)) {
+    if (prevPubkey !== pubkey || updateLike) {
       handleLikesUpdate();
     }
   }, [pubkey, prevPubkey, updateLike]);

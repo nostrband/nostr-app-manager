@@ -56,13 +56,12 @@ const NewReviews = () => {
       } else {
         updatedReviews = reviews.map((review) => ({
           ...review,
-          countLikes: 0,
-          like: null,
+          like: false,
         }));
       }
       setNewReview({ ...newReview, reviews: updatedReviews });
     }
-    if (prevPubkey !== undefined && (pubkey !== prevPubkey || updateLike)) {
+    if (prevPubkey !== pubkey || updateLike) {
       handleLikesUpdate();
     }
   }, [pubkey, prevPubkey, updateLike]);

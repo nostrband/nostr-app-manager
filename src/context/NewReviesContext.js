@@ -17,7 +17,6 @@ export const NewReviewStateProvider = ({ children }) => {
     loading: false,
   });
   const [empty, setEmpty] = useState(false);
-  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
 
   const updateState = (changes) => {
     setNewReview((prevState) => ({ ...prevState, ...changes }));
@@ -145,7 +144,6 @@ export const NewReviewStateProvider = ({ children }) => {
           const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
             reviewsWithAuthorsAndApps
           );
-
           updateState({
             reviews: [...currentApps, ...reviewsWithAllLikes],
             lastCreatedAt:
