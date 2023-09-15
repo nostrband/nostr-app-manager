@@ -39,8 +39,8 @@ const AnswerReviewFunctional = ({ review }) => {
       const event = {
         kind: 1,
         tags: [
-          ['p', loginPubkey],
-          ['e', cmn.naddrToAddr(cmn.getNaddr(review))],
+          ['p', review.pubkey],
+          ['e', review.id],
         ],
         content: textForShare,
       };
