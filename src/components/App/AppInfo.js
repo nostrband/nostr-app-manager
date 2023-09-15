@@ -18,7 +18,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import errorToast from '../../elements/ErrorToast';
 import UnCheckedStar from '../../icons/UnCheckedStar';
-import ReviewModal from './ReviewModal';
+import ReviewModal from './Reviews/ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
 import { useReviewModal } from '../../context/ShowReviewContext';
 
@@ -199,7 +199,6 @@ const AppInfo = (props) => {
       setShowLogin(true);
     }
   };
-
   const fetchCounts = async (kind, setStateFunction) => {
     try {
       const ndk = await cmn.getNDK();

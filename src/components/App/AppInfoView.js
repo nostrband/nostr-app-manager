@@ -13,10 +13,9 @@ import AppInfo from './AppInfo';
 
 import * as cmn from '../../common';
 import FollowersAppInfoView from './FollowersAppInfoView';
-import ReviewsAppInfoView from './ReviewsAppInfoView';
+import ReviewsAppInfoView from './Reviews/ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
-import { kinds } from '../../const';
 
 const tabs = [
   {
@@ -200,7 +199,7 @@ const AppInfoView = () => {
               {tags.map((t) => {
                 return (
                   <button
-                    class="btn btn-outline-primary mx-1"
+                    class="btn btn-outline-primary mx-1 mt-1 mb-1"
                     onClick={() => navigate(`/tag/${t}`)}
                     key={t}
                   >

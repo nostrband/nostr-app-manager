@@ -1,0 +1,28 @@
+.reviews-container {
+  padding: 0;
+}
+
+.review-item {
+  margin: 0;
+  padding-bottom: 15px;
+  .rating-content-container {
+    padding: 20px 0;
+    color: black;
+    @media (max-width: 450px) {
+      font-size: 1.1rem;
+    }
+  }
+  .container-actions-icon {
+    display: flex;
+    gap: 4px;
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+}

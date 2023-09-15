@@ -15,3 +15,24 @@
     padding: 3px;
   }
 }
+
+.count-likes {
+  color: #b22222;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.rating-content-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  p {
+    margin: 0;
+  }
+  @media (max-width: 450px) {
+    flex-direction: column;
+    p {
+      margin-bottom: 10px;
+    }
+  }
+}

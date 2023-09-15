@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Menu, Rating } from '@mui/material';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Toast from '../../elements/Toast';
+import Toast from '../../../elements/Toast';
 import { toast } from 'react-toastify';
-import * as cmn from '../../common';
-import { useReviewModal } from '../../context/ShowReviewContext';
+import * as cmn from '../../../common';
+import { useReviewModal } from '../../../context/ShowReviewContext';
 
 const ReviewModal = ({
   showModal,
