@@ -180,4 +180,24 @@ export const optionsNips = [
   { value: 'NIP-99', label: 'NIP-99: Classified Listings' },
 ];
 
+export const optionsTags = [
+  { value: 'social', label: 'social' },
+  { value: 'productivity', label: 'productivity' },
+  { value: 'live streaming', label: 'live streaming' },
+  { value: 'marketplace', label: 'marketplace' },
+  { value: 'music', label: 'music' },
+  { value: 'video', label: 'video' },
+  { value: 'pictures', label: 'pictures' },
+  { value: 'storage', label: 'storage' },
+  { value: 'dvm', label: 'dvm' },
+  { value: 'game', label: 'game' },
+  { value: 'messaging', label: 'messaging' },
+  { value: 'education', label: 'education' },
+  { value: 'health', label: 'health' },
+  { value: 'dating', label: 'dating' },
+  { value: 'adult', label: 'adult' },
+  { value: 'news', label: 'news' },
+  { value: 'podcasts', label: 'podcasts' },
+];
+
 export const isTablet = window.screen.width < 615;
