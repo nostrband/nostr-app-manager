@@ -209,13 +209,14 @@ const AppEditForm = (props) => {
     });
 
     tags.forEach((tag) => {
-      const tagLabel = tag.label;
+      const tagLabel = tag.value;
       if (!event.tags.some((t) => t[0] === 't' && t[1] === tagLabel)) {
         event.tags.push(['t', tagLabel]);
       }
     });
 
     setSending(true);
+    console.log(event, 'EVENT');
     const r = await cmn.publishEvent(event);
     setSending(false);
     if (!r || r.error) {
@@ -472,7 +473,7 @@ const AppEditForm = (props) => {
         <CreatableSelect
           isMulti
           name="tags"
-          options={[]}
+          options={cs.optionsTags}
           classNamePrefix="select"
           value={tags}
           onChange={(selectedOptions) => setTags(selectedOptions)}
