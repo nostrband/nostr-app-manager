@@ -21,8 +21,9 @@ import { AppStateProvider } from './context/AppContext';
 import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
 import KindView from './components/Kinds/KindView';
 import TagView from './components/Tags/TagView';
-import { NewReviewStateProvider } from './context/NewReviesContext';
+import { NewReviewStateProvider } from './context/NewReviewsContext';
 import EventApps from './components/EventApps';
+import { UpdateAnswersReviewProvider } from './context/UpdateAnswersContext';
 
 const HTTP = new QueryClient();
 
@@ -89,12 +90,14 @@ root.render(
         <NewReviewStateProvider>
           <LoginModalProvider>
             <ReviewModalProvider>
-              <IntlProvider>
-                <ThemeProvider>
-                  <RouterProvider router={router} />
-                  <ToastContainer />
-                </ThemeProvider>
-              </IntlProvider>
+              <UpdateAnswersReviewProvider>
+                <IntlProvider>
+                  <ThemeProvider>
+                    <RouterProvider router={router} />
+                    <ToastContainer />
+                  </ThemeProvider>
+                </IntlProvider>
+              </UpdateAnswersReviewProvider>
             </ReviewModalProvider>
           </LoginModalProvider>
         </NewReviewStateProvider>

@@ -5,13 +5,16 @@ import * as cmn from '../../../common';
 import AnswerIcon from '../../../icons/AnswerIcon';
 import TextAreaAutosize from 'react-textarea-autosize';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
+import { useUpdateAnswersReviewState } from '../../../context/UpdateAnswersContext';
 
-const AnswerReviewFunctional = ({ review }) => {
+const AnswerReviewFunctional = ({ review, mainPage }) => {
   const [showModal, setShowModal] = useState(false);
   const textRef = useRef();
   const [textForShare, setTextForShare] = useState('');
   const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const { setShowLogin } = useAuthShowModal();
+  const { setUpdateAnswers, setUpdateAnswersMainPage } =
+    useUpdateAnswersReviewState();
 
   useEffect(() => {
     if (textRef && textRef.current) {
@@ -47,6 +50,10 @@ const AnswerReviewFunctional = ({ review }) => {
       const result = await cmn.publishEvent(event);
       if (result) {
         handleCloseModal();
+        setUpdateAnswers((prev) => (prev === 'FALSE' ? 'TRUE' : 'FALSE'));
+        setUpdateAnswersMainPage((prev) =>
+          prev === 'FALSE' ? 'TRUE' : 'FALSE'
+        );
       }
     } catch (error) {
       console.log(error);
