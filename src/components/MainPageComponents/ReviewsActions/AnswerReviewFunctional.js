@@ -6,6 +6,7 @@ import AnswerIcon from '../../../icons/AnswerIcon';
 import TextAreaAutosize from 'react-textarea-autosize';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
 import { useUpdateAnswersReviewState } from '../../../context/UpdateAnswersContext';
+import { useNewReviewState } from '../../../context/NewReviewsContext';
 
 const AnswerReviewFunctional = ({ review, mainPage }) => {
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +16,8 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
   const { setShowLogin } = useAuthShowModal();
   const { setUpdateAnswers, setUpdateAnswersMainPage } =
     useUpdateAnswersReviewState();
+
+  const { newReview, updateState } = useNewReviewState();
 
   useEffect(() => {
     if (textRef && textRef.current) {
@@ -50,10 +53,26 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
       const result = await cmn.publishEvent(event);
       if (result) {
         handleCloseModal();
-        setUpdateAnswers((prev) => (prev === 'FALSE' ? 'TRUE' : 'FALSE'));
-        setUpdateAnswersMainPage((prev) =>
-          prev === 'FALSE' ? 'TRUE' : 'FALSE'
-        );
+        if (!mainPage) {
+          setUpdateAnswers((prev) => (prev === 'FALSE' ? 'TRUE' : 'FALSE'));
+          const updatedReviews = newReview.reviews.map((r) => {
+            if (r.id === review.id) {
+              return {
+                ...r,
+                answers: [
+                  { content: textForShare, pubkey: r.pubkey },
+                  ...r.answers,
+                ],
+              };
+            }
+            return r;
+          });
+          updateState({ reviews: updatedReviews });
+        } else {
+          setUpdateAnswersMainPage((prev) =>
+            prev === 'FALSE' ? 'TRUE' : 'FALSE'
+          );
+        }
       }
     } catch (error) {
       console.log(error);
