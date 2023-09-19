@@ -133,6 +133,7 @@ export const NewReviewStateProvider = ({ children }) => {
               }
             });
           }
+
           const reviewsWithAuthors = associateAuthorsWithReviews(
             filteredReviews,
             authors
@@ -144,10 +145,14 @@ export const NewReviewStateProvider = ({ children }) => {
           const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
             reviewsWithAuthorsAndApps
           );
+          const reviewsWithAnswers = await cmn.associateAnswersWithReviews(
+            reviewsWithAllLikes
+          );
+
           updateState({
-            reviews: [...currentApps, ...reviewsWithAllLikes],
+            reviews: [...currentApps, ...reviewsWithAnswers],
             lastCreatedAt:
-              reviewsWithAllLikes[reviewsWithAllLikes.length - 1].created_at,
+              reviewsWithAnswers[reviewsWithAnswers.length - 1].created_at,
           });
         }
       } else {

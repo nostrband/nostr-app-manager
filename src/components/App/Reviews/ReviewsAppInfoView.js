@@ -8,13 +8,13 @@ import LoadingSpinner from '../../../elements/LoadingSpinner';
 import { useReviewModal } from '../../../context/ShowReviewContext';
 import Profile from '../../../elements/Profile';
 import { Link } from 'react-router-dom';
-import Zap from '../../../icons/Zap';
-import AnswerIcon from '../../../icons/AnswerIcon';
+import ReviewAnswers from '../../MainPageComponents/ReviewsActions/ReviewAnswers';
 import ReviewLike from '../../MainPageComponents/ReviewsActions/ReviewLike';
 import { useAuth } from '../../../context/AuthContext';
 import ZapFunctional from '../../MainPageComponents/ReviewsActions/ZapFunctional';
 import { nip19 } from '@nostrband/nostr-tools';
 import AnswerReviewFunctional from '../../MainPageComponents/ReviewsActions/AnswerReviewFunctional';
+import { useUpdateAnswersReviewState } from '../../../context/UpdateAnswersContext';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -31,6 +31,8 @@ const ReviewsAppInfoView = ({ app }) => {
   const prevPubkey = usePrevious(pubkey);
   const [updateLike, setUpdateLike] = useState(false);
   const { setShowReviewModal, reviewAction } = useReviewModal();
+  const [showAnswersReviewById, setShowAnswersById] = useState('');
+  const { updateAnswers } = useUpdateAnswersReviewState();
 
   const getReviews = async (id) => {
     setLoading(true);
@@ -69,7 +71,11 @@ const ReviewsAppInfoView = ({ app }) => {
           const reviewsWithAllLikes = await cmn.associateLikesWithReviews(
             reviewsData
           );
-          setReviews((prev) => ({ ...prev, reviewsData: reviewsWithAllLikes }));
+
+          const reviewsWithAnswers = await cmn.associateAnswersWithReviews(
+            reviewsWithAllLikes
+          );
+          setReviews((prev) => ({ ...prev, reviewsData: reviewsWithAnswers }));
         } catch (error) {
           console.error('Error fetching authors:', error);
         }
@@ -116,6 +122,19 @@ const ReviewsAppInfoView = ({ app }) => {
     }
   }, [pubkey, prevPubkey, updateLike]);
 
+  useEffect(() => {
+    async function handleAnswersUpdate() {
+      let updatedReviews;
+      updatedReviews = await cmn.associateAnswersWithReviews(
+        reviews.reviewsData
+      );
+      setReviews((prev) => ({ ...prev, reviewsData: updatedReviews }));
+    }
+    if (updateAnswers) {
+      handleAnswersUpdate();
+    }
+  }, [updateAnswers]);
+
   return (
     <div>
       {loading ? (
@@ -129,7 +148,7 @@ const ReviewsAppInfoView = ({ app }) => {
               : {};
             let count = cmn.getCountReview(review);
             return (
-              <ListGroupItem key={review.pubkey} className="review-item darked">
+              <ListGroupItem key={review.pubkey} className="review-item">
                 <Link key={review.id} to={cmn.generateNoteLink(review.id)}>
                   <div className="rating-content-container">
                     <p className="mx-1">{review.content}</p>
@@ -155,6 +174,15 @@ const ReviewsAppInfoView = ({ app }) => {
                     <AnswerReviewFunctional review={review} />
                   </div>
                 </div>
+                <ReviewAnswers
+                  setShowAnswersById={() =>
+                    setShowAnswersById(
+                      showAnswersReviewById === review.id ? '' : review.id
+                    )
+                  }
+                  answers={review.answers}
+                  showAnswers={showAnswersReviewById === review.id}
+                />
               </ListGroupItem>
             );
           })}

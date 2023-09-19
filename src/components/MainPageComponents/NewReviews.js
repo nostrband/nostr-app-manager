@@ -1,18 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as cmn from '../../common';
-import { useNewReviewState } from '../../context/NewReviesContext';
+import { useNewReviewState } from '../../context/NewReviewsContext';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
 import { Link } from 'react-router-dom';
-import AnswerIcon from '../../icons/AnswerIcon';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
 import ZapFunctional from './ReviewsActions/ZapFunctional';
 import AnswerReviewFunctional from './ReviewsActions/AnswerReviewFunctional';
+import ReviewAnswers from './ReviewsActions/ReviewAnswers';
+import { useUpdateAnswersReviewState } from '../../context/UpdateAnswersContext';
 
 function usePrevious(value) {
   const ref = useRef();
@@ -31,8 +32,10 @@ const NewReviews = () => {
     newReview;
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
+  const [showAnswersReviewById, setShowAnswersById] = useState('');
   const [updateLike, setUpdateLike] = useState('FALSE');
   const zapButtonRef = useRef(null);
+  const { updateAnswersMainPage } = useUpdateAnswersReviewState();
 
   useEffect(() => {
     window.scrollTo({ top: scrollPosition, behavior: 'instant' });
@@ -68,6 +71,17 @@ const NewReviews = () => {
       handleLikesUpdate();
     }
   }, [pubkey, prevPubkey, updateLike]);
+
+  useEffect(() => {
+    async function handleAnswersUpdate() {
+      let updatedReviews;
+      updatedReviews = await cmn.associateAnswersWithReviews(reviews);
+      setNewReview({ ...newReview, reviews: updatedReviews });
+    }
+    if (updateAnswersMainPage) {
+      handleAnswersUpdate();
+    }
+  }, [updateAnswersMainPage]);
 
   useEffect(() => {
     if (reviews.length > 0) {
@@ -106,7 +120,7 @@ const NewReviews = () => {
               ? cmn.convertContentToProfile([review.author])
               : {};
             return (
-              <ListGroupItem key={review.id} className="review-item darked">
+              <ListGroupItem key={review.id} className="review-item">
                 <div className="app-profile">
                   <Link to={review.app ? getUrl(review.app) : ''}>
                     {appProfile.pubkey ? (
@@ -141,9 +155,18 @@ const NewReviews = () => {
                       npub={nip19?.npubEncode(review.pubkey)}
                       noteId={nip19.noteEncode(review.id)}
                     />
-                    <AnswerReviewFunctional review={review} />
+                    <AnswerReviewFunctional review={review} mainPage />
                   </div>
                 </div>
+                <ReviewAnswers
+                  setShowAnswersById={() =>
+                    setShowAnswersById(
+                      showAnswersReviewById === review.id ? '' : review.id
+                    )
+                  }
+                  answers={review.answers}
+                  showAnswers={showAnswersReviewById === review.id}
+                />
               </ListGroupItem>
             );
           })}

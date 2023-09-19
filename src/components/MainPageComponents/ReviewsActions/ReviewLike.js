@@ -3,7 +3,7 @@ import Heart from '../../../icons/Heart';
 import * as cmn from '../../../common';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
 import LikedHeart from '../../../icons/LikedHeart';
-import { useNewReviewState } from '../../../context/NewReviesContext';
+import { useNewReviewState } from '../../../context/NewReviewsContext';
 import { toast } from 'react-toastify';
 
 const ReviewLike = ({

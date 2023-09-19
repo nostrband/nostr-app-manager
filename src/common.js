@@ -1173,3 +1173,53 @@ export const associateLikesWithReviews = async (reviews) => {
   }
   return reviewsWithAllLikes;
 };
+
+export const fetchAnswers = async (allReviewIds) => {
+  const ndk = await getNDK();
+  const filter = {
+    kinds: [1],
+    '#e': [...allReviewIds],
+  };
+  try {
+    const result = await fetchAllEvents([startFetch(ndk, filter)]);
+    return result;
+  } catch (error) {
+    console.error('Error fetching liked status:', error);
+  }
+};
+
+export const associateAnswersWithReviews = async (reviews) => {
+  const ndk = await getNDK();
+  const allReviewIds = reviews?.map((r) => r.id);
+  let reviewsWithAnswers = reviews;
+  const answers = await fetchAnswers(allReviewIds);
+  if (answers) {
+    reviewsWithAnswers = reviews.map((review) => {
+      const answersForThisReview = answers.filter((answer) =>
+        answer.tags.some((tag) => tag[0] === 'e' && tag[1] === review.id)
+      );
+      return { ...review, answers: answersForThisReview };
+    });
+    const pubkeysAnswers = answers.map((answer) => answer.pubkey);
+    const filterForAuthorsAnswer = {
+      kinds: [0],
+      authors: pubkeysAnswers,
+    };
+    const authorsAnswer = await fetchAllEvents([
+      startFetch(ndk, filterForAuthorsAnswer),
+    ]);
+
+    reviewsWithAnswers.forEach((review) => {
+      review.answers.forEach((answer) => {
+        const authorAnswer = authorsAnswer.find(
+          (author) => author.pubkey === answer.pubkey
+        );
+        if (authorAnswer) {
+          answer.answerAuthor = authorAnswer;
+        }
+      });
+    });
+  }
+
+  return reviewsWithAnswers;
+};

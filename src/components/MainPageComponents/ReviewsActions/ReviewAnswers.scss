@@ -1,0 +1,70 @@
+@keyframes accordionOpen {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  100% {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+
+@keyframes accordionClose {
+  0% {
+    max-height: 1000px;
+    opacity: 1;
+  }
+  100% {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.open-comment-button {
+  min-width: 160px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: none;
+  margin: 5px 0;
+  padding: 0;
+}
+
+.container-answers {
+  border-left: 1px solid black;
+  margin: 10px 0 0 30px;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+}
+
+.container-answers.open {
+  animation-name: accordionOpen;
+}
+
+.answer-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px 10px 10px;
+  margin: 0;
+  p {
+    word-wrap: break-word;
+  }
+  span {
+    padding: 0 3px;
+  }
+}
+.arrow {
+  transform: rotate(180deg);
+}
+
+.arrow.reverse {
+  transform: rotate(360deg);
+}
