@@ -5,23 +5,27 @@ import Profile from '../../../elements/Profile';
 import * as cmn from '../../../common';
 
 const ReviewAnswers = ({ answers, setShowAnswersById, showAnswers }) => {
+  const sortedAnswers = answers.slice().sort((a, b) => {
+    return new Date(a.created_at) - new Date(b.created_at);
+  });
+
   return (
     <div>
       {answers.length > 0 ? (
         <button onClick={setShowAnswersById} className="open-comment-button">
           <span>
             {showAnswers
-              ? `Hide answers(${answers.length})`
-              : `See answers(${answers.length})`}
+              ? `Hide replies (${answers.length})`
+              : `Show replies (${answers.length})`}
           </span>
           <ArrowIcon className={`arrow${showAnswers ? 'reverse' : ''}`} />
         </button>
       ) : null}
 
       <div>
-        {showAnswers ? (
+        {sortedAnswers ? (
           <ul className={`container-answers ${showAnswers ? 'open' : 'close'}`}>
-            {answers.map((a) => {
+            {sortedAnswers.map((a) => {
               let authorAnswer = a.answerAuthor?.content
                 ? cmn.convertContentToProfile([a.answerAuthor])
                 : {};

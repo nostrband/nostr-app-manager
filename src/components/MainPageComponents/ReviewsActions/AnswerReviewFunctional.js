@@ -60,8 +60,12 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
               return {
                 ...r,
                 answers: [
-                  { content: textForShare, pubkey: r.pubkey },
                   ...r.answers,
+                  {
+                    content: textForShare,
+                    pubkey: r.pubkey,
+                    created_at: Math.floor(Date.now() / 1000),
+                  },
                 ],
               };
             }
