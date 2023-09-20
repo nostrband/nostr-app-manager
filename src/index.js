@@ -24,6 +24,7 @@ import TagView from './components/Tags/TagView';
 import { NewReviewStateProvider } from './context/NewReviewsContext';
 import EventApps from './components/EventApps';
 import { UpdateAnswersReviewProvider } from './context/UpdateAnswersContext';
+import ReviewInfo from './components/ReviewInfo';
 
 const HTTP = new QueryClient();
 
@@ -63,6 +64,14 @@ export const router = createBrowserRouter([
   {
     path: '/r/:naddr',
     element: <RepositoryInfo />,
+  },
+  {
+    path: '/e/:note',
+    element: (
+      <ContainerWithHeaderFooter>
+        <ReviewInfo />
+      </ContainerWithHeaderFooter>
+    ),
   },
   {
     path: '/tag/:tag',

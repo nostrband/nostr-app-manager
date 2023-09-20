@@ -156,7 +156,12 @@ const ReviewsAppInfoView = ({ app }) => {
                   </div>
                 </Link>
                 <div className="d-flex justify-content-between">
-                  <Profile small profile={{ profile }} pubkey={review.pubkey} />
+                  <Profile
+                    application
+                    small
+                    profile={{ profile }}
+                    pubkey={review.pubkey}
+                  />
                   <div className="container-actions-icon">
                     <ReviewLike
                       like={review.like}

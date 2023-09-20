@@ -105,7 +105,6 @@ const NewReviews = () => {
       window.nostrZap.initTarget(zapButtonRef.current);
     }
   }, []);
-
   return (
     <>
       <ListGroup className="reviews-container">
@@ -135,11 +134,15 @@ const NewReviews = () => {
                 </div>
 
                 <div className="rating-content-container">
-                  <p>{review.content}</p>
+                  <Link to={cmn.generateLinkForReviewPage(review.id)}>
+                    <p>{review.content}</p>
+                  </Link>
+
                   <Rating name="read-only" value={count} readOnly />
                 </div>
                 <div className="d-flex justify-content-between">
                   <Profile
+                    application
                     small
                     profile={{ profile: authorProfile }}
                     pubkey={review.pubkey}
