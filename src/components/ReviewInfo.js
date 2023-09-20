@@ -111,10 +111,7 @@ const ReviewInfo = () => {
               </div>
 
               <div>
-                <Link to={cmn.generateLinkForReviewPage(review.id)}>
-                  <p>{review.content}</p>
-                </Link>
-
+                <p>{review.content}</p>
                 <Rating name="read-only" value={count} readOnly />
               </div>
               <div className="d-flex justify-content-between">
