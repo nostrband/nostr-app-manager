@@ -95,7 +95,6 @@ const ReviewInfo = () => {
           let authorProfile = review.author?.content
             ? cmn.convertContentToProfile([review.author])
             : {};
-          console.log(review, 'REVIEW');
           return (
             <div key={review.id} className="review-info">
               <div className="app">

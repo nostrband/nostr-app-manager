@@ -149,7 +149,10 @@ const ReviewsAppInfoView = ({ app }) => {
             let count = cmn.getCountReview(review);
             return (
               <ListGroupItem key={review.pubkey} className="review-item">
-                <Link key={review.id} to={cmn.generateNoteLink(review.id)}>
+                <Link
+                  key={review.id}
+                  to={cmn.generateLinkForReviewPage(review.id)}
+                >
                   <div className="rating-content-container">
                     <p className="mx-1">{review.content}</p>
                     <Rating name="read-only" value={count} readOnly />

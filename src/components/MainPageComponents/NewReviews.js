@@ -132,14 +132,13 @@ const NewReviews = () => {
                     ) : null}
                   </Link>
                 </div>
-
-                <div className="rating-content-container">
-                  <Link to={cmn.generateLinkForReviewPage(review.id)}>
+                <Link to={cmn.generateLinkForReviewPage(review.id)}>
+                  <div className="rating-content-container">
                     <p>{review.content}</p>
-                  </Link>
+                    <Rating name="read-only" value={count} readOnly />
+                  </div>
+                </Link>
 
-                  <Rating name="read-only" value={count} readOnly />
-                </div>
                 <div className="d-flex justify-content-between">
                   <Profile
                     application
