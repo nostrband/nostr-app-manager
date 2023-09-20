@@ -66,11 +66,6 @@ function About() {
           </p>
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <Footer />
-        </Col>
-      </Row>
     </Container>
   );
 }

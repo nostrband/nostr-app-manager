@@ -1080,11 +1080,20 @@ export const getCountReview = (review) => {
       (item) =>
         typeof item === 'string' && item.startsWith('{') && item.endsWith('}')
     );
-    const jsonObj = JSON.parse(jsonString);
-    const quality = jsonObj.quality;
-    const originalReview = Math.round(quality * 5);
-    return originalReview;
+
+    if (jsonString) {
+      try {
+        const jsonObj = JSON.parse(jsonString);
+        const quality = jsonObj.quality;
+        const originalReview = Math.round(quality * 5);
+        return originalReview;
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        return 0;
+      }
+    }
   }
+  return 0;
 };
 
 export const convertContentToProfile = (event) => {

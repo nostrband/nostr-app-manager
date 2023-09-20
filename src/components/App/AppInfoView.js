@@ -73,7 +73,11 @@ const AppInfoView = () => {
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-    const profile = await cmn.getProfile(pubkey[1]);
+
+    let profile;
+    if (cmn.getProfile[1]) {
+      profile = await cmn.getProfile(pubkey[1]);
+    }
     setAuthor(profile);
     setTags(tags);
     setAddKinds(appInfo.kinds);
@@ -172,7 +176,7 @@ const AppInfoView = () => {
                   {app.kinds.map((k) => {
                     return (
                       <button
-                        class="btn btn-outline-primary mx-1"
+                        class="btn btn-outline-primary mx-1 mb-1 mt-1"
                         onClick={() => navigate(`/kind/${k}`)}
                         key={k}
                       >

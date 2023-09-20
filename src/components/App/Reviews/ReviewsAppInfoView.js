@@ -134,7 +134,6 @@ const ReviewsAppInfoView = ({ app }) => {
       handleAnswersUpdate();
     }
   }, [updateAnswers]);
-
   return (
     <div>
       {loading ? (
@@ -142,58 +141,69 @@ const ReviewsAppInfoView = ({ app }) => {
       ) : (
         <ListGroup className="reviews-container">
           <RatingStatistics reviews={reviews} />
-          {reviews?.reviewsData?.map((review) => {
-            const profile = review?.author?.content
-              ? JSON.parse(review?.author?.content)
-              : {};
-            let count = cmn.getCountReview(review);
-            return (
-              <ListGroupItem key={review.pubkey} className="review-item">
-                <Link
-                  key={review.id}
-                  to={cmn.generateLinkForReviewPage(review.id)}
-                >
-                  <div className="rating-content-container">
-                    <p className="mx-1">{review.content}</p>
-                    <Rating name="read-only" value={count} readOnly />
+          {reviews?.reviewsData
+            .filter((review) => {
+              const hasMatchingTag = review.tags.some(
+                (tagArray) =>
+                  Array.isArray(tagArray) &&
+                  tagArray.length >= 2 &&
+                  tagArray[0] === 'l' &&
+                  tagArray[1] === 'review/app'
+              );
+              return hasMatchingTag;
+            })
+            .map((review) => {
+              const profile = review?.author?.content
+                ? JSON.parse(review?.author?.content)
+                : {};
+              let count = cmn.getCountReview(review);
+              return (
+                <ListGroupItem key={review.pubkey} className="review-item">
+                  <Link
+                    key={review.id}
+                    to={cmn.generateLinkForReviewPage(review.id)}
+                  >
+                    <div className="rating-content-container">
+                      <p className="mx-1">{review.content}</p>
+                      <Rating name="read-only" value={count} readOnly />
+                    </div>
+                  </Link>
+                  <div className="d-flex justify-content-between">
+                    <Profile
+                      application
+                      small
+                      profile={{ profile }}
+                      pubkey={review.pubkey}
+                    />
+                    <div className="container-actions-icon">
+                      <ReviewLike
+                        like={review.like}
+                        countLikes={review.countLikes}
+                        setUpdateLike={setUpdateLike}
+                        review={review}
+                        setReviews={setReviews}
+                        reviews={reviews}
+                        appInfo
+                      />
+                      <ZapFunctional
+                        npub={nip19?.npubEncode(review.pubkey)}
+                        noteId={nip19.noteEncode(review.id)}
+                      />
+                      <AnswerReviewFunctional review={review} />
+                    </div>
                   </div>
-                </Link>
-                <div className="d-flex justify-content-between">
-                  <Profile
-                    application
-                    small
-                    profile={{ profile }}
-                    pubkey={review.pubkey}
+                  <ReviewAnswers
+                    setShowAnswersById={() =>
+                      setShowAnswersById(
+                        showAnswersReviewById === review.id ? '' : review.id
+                      )
+                    }
+                    answers={review.answers}
+                    showAnswers={showAnswersReviewById === review.id}
                   />
-                  <div className="container-actions-icon">
-                    <ReviewLike
-                      like={review.like}
-                      countLikes={review.countLikes}
-                      setUpdateLike={setUpdateLike}
-                      review={review}
-                      setReviews={setReviews}
-                      reviews={reviews}
-                      appInfo
-                    />
-                    <ZapFunctional
-                      npub={nip19?.npubEncode(review.pubkey)}
-                      noteId={nip19.noteEncode(review.id)}
-                    />
-                    <AnswerReviewFunctional review={review} />
-                  </div>
-                </div>
-                <ReviewAnswers
-                  setShowAnswersById={() =>
-                    setShowAnswersById(
-                      showAnswersReviewById === review.id ? '' : review.id
-                    )
-                  }
-                  answers={review.answers}
-                  showAnswers={showAnswersReviewById === review.id}
-                />
-              </ListGroupItem>
-            );
-          })}
+                </ListGroupItem>
+              );
+            })}
         </ListGroup>
       )}
       <div className="mt-2">
