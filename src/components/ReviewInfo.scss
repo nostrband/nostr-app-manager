@@ -1,4 +1,7 @@
 .review-info {
+  a {
+    color: black;
+  }
   font-size: 1.2rem;
   padding: 20px 0;
   h3 {
@@ -6,9 +9,6 @@
   }
   .app {
     padding: 15px 0;
-    a {
-      flex-direction: row-reverse;
-    }
     font-size: 1.5rem;
     img {
       width: 60px;
