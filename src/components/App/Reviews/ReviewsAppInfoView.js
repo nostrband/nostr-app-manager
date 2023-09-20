@@ -149,14 +149,22 @@ const ReviewsAppInfoView = ({ app }) => {
             let count = cmn.getCountReview(review);
             return (
               <ListGroupItem key={review.pubkey} className="review-item">
-                <Link key={review.id} to={cmn.generateNoteLink(review.id)}>
+                <Link
+                  key={review.id}
+                  to={cmn.generateLinkForReviewPage(review.id)}
+                >
                   <div className="rating-content-container">
                     <p className="mx-1">{review.content}</p>
                     <Rating name="read-only" value={count} readOnly />
                   </div>
                 </Link>
                 <div className="d-flex justify-content-between">
-                  <Profile small profile={{ profile }} pubkey={review.pubkey} />
+                  <Profile
+                    application
+                    small
+                    profile={{ profile }}
+                    pubkey={review.pubkey}
+                  />
                   <div className="container-actions-icon">
                     <ReviewLike
                       like={review.like}

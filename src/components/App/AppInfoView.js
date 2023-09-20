@@ -147,6 +147,7 @@ const AppInfoView = () => {
               <div>
                 <h6 className="mt-4">Published by:</h6>
                 <Profile
+                  application
                   profile={info.meta}
                   pubkey={addr.pubkey}
                   small={true}
@@ -156,6 +157,7 @@ const AppInfoView = () => {
                 <div>
                   <h6 className="mt-3">Author:</h6>
                   <Profile
+                    application
                     profile={{ profile: author }}
                     pubkey={author.pubkey}
                     small={true}

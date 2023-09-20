@@ -43,6 +43,10 @@
   animation-duration: 0.5s;
   animation-fill-mode: both;
   animation-timing-function: ease-in-out;
+  @media (max-width: 450px) {
+    margin: 0;
+    border-left: none;
+  }
 }
 
 .container-answers.open {
@@ -51,9 +55,12 @@
 
 .answer-item {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   padding: 5px 10px 10px 10px;
   margin: 0;
+  @media (max-width: 450px) {
+    padding: 5px 0;
+  }
   p {
     word-wrap: break-word;
   }

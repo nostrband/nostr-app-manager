@@ -1118,6 +1118,8 @@ export const getRepositoryUrl = (event) => {
   return viewUrl;
 };
 
+// REVIEWS
+
 export const fetchLikes = async (allReviewIds, pubkey) => {
   const ndk = await getNDK();
   if (isAuthed()) {
@@ -1222,4 +1224,10 @@ export const associateAnswersWithReviews = async (reviews) => {
   }
 
   return reviewsWithAnswers;
+};
+
+export const generateLinkForReviewPage = (reviewId) => {
+  let note = nip19.noteEncode(reviewId);
+  let link = '/e/' + note;
+  return link;
 };

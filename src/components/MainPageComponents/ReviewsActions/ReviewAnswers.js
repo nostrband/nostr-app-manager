@@ -4,14 +4,19 @@ import ArrowIcon from '../../../icons/Arrow';
 import Profile from '../../../elements/Profile';
 import * as cmn from '../../../common';
 
-const ReviewAnswers = ({ answers, setShowAnswersById, showAnswers }) => {
+const ReviewAnswers = ({
+  answers,
+  setShowAnswersById,
+  showAnswers,
+  hideButton,
+}) => {
   const sortedAnswers = answers.slice().sort((a, b) => {
     return new Date(a.created_at) - new Date(b.created_at);
   });
 
   return (
     <div>
-      {answers.length > 0 ? (
+      {!hideButton && answers.length > 0 ? (
         <button onClick={setShowAnswersById} className="open-comment-button">
           <span>
             {showAnswers
@@ -32,6 +37,7 @@ const ReviewAnswers = ({ answers, setShowAnswersById, showAnswers }) => {
               return (
                 <li className="answer-item darked" key={a.id}>
                   <Profile
+                    application
                     small
                     profile={{ profile: authorAnswer }}
                     pubkey={a.pubkey}

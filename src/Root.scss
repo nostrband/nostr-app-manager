@@ -4,15 +4,14 @@
 
 a {
   text-decoration: none;
+  color: black;
+  :hover {
+    color: black;
+  }
 }
 
 ul {
   list-style: none;
-}
-
-img.profile {
-  border: 1px solid #eee;
-  border-radius: 50%;
 }
 
 .highlight:hover {

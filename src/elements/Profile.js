@@ -17,7 +17,7 @@ const Profile = (props) => {
     name = name.substring(0, 15) + '...';
 
   return (
-    <Row className={'position-relative ' + (props.small ? 'gx-1' : '')}>
+    <Row className={'profile position-relative ' + (props.small ? 'gx-1' : '')}>
       <Col xs="auto">
         <Link
           className={!props.removeLink ? 'stretched-link' : null}
@@ -26,7 +26,9 @@ const Profile = (props) => {
         >
           {p?.picture && (
             <img
-              className="profile"
+              style={{
+                borderRadius: props.application ? '50%' : '7px',
+              }}
               alt={p?.name}
               width={size}
               height={size}
