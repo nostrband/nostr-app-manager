@@ -25,7 +25,7 @@ import { NewReviewStateProvider } from './context/NewReviewsContext';
 import EventApps from './components/EventApps';
 import { UpdateAnswersReviewProvider } from './context/UpdateAnswersContext';
 import ReviewInfo from './components/ReviewInfo';
-
+import About from './About';
 const HTTP = new QueryClient();
 
 export const router = createBrowserRouter([
@@ -34,12 +34,20 @@ export const router = createBrowserRouter([
     element: <Root />,
   },
   {
-    path: '/review',
-    element: <EventApps />,
+    path: '/about',
+    element: (
+      <ContainerWithHeaderFooter>
+        <About />
+      </ContainerWithHeaderFooter>
+    ),
   },
   {
-    path: '/about',
+    path: '/used-apps',
     element: <Root />,
+  },
+  {
+    path: '/review',
+    element: <EventApps />,
   },
   {
     path: '/recommendations',

@@ -56,7 +56,6 @@ const Header = () => {
       setError('Please install extension');
       return;
     }
-
     const pubkey = await window.nostr.getPublicKey();
     if (pubkey) {
       setPubkey(pubkey);
@@ -112,13 +111,38 @@ const Header = () => {
               />
             )}
             {!pubkey && (
-              <Button
-                style={{ height: '40px' }}
-                variant="outline-secondary"
-                onClick={(e) => setShowLogin(true)}
-              >
-                Login
-              </Button>
+              <div>
+                <Dropdown drop="down-left">
+                  <Dropdown.Toggle
+                    style={{ height: '40px' }}
+                    variant="outline-secondary"
+                  >
+                    Menu
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/used-apps');
+                      }}
+                    >
+                      Used Apps
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/about');
+                      }}
+                    >
+                      What is it?
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={(e) => setShowLogin(true)}>
+                      Log in
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             )}
             {pubkey && (
               <div>
@@ -138,7 +162,6 @@ const Header = () => {
                           cmn.formatNpubShort(pubkey)
                         : cmn.formatNpubShort(pubkey)}
                     </Dropdown.ItemText>
-                    <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
                       href={appsUrl}
                       onClick={(e) => {
@@ -165,7 +188,22 @@ const Header = () => {
                     >
                       Create repository
                     </Dropdown.Item>
-                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/used-apps');
+                      }}
+                    >
+                      Used Apps
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/about');
+                      }}
+                    >
+                      What is it?
+                    </Dropdown.Item>
                     <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
