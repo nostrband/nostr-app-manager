@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import SearchApp from './SearchApp';
 import { isTablet } from '../const';
 import SearchButton from '../elements/SearchButton';
+import { Avatar } from '@mui/material';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -56,7 +57,6 @@ const Header = () => {
       setError('Please install extension');
       return;
     }
-
     const pubkey = await window.nostr.getPublicKey();
     if (pubkey) {
       setPubkey(pubkey);
@@ -112,13 +112,39 @@ const Header = () => {
               />
             )}
             {!pubkey && (
-              <Button
-                style={{ height: '40px' }}
-                variant="outline-secondary"
-                onClick={(e) => setShowLogin(true)}
-              >
-                Login
-              </Button>
+              <div>
+                <Dropdown drop="down-left">
+                  <Dropdown.Toggle
+                    style={{ height: '40px' }}
+                    variant="outline-secondary"
+                  >
+                    Menu
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={(e) => setShowLogin(true)}>
+                      Log in
+                    </Dropdown.Item>
+                    <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/used-apps');
+                      }}
+                    >
+                      Used apps
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/about');
+                      }}
+                    >
+                      What is it?
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             )}
             {pubkey && (
               <div>
@@ -132,13 +158,17 @@ const Header = () => {
 
                   <Dropdown.Menu>
                     <Dropdown.ItemText>
-                      {profile
-                        ? profile.name ||
-                          profile.display_name ||
-                          cmn.formatNpubShort(pubkey)
-                        : cmn.formatNpubShort(pubkey)}
+                      <div className="d-flex align-items-center">
+                        <Avatar src={profile?.picture} />
+                        <span className="mx-2">
+                          {profile
+                            ? profile.name ||
+                              profile.display_name ||
+                              cmn.formatNpubShort(pubkey)
+                            : cmn.formatNpubShort(pubkey)}
+                        </span>
+                      </div>
                     </Dropdown.ItemText>
-                    <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
                       href={appsUrl}
                       onClick={(e) => {
@@ -165,8 +195,25 @@ const Header = () => {
                     >
                       Create repository
                     </Dropdown.Item>
-                    <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
+                    <Dropdown.Divider></Dropdown.Divider>
+
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/used-apps');
+                      }}
+                    >
+                      Used apps
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/about');
+                      }}
+                    >
+                      What is it?
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               </div>

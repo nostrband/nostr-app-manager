@@ -786,16 +786,13 @@ export async function fetchAppsByAs(aTags) {
 
 export async function fetchProfile(pubkey) {
   if (pubkey in profileCache) return profileCache[pubkey];
-
   const ndk = await getNDK();
-  const events = await fetchAllEvents([
-    startFetch(ndk, {
-      kinds: [cs.KIND_META],
-      authors: [pubkey],
-    }),
-  ]);
+  const filter = {
+    kinds: [cs.KIND_META],
+    authors: [pubkey],
+  };
+  const events = await fetchAllEvents([startFetch(ndk, filter)]);
   if (!events.length) return null;
-
   const p = events[0];
   p.profile = parseContentJson(p.content);
   profileCache[pubkey] = p;

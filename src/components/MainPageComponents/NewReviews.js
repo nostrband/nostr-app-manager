@@ -105,6 +105,8 @@ const NewReviews = () => {
       window.nostrZap.initTarget(zapButtonRef.current);
     }
   }, []);
+
+  console.log(reviews, 'REVIEWS');
   return (
     <>
       <ListGroup className="reviews-container">
