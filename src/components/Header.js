@@ -186,9 +186,7 @@ const Header = () => {
                       }}
                     >
                       Create app
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
-                    <Dropdown.Divider></Dropdown.Divider>
+                    </Dropdown.Item>
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
@@ -197,6 +195,9 @@ const Header = () => {
                     >
                       Create repository
                     </Dropdown.Item>
+                    <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
+                    <Dropdown.Divider></Dropdown.Divider>
+
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
