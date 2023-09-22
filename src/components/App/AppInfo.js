@@ -2,12 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../../common';
 import ConfirmDeleteModal from '../../elements/ConfirmDeleteModal';
 import Zap from '../../icons/Zap';
-import { nip19 } from '@nostrband/nostr-tools';
 import Heart from '../../icons/Heart';
 import LikedHeart from '../../icons/LikedHeart';
 import Share from '../../icons/Share';
@@ -30,19 +29,15 @@ const AppInfo = (props) => {
   const [review, setReview] = useState(false);
   const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const npub = nip19?.npubEncode(props.app.pubkey);
   const authorTag = props.app.tags.find(
     (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
   );
-  const npubAuthor = authorTag ? nip19.npubEncode(authorTag[1]) : null;
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
-  const zapButtonRefByEmail = useRef(null);
   const [textForShare, setTextForShare] = useState('');
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
-  const navigate = useNavigate();
   const naddr = cmn.naddrToAddr(cmn.getNaddr(props.app));
 
   const isAllowEdit = () => {
