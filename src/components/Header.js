@@ -92,6 +92,7 @@ const Header = () => {
       setSearchParams({ page: 'apps' });
     }, 0);
   };
+
   return (
     <header className="pt-3">
       <Row>
@@ -126,6 +127,30 @@ const Header = () => {
                       Log in
                     </Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/apps');
+                      }}
+                    >
+                      Apps
+                    </Dropdown.Item>{' '}
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/repos');
+                      }}
+                    >
+                      Repositories
+                    </Dropdown.Item>{' '}
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/reviews');
+                      }}
+                    >
+                      Reviews
+                    </Dropdown.Item>
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
@@ -197,7 +222,30 @@ const Header = () => {
                     </Dropdown.Item>
                     <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
-
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/apps');
+                      }}
+                    >
+                      Apps
+                    </Dropdown.Item>{' '}
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/repos');
+                      }}
+                    >
+                      Repositories
+                    </Dropdown.Item>{' '}
+                    <Dropdown.Item
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate('/reviews');
+                      }}
+                    >
+                      Reviews
+                    </Dropdown.Item>
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();

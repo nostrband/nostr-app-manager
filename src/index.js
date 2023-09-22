@@ -26,6 +26,9 @@ import EventApps from './components/EventApps';
 import { UpdateAnswersReviewProvider } from './context/UpdateAnswersContext';
 import ReviewInfo from './components/ReviewInfo';
 import About from './About';
+import NewApps from './components/MainPageComponents/NewApps';
+import NewReviews from './components/MainPageComponents/NewReviews';
+import Repositories from './components/MainPageComponents/RepositoriesInMainPage';
 const HTTP = new QueryClient();
 
 export const router = createBrowserRouter([
@@ -94,6 +97,30 @@ export const router = createBrowserRouter([
     element: (
       <ContainerWithHeaderFooter>
         <KindView />
+      </ContainerWithHeaderFooter>
+    ),
+  },
+  {
+    path: '/apps',
+    element: (
+      <ContainerWithHeaderFooter>
+        <NewApps />
+      </ContainerWithHeaderFooter>
+    ),
+  },
+  {
+    path: '/reviews',
+    element: (
+      <ContainerWithHeaderFooter>
+        <NewReviews />
+      </ContainerWithHeaderFooter>
+    ),
+  },
+  {
+    path: '/repos',
+    element: (
+      <ContainerWithHeaderFooter>
+        <Repositories />
       </ContainerWithHeaderFooter>
     ),
   },
