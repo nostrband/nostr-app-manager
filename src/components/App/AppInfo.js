@@ -7,7 +7,6 @@ import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../../common';
 import ConfirmDeleteModal from '../../elements/ConfirmDeleteModal';
 import Zap from '../../icons/Zap';
-import { nip19 } from '@nostrband/nostr-tools';
 import Heart from '../../icons/Heart';
 import LikedHeart from '../../icons/LikedHeart';
 import Share from '../../icons/Share';
@@ -30,19 +29,16 @@ const AppInfo = (props) => {
   const [review, setReview] = useState(false);
   const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const npub = nip19?.npubEncode(props.app.pubkey);
   const authorTag = props.app.tags.find(
     (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
   );
-  const npubAuthor = authorTag ? nip19.npubEncode(authorTag[1]) : null;
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
-  const zapButtonRef = useRef(null);
-  const zapButtonRefByEmail = useRef(null);
   const [textForShare, setTextForShare] = useState('');
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
+  const naddr = cmn.naddrToAddr(cmn.getNaddr(props.app));
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
@@ -178,15 +174,6 @@ const AppInfo = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (zapButtonRef.current) {
-      window.nostrZap.initTarget(zapButtonRef.current);
-    }
-    if (zapButtonRefByEmail.current) {
-      window.nostrZap.initTarget(zapButtonRefByEmail.current);
-    }
-  }, []);
-
   const openShareAppModalAndSetText = () => {
     if (cmn.localGet('loginPubkey')) {
       const naddr = cmn.getNaddr(props.app);
@@ -246,15 +233,15 @@ const AppInfo = (props) => {
               </div>
             )}
             {app?.lud16 ? (
-              <div
-                onClick={showZapError}
-                data-npub={authorTag ? npubAuthor : npub}
-                ref={app?.lud16 ? zapButtonRefByEmail : null}
-                className="text-muted pointer lud-16"
+              <a
+                href={`https://zapper.nostrapps.org/zap?id=${naddr}`}
+                target="_blank"
               >
-                <Lightning className="me-2" />
-                <span>{app.lud16}</span>
-              </div>
+                <div className="text-muted pointer lud-16">
+                  <Lightning className="me-2" />
+                  <span>{app.lud16}</span>
+                </div>
+              </a>
             ) : null}
             <div className="mt-2 description">{app.about}</div>
             {app.banner && (
@@ -286,11 +273,12 @@ const AppInfo = (props) => {
             >
               <div className="zap count-block">
                 <span className="font-weight-bold">{zapCount}</span>
-                <Zap
-                  onClick={showZapError}
-                  zapRef={app?.lud16 ? zapButtonRef : null}
-                  dataNpub={authorTag ? npubAuthor : npub}
-                />
+                <a
+                  href={`https://zapper.nostrapps.org/zap?id=${naddr}`}
+                  target="_blank"
+                >
+                  <Zap />
+                </a>
               </div>
             </OverlayTrigger>
 

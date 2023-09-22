@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as cmn from '../../common';
 import { useNewReviewState } from '../../context/NewReviewsContext';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Container, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
@@ -106,9 +106,9 @@ const NewReviews = () => {
     }
   }, []);
 
-  console.log(reviews, 'REVIEWS');
   return (
-    <>
+    <Container>
+      <h2>Reviews:</h2>
       <ListGroup className="reviews-container">
         {reviews
           ?.filter((review) => review.app)
@@ -155,10 +155,7 @@ const NewReviews = () => {
                       setUpdateLike={setUpdateLike}
                       review={review}
                     />
-                    <ZapFunctional
-                      npub={nip19?.npubEncode(review.pubkey)}
-                      noteId={nip19.noteEncode(review.id)}
-                    />
+                    <ZapFunctional noteId={nip19.noteEncode(review.id)} />
                     <AnswerReviewFunctional review={review} mainPage />
                   </div>
                 </div>
@@ -176,7 +173,7 @@ const NewReviews = () => {
           })}
         {loading && !empty && <LoadingSpinner />}
       </ListGroup>
-    </>
+    </Container>
   );
 };
 

@@ -34,7 +34,7 @@ const KindView = () => {
 
   return (
     <>
-      <h5 className="mt-2 mx-1">
+      <h5 className="mt-1 mx-1">
         Apps by kind : <KindElement> {cmn.getKindLabel(kind)} </KindElement>
       </h5>
       <ListGroup>

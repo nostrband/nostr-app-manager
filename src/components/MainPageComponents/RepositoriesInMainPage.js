@@ -73,25 +73,23 @@ const Repositories = () => {
 
   return (
     <div>
-      <Container>
-        <h2>Repositories:</h2>
-        <ListGroup>
-          {allRepositories.length > 0 ? (
-            allRepositories?.map((repo) => {
-              return (
-                <RepositoryElement
-                  key={repo.id}
-                  repo={repo}
-                  getUrl={cmn.getRepositoryUrl}
-                />
-              );
-            })
-          ) : (
-            <span>Nothing yet.</span>
-          )}
-        </ListGroup>
-        {loading && !empty && <LoadingSpinner />}
-      </Container>
+      <h2>Repositories:</h2>
+      <ListGroup>
+        {allRepositories.length > 0 ? (
+          allRepositories?.map((repo) => {
+            return (
+              <RepositoryElement
+                key={repo.id}
+                repo={repo}
+                getUrl={cmn.getRepositoryUrl}
+              />
+            );
+          })
+        ) : (
+          <span>Nothing yet.</span>
+        )}
+      </ListGroup>
+      {loading && !empty && <LoadingSpinner />}
     </div>
   );
 };

@@ -21,7 +21,7 @@ const components = {
 const TagView = () => {
   const [activeNav, setActiveNav] = useState('apps');
   return (
-    <div className="mt-3">
+    <div className="mt-1">
       <ul className="nav nav-pills d-flex justify-content-center mb-3">
         {tabs.map((nav) => {
           return (

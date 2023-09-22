@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const ContainerWithHeaderFooter = ({ children }) => {
+const ContainerWithHeaderFooter = ({ children, className }) => {
   return (
     <Container className="Root mt-3">
       <Row>
@@ -12,7 +12,7 @@ const ContainerWithHeaderFooter = ({ children }) => {
           <Header />
         </Col>
       </Row>
-      <Row>
+      <Row className="pt-3">
         <Col>{children}</Col>
       </Row>
       <Row>
