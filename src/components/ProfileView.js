@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
 import { Link } from 'react-router-dom';
 import Profile from '../elements/Profile';
@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import EditAppModal from './EditAppModal';
 import { ListGroup, Spinner } from 'react-bootstrap';
 import PublishedRepositories from './PublishedRepositories';
+import { useAuth } from '../context/AuthContext';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -70,7 +71,7 @@ const ProfileView = () => {
   });
   const [showEditModal, setShowEditModal] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const { pubkey: isLogged } = useAuth();
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
@@ -89,13 +90,6 @@ const ProfileView = () => {
   const handleCloseModal = () => {
     setShowEditModal(null);
   };
-
-  useEffect(() => {
-    if (!pubkey && !pubKey) {
-      navigate('/');
-    }
-  }, [pubkey]);
-
   if (!npub) return null;
   return (
     <>
@@ -119,17 +113,21 @@ const ProfileView = () => {
                   })}
                 </ListGroup>
               )}
-              <div className="mt-2">
-                <Link to={cmn.formatAppEditUrl('')}>
-                  <Button variant="primary">Add app</Button>
-                </Link>
-              </div>
+              {isLogged ? (
+                <div className="mt-2">
+                  <Link to={cmn.formatAppEditUrl('')}>
+                    <Button variant="primary">Add app</Button>
+                  </Link>
+                </div>
+              ) : null}
               <PublishedRepositories pubkey={pubkey} />
-              <div className="mt-2">
-                <Link to={cmn.formatRepositoryEditUrl('')}>
-                  <Button variant="primary">Add repository</Button>
-                </Link>
-              </div>
+              {isLogged ? (
+                <div className="mt-2">
+                  <Link to={cmn.formatRepositoryEditUrl('')}>
+                    <Button variant="primary">Add repository</Button>
+                  </Link>
+                </div>
+              ) : null}
               <h4 className="mt-5">Used apps:</h4>
               {!recomms.length && 'Nothing yet.'}
               {recomms.length > 0 && (
