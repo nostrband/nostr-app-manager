@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
 import { Link } from 'react-router-dom';
 import Profile from '../elements/Profile';
@@ -70,7 +70,7 @@ const ProfileView = () => {
   });
   const [showEditModal, setShowEditModal] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate();
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
@@ -89,6 +89,12 @@ const ProfileView = () => {
   const handleCloseModal = () => {
     setShowEditModal(null);
   };
+
+  useEffect(() => {
+    if (!pubkey && !pubKey) {
+      navigate('/');
+    }
+  }, [pubkey]);
 
   if (!npub) return null;
   return (
