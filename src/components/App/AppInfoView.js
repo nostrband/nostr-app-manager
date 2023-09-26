@@ -70,14 +70,16 @@ const AppInfoView = () => {
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
+
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
 
     let profile;
-    if (cmn.getProfile[1]) {
+    if (cmn.getProfile(pubkey[1])) {
       profile = await cmn.getProfile(pubkey[1]);
     }
+
     setAuthor(profile);
     setTags(tags);
     setAddKinds(appInfo.kinds);

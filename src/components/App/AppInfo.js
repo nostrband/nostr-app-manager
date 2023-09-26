@@ -29,20 +29,18 @@ const AppInfo = (props) => {
   const [review, setReview] = useState(false);
   const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const authorTag = props.app.tags.find(
-    (tag) => tag.length >= 4 && tag[0] === 'p' && tag[3] === 'author'
-  );
   const app = props.app.profile;
   const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const [textForShare, setTextForShare] = useState('');
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
-  const naddr = cmn.naddrToAddr(cmn.getNaddr(props.app));
+  const naddr = cmn.getNaddr(props.app);
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
   };
+
   const [allowEdit, setAllowEdit] = useState(isAllowEdit());
 
   useEffect(() => {
