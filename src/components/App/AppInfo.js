@@ -209,27 +209,20 @@ const AppInfo = (props) => {
       ]);
       let totalZapAmount = 0;
       for (const zap of zapResponse) {
-        const pubkeyTag = zap.tags.find(
-          (tag) => tag[0] === 'p' && tag[1] === props.app.pubkey
-        );
-        if (pubkeyTag) {
-          const bolt11Tag = zap.tags.find((tag) => tag[0] === 'bolt11');
-          if (bolt11Tag) {
-            const invoice = bolt11Tag[1];
-            try {
-              const i = bolt11Decode(invoice);
-              const amountSection = i?.sections?.find(
-                (s) => s.name === 'amount'
-              );
-              const amountValue = Number(amountSection?.value || 0);
-              totalZapAmount += amountValue;
-            } catch (e) {
-              console.error('Error parsing invoice:', e);
-            }
+        const bolt11Tag = zap.tags.find((tag) => tag[0] === 'bolt11');
+        if (bolt11Tag) {
+          const invoice = bolt11Tag[1];
+          try {
+            const i = bolt11Decode(invoice);
+            const amountSection = i?.sections?.find((s) => s.name === 'amount');
+            const amountValue = Number(amountSection?.value || 0);
+            totalZapAmount += amountValue;
+          } catch (e) {
+            console.error('Error parsing invoice:', e);
           }
         }
       }
-      setZapCount(totalZapAmount);
+      setZapCount(totalZapAmount / 1000);
     } catch (error) {
       console.error('Error fetching zap counts:', error);
     }
