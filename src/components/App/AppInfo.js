@@ -15,11 +15,11 @@ import ShareAppModal from './ShareAppModal';
 import './AppInfo.scss';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import errorToast from '../../elements/ErrorToast';
 import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './Reviews/ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
 import { useReviewModal } from '../../context/ShowReviewContext';
+import { decode as bolt11Decode } from 'light-bolt11-decoder';
 
 const AppInfo = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -166,12 +166,6 @@ const AppInfo = (props) => {
     hasReview();
   }, [props.app]);
 
-  const showZapError = () => {
-    if (!app?.lud16) {
-      errorToast('Lightning address not specified');
-    }
-  };
-
   const openShareAppModalAndSetText = () => {
     if (cmn.localGet('loginPubkey')) {
       const naddr = cmn.getNaddr(props.app);
@@ -184,6 +178,7 @@ const AppInfo = (props) => {
       setShowLogin(true);
     }
   };
+
   const fetchCounts = async (kind, setStateFunction) => {
     try {
       const ndk = await cmn.getNDK();
@@ -199,8 +194,39 @@ const AppInfo = (props) => {
   };
 
   const fetchCountsLike = () => fetchCounts(7, setLikeCount);
-  const fetchCountsZap = () => fetchCounts(9734, setZapCount);
   const fetchCountShared = () => fetchCounts(1, setShareCount);
+
+  const fetchCountsZap = async () => {
+    const ndk = await cmn.getNDK();
+    try {
+      const zapQuery = {
+        kinds: [9735],
+        '#a': [cmn.naddrToAddr(cmn.getNaddr(props.app))],
+        limit: 100,
+      };
+      const zapResponse = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, zapQuery),
+      ]);
+      let totalZapAmount = 0;
+      for (const zap of zapResponse) {
+        const bolt11Tag = zap.tags.find((tag) => tag[0] === 'bolt11');
+        if (bolt11Tag) {
+          const invoice = bolt11Tag[1];
+          try {
+            const i = bolt11Decode(invoice);
+            const amountSection = i?.sections?.find((s) => s.name === 'amount');
+            const amountValue = Number(amountSection?.value || 0);
+            totalZapAmount += amountValue;
+          } catch (e) {
+            console.error('Error parsing invoice:', e);
+          }
+        }
+      }
+      setZapCount(totalZapAmount / 1000);
+    } catch (error) {
+      console.error('Error fetching zap counts:', error);
+    }
+  };
 
   useEffect(() => {
     fetchCountsLike();
@@ -270,7 +296,9 @@ const AppInfo = (props) => {
               }
             >
               <div className="zap count-block">
-                <span className="font-weight-bold">{zapCount}</span>
+                <span className="font-weight-bold">
+                  {cmn.formatNumber(zapCount)}
+                </span>
                 <a
                   href={`https://zapper.nostrapps.org/zap?id=${naddr}`}
                   target="_blank"
