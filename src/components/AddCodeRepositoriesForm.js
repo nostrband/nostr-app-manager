@@ -69,9 +69,11 @@ const CodeRepositoryForm = () => {
 
     if (type === 'npub') {
       const AUTHOR_PUBKEY = data;
+      const PUBLISHED_PUBKEY = pubkey;
 
       event.tags.push(
-        ['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '1'],
+        ['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '9'],
+        ['zap', PUBLISHED_PUBKEY, 'wss://relay.nostr.band', '1'],
         ['p', AUTHOR_PUBKEY, 'wss://relay.nostr.band', 'author']
       );
     }

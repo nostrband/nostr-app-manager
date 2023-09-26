@@ -29,7 +29,7 @@ const tabs = [
 const AppEditForm = (props) => {
   const navigate = useNavigate();
   const noMeta = !Object.keys(props.app?.profile ?? {}).length;
-
+  const pubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
   const [inherit, setInherit] = useState(false);
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -181,8 +181,20 @@ const AppEditForm = (props) => {
       const { type, data } = nip19.decode(author);
       if (type === 'npub') {
         const AUTHOR_PUBKEY = data;
+        const PUBLISHER_PUBKEY = pubkey;
+
+        event.tags = event.tags.filter(
+          (tag) => !(tag[0] === 'zap' && (tag[3] === '9' || tag[3] === '1'))
+        );
         event.tags = event.tags.filter((tag) => tag[0] !== 'zap');
-        event.tags.push(['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '1']);
+
+        event.tags.push(['zap', AUTHOR_PUBKEY, 'wss://relay.nostr.band', '9']);
+        event.tags.push([
+          'zap',
+          PUBLISHER_PUBKEY,
+          'wss://relay.nostr.band',
+          '1',
+        ]);
         event.tags = event.tags.filter((tag) => tag[0] !== 'p');
         event.tags.push([
           'p',
@@ -216,7 +228,7 @@ const AppEditForm = (props) => {
     });
 
     setSending(true);
-    console.log(event, 'EVENT');
+    console.log(event, 'EVENT FOR EDIT OR CREATE APP');
     const r = await cmn.publishEvent(event);
     setSending(false);
     if (!r || r.error) {
