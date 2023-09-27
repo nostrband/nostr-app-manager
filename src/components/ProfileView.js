@@ -8,6 +8,7 @@ import PublishedRepositories from './PublishedRepositories';
 import { useAuth } from '../context/AuthContext';
 import Apps from './Profile/Apps';
 import UsedApps from './Profile/UsedApps';
+import NewReviews from './MainPageComponents/NewReviews';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -64,6 +65,10 @@ const tabs = [
     title: 'Used apps',
     path: 'used-apps',
   },
+  {
+    title: 'Reviews',
+    path: 'reviews',
+  },
 ];
 
 const ProfileView = () => {
@@ -113,6 +118,7 @@ const ProfileView = () => {
         getRecomnsQuery={getRecomnsQuery}
       />
     ),
+    reviews: <NewReviews myReviews />,
   };
 
   if (!npub) return null;

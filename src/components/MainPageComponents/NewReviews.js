@@ -25,7 +25,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = () => {
+const NewReviews = ({ myReviews }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
   const { reviews, loading, lastCreatedAt, hasMore, scrollPosition } =
@@ -112,6 +112,7 @@ const NewReviews = () => {
       <ListGroup className="reviews-container">
         {reviews
           ?.filter((review) => review.app)
+          .filter((review) => (myReviews ? review.pubkey === pubkey : true))
           .map((review) => {
             let count = cmn.getCountReview(review);
             let appProfile = review.app?.content
@@ -142,12 +143,14 @@ const NewReviews = () => {
                 </Link>
 
                 <div className="d-flex justify-content-between">
-                  <Profile
-                    application
-                    small
-                    profile={{ profile: authorProfile }}
-                    pubkey={review.pubkey}
-                  />
+                  {!myReviews ? (
+                    <Profile
+                      application
+                      small
+                      profile={{ profile: authorProfile }}
+                      pubkey={review.pubkey}
+                    />
+                  ) : null}
                   <div className="container-actions-icon">
                     <ReviewLike
                       like={review.like}
