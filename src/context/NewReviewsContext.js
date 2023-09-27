@@ -64,17 +64,18 @@ export const NewReviewStateProvider = ({ children }) => {
     });
   };
 
-  const fetchReviews = async (created_at) => {
+  const fetchReviews = async (created_at, myReviews) => {
     updateState({ loading: true });
     const ndk = await cmn.getNDK();
     const filter = {
       kinds: [1985],
       '#l': ['review/app'],
-      limit: 10,
+      ...(!myReviews ? { limit: 10 } : {}),
       ...(created_at ? { until: created_at } : {}),
     };
     try {
       const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
+      console.log(response, 'RESPONSE');
       const currentApps = newReview.reviews;
 
       if (response.length > 0) {
@@ -148,7 +149,7 @@ export const NewReviewStateProvider = ({ children }) => {
           const reviewsWithAnswers = await cmn.associateAnswersWithReviews(
             reviewsWithAllLikes
           );
-
+          console.log(reviewsWithAnswers, 'REVIEWS WITH ANSWERS');
           updateState({
             reviews: [...currentApps, ...reviewsWithAnswers],
             lastCreatedAt:
@@ -156,7 +157,7 @@ export const NewReviewStateProvider = ({ children }) => {
           });
         }
       } else {
-        updateState({ hasMore: false });
+        updateState({ hasMore: false, loading: false });
       }
     } catch (error) {
       console.error(error);

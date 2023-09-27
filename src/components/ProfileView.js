@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import Apps from './Profile/Apps';
 import UsedApps from './Profile/UsedApps';
 import NewReviews from './MainPageComponents/NewReviews';
+import { useNewReviewState } from '../context/NewReviewsContext';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -90,6 +91,7 @@ const ProfileView = () => {
   const [activeComponent, setActiveComponent] = useState('apps');
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
+  const { newReview } = useNewReviewState();
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
@@ -120,9 +122,14 @@ const ProfileView = () => {
         getRecomnsQuery={getRecomnsQuery}
       />
     ),
-    reviews: <NewReviews myReviews profilePubkey={profilePubkey} />,
+    reviews: (
+      <NewReviews
+        showSpinner={window.scrollY > 40 || newReview.reviews.length === 0}
+        myReviews
+        profilePubkey={profilePubkey}
+      />
+    ),
   };
-
   if (!npub) return null;
   return (
     <>

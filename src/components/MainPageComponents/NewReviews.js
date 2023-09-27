@@ -25,17 +25,19 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = ({ myReviews, profilePubkey }) => {
+const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
-  const { reviews, loading, lastCreatedAt, hasMore, scrollPosition } =
-    newReview;
+  const { reviews, loading, lastCreatedAt, hasMore } = newReview;
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
   const [showAnswersReviewById, setShowAnswersById] = useState('');
   const [updateLike, setUpdateLike] = useState('FALSE');
   const zapButtonRef = useRef(null);
   const { updateAnswersMainPage } = useUpdateAnswersReviewState();
+  const filteredReviews = reviews
+    ?.filter((review) => review.app)
+    .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -45,7 +47,7 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
       );
       updateState({ scrollPosition: window.scrollY });
       if (scrollBottom < 10 && !empty) {
-        fetchReviews(lastCreatedAt);
+        fetchReviews(lastCreatedAt, myReviews);
       }
     }
   }, [loading, hasMore, lastCreatedAt, fetchReviews]);
@@ -81,9 +83,9 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
 
   useEffect(() => {
     if (reviews.length > 0) {
-      fetchReviews(lastCreatedAt);
+      fetchReviews(lastCreatedAt, myReviews);
     } else {
-      fetchReviews();
+      fetchReviews(null, myReviews);
     }
   }, []);
 
@@ -176,7 +178,10 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
               </ListGroupItem>
             );
           })}
-        {loading && !empty && <LoadingSpinner />}
+        {loading && !empty && showSpinner && <LoadingSpinner />}
+        {filteredReviews.length === 0 && !showSpinner ? (
+          <span> Nothing yet.</span>
+        ) : null}
       </ListGroup>
     </Container>
   );

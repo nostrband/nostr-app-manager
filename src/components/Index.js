@@ -155,7 +155,7 @@ const Index = () => {
     search: <FindApps setLink={setLink} link={link} open={open} go={go} />,
     apps: <NewApps />,
     codes: <Repositories />,
-    reviews: <NewReviews />,
+    reviews: <NewReviews showSpinner />,
   };
 
   return (
