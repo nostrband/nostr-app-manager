@@ -25,21 +25,19 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = () => {
+const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
-  const { reviews, loading, lastCreatedAt, hasMore, scrollPosition } =
-    newReview;
+  const { reviews, loading, lastCreatedAt, hasMore } = newReview;
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
   const [showAnswersReviewById, setShowAnswersById] = useState('');
   const [updateLike, setUpdateLike] = useState('FALSE');
   const zapButtonRef = useRef(null);
   const { updateAnswersMainPage } = useUpdateAnswersReviewState();
-
-  useEffect(() => {
-    window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-  }, []);
+  const filteredReviews = reviews
+    ?.filter((review) => review.app)
+    .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -49,7 +47,7 @@ const NewReviews = () => {
       );
       updateState({ scrollPosition: window.scrollY });
       if (scrollBottom < 10 && !empty) {
-        fetchReviews(lastCreatedAt);
+        fetchReviews(lastCreatedAt, myReviews);
       }
     }
   }, [loading, hasMore, lastCreatedAt, fetchReviews]);
@@ -85,9 +83,9 @@ const NewReviews = () => {
 
   useEffect(() => {
     if (reviews.length > 0) {
-      fetchReviews(lastCreatedAt);
+      fetchReviews(lastCreatedAt, myReviews);
     } else {
-      fetchReviews();
+      fetchReviews(null, myReviews);
     }
   }, []);
 
@@ -108,10 +106,17 @@ const NewReviews = () => {
 
   return (
     <Container>
-      <h2>Reviews:</h2>
+      {myReviews ? (
+        <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
+      ) : (
+        <h2>Reviews</h2>
+      )}
       <ListGroup className="reviews-container">
         {reviews
           ?.filter((review) => review.app)
+          .filter((review) =>
+            myReviews ? review.pubkey === profilePubkey : true
+          )
           .map((review) => {
             let count = cmn.getCountReview(review);
             let appProfile = review.app?.content
@@ -142,12 +147,14 @@ const NewReviews = () => {
                 </Link>
 
                 <div className="d-flex justify-content-between">
-                  <Profile
-                    application
-                    small
-                    profile={{ profile: authorProfile }}
-                    pubkey={review.pubkey}
-                  />
+                  {!myReviews ? (
+                    <Profile
+                      application
+                      small
+                      profile={{ profile: authorProfile }}
+                      pubkey={review.pubkey}
+                    />
+                  ) : null}
                   <div className="container-actions-icon">
                     <ReviewLike
                       like={review.like}
@@ -171,7 +178,10 @@ const NewReviews = () => {
               </ListGroupItem>
             );
           })}
-        {loading && !empty && <LoadingSpinner />}
+        {loading && !empty && showSpinner && <LoadingSpinner />}
+        {filteredReviews.length === 0 && !showSpinner ? (
+          <span> Nothing yet.</span>
+        ) : null}
       </ListGroup>
     </Container>
   );

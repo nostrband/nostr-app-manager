@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import * as cmn from '../common';
-import { ListGroup } from 'react-bootstrap';
+import { Button, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
-import GithubIcon from '../icons/Github';
-import GitHubIconWithStar from '../elements/GitHubIconWithStar';
 import RepositoryElement from '../elements/RepositoryElement';
 
-const PublishedRepositories = ({ pubkey }) => {
+const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
 
   const fetchPublishedRepositories = async () => {
@@ -33,7 +31,17 @@ const PublishedRepositories = ({ pubkey }) => {
 
   return (
     <div>
-      <h4 className="mt-5">Published repositories:</h4>
+      <div className="d-flex justify-content-between align-items-center pb-2">
+        <h4>Published repositories:</h4>
+        {isLogged && showButton ? (
+          <div className="mt-2">
+            <Link to={cmn.formatRepositoryEditUrl('')}>
+              <Button variant="primary">Add repository</Button>
+            </Link>
+          </div>
+        ) : null}
+      </div>
+
       <ListGroup>
         {publishedRepositories.length > 0 ? (
           publishedRepositories?.map((repo) => {

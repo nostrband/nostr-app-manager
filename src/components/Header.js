@@ -182,26 +182,22 @@ const Header = () => {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.ItemText>
-                      <div className="d-flex align-items-center">
-                        <Avatar src={profile?.picture} />
-                        <span className="mx-2">
-                          {profile
-                            ? profile.name ||
-                              profile.display_name ||
-                              cmn.formatNpubShort(pubkey)
-                            : cmn.formatNpubShort(pubkey)}
-                        </span>
-                      </div>
-                    </Dropdown.ItemText>
                     <Dropdown.Item
-                      href={appsUrl}
                       onClick={(e) => {
                         e.preventDefault();
                         navigate(appsUrl);
                       }}
+                      className="d-flex align-items-center"
+                      href={appsUrl}
                     >
-                      My apps
+                      <Avatar src={profile?.picture} />
+                      <span className="mx-2">
+                        {profile
+                          ? profile.name ||
+                            profile.display_name ||
+                            cmn.formatNpubShort(pubkey)
+                          : cmn.formatNpubShort(pubkey)}
+                      </span>
                     </Dropdown.Item>
                     <Dropdown.Item
                       href={createUrl}
