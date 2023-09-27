@@ -3,6 +3,7 @@ import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import * as cmn from '../common';
 import Avatar from '../icons/Avatar';
+import defaultImage from '../images/default.png';
 
 const Profile = (props) => {
   const p = props?.profile?.profile;
@@ -27,7 +28,7 @@ const Profile = (props) => {
           {p?.picture && (
             <img
               style={{
-                borderRadius: props.application ? '50%' : '7px',
+                borderRadius: props.appLogo ? '7px' : '50%',
               }}
               alt={p?.name}
               width={size}
@@ -35,7 +36,14 @@ const Profile = (props) => {
               src={p?.picture}
             />
           )}
-          {!p?.picture && <Avatar className="profile" size={size} />}
+          {!p?.picture && !props.appLogo && (
+            <Avatar className="profile" size={size} />
+          )}
+          {!p?.picture && props.appLogo && (
+            <div className="default-image-app-review">
+              <img src={defaultImage} alt={name} />
+            </div>
+          )}
         </Link>
       </Col>
       <Col className="d-flex align-items-center">
