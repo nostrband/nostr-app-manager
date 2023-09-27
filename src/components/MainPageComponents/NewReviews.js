@@ -25,7 +25,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = ({ myReviews }) => {
+const NewReviews = ({ myReviews, profilePubkey }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
   const { reviews, loading, lastCreatedAt, hasMore, scrollPosition } =
@@ -36,10 +36,6 @@ const NewReviews = ({ myReviews }) => {
   const [updateLike, setUpdateLike] = useState('FALSE');
   const zapButtonRef = useRef(null);
   const { updateAnswersMainPage } = useUpdateAnswersReviewState();
-
-  useEffect(() => {
-    window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-  }, []);
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -108,11 +104,17 @@ const NewReviews = ({ myReviews }) => {
 
   return (
     <Container>
-      <h2>Reviews:</h2>
+      {myReviews ? (
+        <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
+      ) : (
+        <h2>Reviews</h2>
+      )}
       <ListGroup className="reviews-container">
         {reviews
           ?.filter((review) => review.app)
-          .filter((review) => (myReviews ? review.pubkey === pubkey : true))
+          .filter((review) =>
+            myReviews ? review.pubkey === profilePubkey : true
+          )
           .map((review) => {
             let count = cmn.getCountReview(review);
             let appProfile = review.app?.content

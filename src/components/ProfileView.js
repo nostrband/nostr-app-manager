@@ -74,6 +74,8 @@ const tabs = [
 const ProfileView = () => {
   const params = useParams();
   const npub = (params.npub ?? '').toLowerCase();
+  const { type, data } = nip19?.decode(npub);
+  const profilePubkey = type === 'npub' ? data : '';
   const [reorganizesData, setReorganizesData] = useState([]);
   const [apps, setApps] = useState(null);
   const [pubkey, setPubkey] = useState('');
@@ -118,7 +120,7 @@ const ProfileView = () => {
         getRecomnsQuery={getRecomnsQuery}
       />
     ),
-    reviews: <NewReviews myReviews />,
+    reviews: <NewReviews myReviews profilePubkey={profilePubkey} />,
   };
 
   if (!npub) return null;
