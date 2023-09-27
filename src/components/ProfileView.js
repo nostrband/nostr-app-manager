@@ -1,15 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
-import { Link } from 'react-router-dom';
 import Profile from '../elements/Profile';
-import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
-import Button from 'react-bootstrap/Button';
-import EditAppModal from './EditAppModal';
-import { ListGroup, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import PublishedRepositories from './PublishedRepositories';
 import { useAuth } from '../context/AuthContext';
+import Apps from './Profile/Apps';
+import UsedApps from './Profile/UsedApps';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -53,6 +51,21 @@ const reorganizeData = (recomms, setReorganizesData) => {
   setReorganizesData(sortedApps);
 };
 
+const tabs = [
+  {
+    title: 'Apps',
+    path: 'apps',
+  },
+  {
+    title: 'Repositories',
+    path: 'repos',
+  },
+  {
+    title: 'Used apps',
+    path: 'used-apps',
+  },
+];
+
 const ProfileView = () => {
   const params = useParams();
   const npub = (params.npub ?? '').toLowerCase();
@@ -60,8 +73,6 @@ const ProfileView = () => {
   const [apps, setApps] = useState(null);
   const [pubkey, setPubkey] = useState('');
   const [recomms, setRecomms] = useState([]);
-  const pubKey = cmn.getLoginPubkey();
-  const myNpubKey = pubKey ? nip19.npubEncode(pubKey) : '';
   const [selectedApp, setSelectedApp] = useState({
     app: {
       kinds: [],
@@ -69,7 +80,7 @@ const ProfileView = () => {
     },
     kinds: [],
   });
-  const [showEditModal, setShowEditModal] = useState(null);
+  const [activeComponent, setActiveComponent] = useState('apps');
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
   const getRecomnsQuery = useCallback(() => {
@@ -87,9 +98,23 @@ const ProfileView = () => {
     reorganizeData(recomms, setReorganizesData);
   }, [recomms, selectedApp]);
 
-  const handleCloseModal = () => {
-    setShowEditModal(null);
+  const profileViewComponents = {
+    apps: <Apps apps={apps} isLogged={isLogged} />,
+    repos: (
+      <PublishedRepositories pubkey={pubkey} isLogged={isLogged} showButton />
+    ),
+    ['used-apps']: (
+      <UsedApps
+        selectedApp={selectedApp}
+        recomms={recomms}
+        reorganizesData={reorganizesData}
+        setSelectedApp={setSelectedApp}
+        npub={npub}
+        getRecomnsQuery={getRecomnsQuery}
+      />
+    ),
   };
+
   if (!npub) return null;
   return (
     <>
@@ -102,72 +127,25 @@ const ProfileView = () => {
           {apps && (
             <div className="mt-5">
               <Profile profile={apps.meta} pubkey={pubkey} />
-              <h4 className="mt-5">Published apps:</h4>
-              {!Object.keys(apps.apps).length && 'Nothing yet.'}
-              {apps.apps && (
-                <ListGroup>
-                  {Object.keys(apps.apps).map((name) => {
-                    const app = apps.apps[name];
-                    const h = app.handlers[0];
-                    return <AppSelectItem key={h.name} app={h} />;
+              <div className="d-flex  justify-content-center pt-4 pb-3">
+                <ul className="nav nav-pills d-flex justify-content-center">
+                  {tabs.map((nav) => {
+                    return (
+                      <li
+                        onClick={() => {
+                          setActiveComponent(nav.path);
+                        }}
+                        className={`pointer nav-link nav-item ${
+                          activeComponent === nav.path ? 'active' : ''
+                        }`}
+                      >
+                        {nav.title}
+                      </li>
+                    );
                   })}
-                </ListGroup>
-              )}
-              {isLogged ? (
-                <div className="mt-2">
-                  <Link to={cmn.formatAppEditUrl('')}>
-                    <Button variant="primary">Add app</Button>
-                  </Link>
-                </div>
-              ) : null}
-              <PublishedRepositories pubkey={pubkey} />
-              {isLogged ? (
-                <div className="mt-2">
-                  <Link to={cmn.formatRepositoryEditUrl('')}>
-                    <Button variant="primary">Add repository</Button>
-                  </Link>
-                </div>
-              ) : null}
-              <h4 className="mt-5">Used apps:</h4>
-              {!recomms.length && 'Nothing yet.'}
-              {recomms.length > 0 && (
-                <ListGroup>
-                  {reorganizesData.map((group) => (
-                    <>
-                      <div key={group.name} className="mb-3">
-                        {group.apps.map((app) => {
-                          return (
-                            <>
-                              <AppSelectItem
-                                showKinds
-                                selecteAppForEdit={() => {
-                                  setSelectedApp({
-                                    app: { ...app },
-                                    kinds: group.kinds,
-                                  });
-                                  setShowEditModal(app.id);
-                                }}
-                                myApp={myNpubKey === npub}
-                                key={app.id}
-                                app={{ ...app, forKinds: group.kinds }}
-                              />
-                              {app.id === showEditModal ? (
-                                <EditAppModal
-                                  getRecomnsQuery={getRecomnsQuery}
-                                  handleEditClose={handleCloseModal}
-                                  openModal={app.id === showEditModal}
-                                  selectedApp={selectedApp}
-                                  setSelectedApp={setSelectedApp}
-                                />
-                              ) : null}
-                            </>
-                          );
-                        })}
-                      </div>
-                    </>
-                  ))}
-                </ListGroup>
-              )}
+                </ul>
+              </div>
+              {profileViewComponents[activeComponent]}
             </div>
           )}
         </>
