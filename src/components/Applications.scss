@@ -64,6 +64,19 @@
     height: 50px;
   }
 }
+.default-image-app-review {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 7px;
+  background-color: rgb(225, 225, 225);
+  img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+}
 
 .count-users {
   display: flex;

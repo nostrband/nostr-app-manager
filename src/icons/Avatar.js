@@ -4,6 +4,7 @@ const Avatar = (props) => {
 
   return (
     <svg
+      style={props.style}
       width={size}
       height={size}
       viewBox="0 0 24 24"

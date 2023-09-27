@@ -131,6 +131,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
                   <Link to={review.app ? getUrl(review.app) : ''}>
                     {appProfile.pubkey ? (
                       <Profile
+                        appLogo
                         small
                         removeLink
                         profile={{ profile: appProfile }}
@@ -149,7 +150,6 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
                 <div className="d-flex justify-content-between">
                   {!myReviews ? (
                     <Profile
-                      application
                       small
                       profile={{ profile: authorProfile }}
                       pubkey={review.pubkey}
