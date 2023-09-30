@@ -1,11 +1,18 @@
 .container-apps {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 auto;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 25px;
+  justify-content: flex-start;
+  text-align: center;
+  gap: 15px;
   margin-bottom: 30px;
   a {
     text-decoration: none;
     color: black;
+  }
+  @media (max-width: 450px) {
+    justify-content: center;
   }
 }
 
@@ -22,6 +29,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 5px;
+  width: 240px;
   padding: 50px 15px 20px 15px;
   min-height: 350px;
   text-align: center;

@@ -551,18 +551,22 @@ export async function fetchApps(pubkey, addr) {
   return info;
 }
 
-export async function fetchAppsByKinds(kinds, created_at, whereWeUse) {
+export async function fetchAppsByKinds(
+  kinds,
+  created_at,
+  whereWeUse,
+  category
+) {
   const ndk = await getNDK();
-
   const filter = {
     kinds: [cs.KIND_HANDLERS],
     ...(whereWeUse === 'MAIN_PAGE' ? { limit: 10 } : {}),
     ...(created_at ? { until: created_at } : {}),
+    ...(category ? { '#t': [category] } : {}),
   };
 
   if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
-
   const pubkeys = {};
   for (const e of events) pubkeys[e.pubkey] = 1;
 

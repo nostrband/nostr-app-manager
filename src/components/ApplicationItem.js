@@ -53,5 +53,4 @@ const ApplicationItem = (props) => {
     </Link>
   );
 };
-
 export default ApplicationItem;

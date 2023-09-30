@@ -16,6 +16,7 @@ export const AppStateProvider = ({ children }) => {
     followedPubkeys: [],
     appCountsState: 0,
     appAddrs: [],
+    category: null,
   });
 
   const [empty, setEmpty] = useState(false);

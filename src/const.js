@@ -198,6 +198,7 @@ export const optionsTags = [
   { value: 'adult', label: 'adult' },
   { value: 'news', label: 'news' },
   { value: 'podcasts', label: 'podcasts' },
+  { value: 'cooking', label: 'cooking' },
 ];
 
 export const isTablet = window.screen.width < 615;
