@@ -130,7 +130,7 @@ const Header = () => {
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
-                        navigate('/apps');
+                        navigate('/apps/category/all');
                       }}
                     >
                       Apps
