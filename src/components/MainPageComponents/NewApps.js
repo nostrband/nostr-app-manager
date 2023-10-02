@@ -214,7 +214,7 @@ const NewApps = () => {
                       categoryUrl === nav.value ? 'active' : ''
                     }`}
                   >
-                    {nav.label.charAt(0).toUpperCase() + nav.label.slice(1)}
+                    {nav.label}
                   </li>
                 );
               })}
