@@ -130,7 +130,7 @@ const Header = () => {
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
-                        navigate('/apps');
+                        navigate('/apps/category/all');
                       }}
                     >
                       Apps
@@ -180,7 +180,6 @@ const Header = () => {
                   >
                     Menu
                   </Dropdown.Toggle>
-
                   <Dropdown.Menu>
                     <Dropdown.Item
                       onClick={(e) => {
@@ -221,7 +220,7 @@ const Header = () => {
                     <Dropdown.Item
                       onClick={(e) => {
                         e.preventDefault();
-                        navigate('/apps');
+                        navigate('/apps/category/all');
                       }}
                     >
                       Apps

@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/apps',
+    path: '/apps/category/:category',
     element: (
       <ContainerWithHeaderFooter>
         <NewApps />
