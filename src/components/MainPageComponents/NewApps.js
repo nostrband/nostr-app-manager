@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
@@ -6,13 +6,14 @@ import ApplicationItem from '../ApplicationItem';
 import { useAuth } from '../../context/AuthContext';
 import { generateAddr } from '../../common';
 import { useAppState } from '../../context/AppContext';
-import { optionsTags } from '../../const';
-import { useLocation } from 'react-router-dom';
+import { categories } from '../../const';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
+  const { category: categoryUrl } = useParams();
   const { pathname } = useLocation();
-
+  const navigate = useNavigate();
   const { appListState, setAppListState, empty, setEmpty } = useAppState();
   const {
     allApps,
@@ -23,8 +24,8 @@ const NewApps = () => {
     hasMore,
     lastCreatedAt,
     followedPubkeys,
-    category,
   } = appListState;
+
   useEffect(() => {
     window.scrollTo({ top: scrollPosition, behavior: 'instant' });
   }, []);
@@ -36,6 +37,7 @@ const NewApps = () => {
   const updateState = (changes) => {
     setAppListState((prevState) => ({ ...prevState, ...changes }));
   };
+
   const fetchApps = async (created_at) => {
     updateState({ loading: true });
     try {
@@ -43,7 +45,7 @@ const NewApps = () => {
         null,
         created_at,
         'MAIN_PAGE',
-        pathname === '/apps' ? category : undefined
+        categoryUrl && categoryUrl !== 'all' ? categoryUrl : undefined
       );
       const newAppsData = [];
       for (const name in info.apps) {
@@ -92,12 +94,12 @@ const NewApps = () => {
   };
 
   useEffect(() => {
-    if (pathname === '/apps') {
+    if (categoryUrl) {
       updateState({
         allApps: [],
         lastCreatedAt: null,
         appAddrs: [],
-        category: category,
+        category: categoryUrl,
         hasMore: true,
       });
     }
@@ -106,14 +108,14 @@ const NewApps = () => {
     } else {
       fetchApps(null);
     }
-  }, [category, pathname]);
+  }, [categoryUrl, pathname]);
 
   const fetchAppsByCategory = (activeTab) => {
+    navigate(`/apps/category/${activeTab}`);
     updateState({
       allApps: [],
       lastCreatedAt: null,
       appAddrs: [],
-      category: activeTab,
     });
     setEmpty(false);
   };
@@ -193,23 +195,23 @@ const NewApps = () => {
     <div>
       <Container className="ps-0 pe-0">
         <h2>New apps:</h2>
-        {pathname === '/apps' ? (
+        {categoryUrl ? (
           <div className="d-flex justify-content-center pt-4 pb-5">
             <ul className="nav nav-pills d-flex justify-content-center ">
               <li
-                onClick={() => fetchAppsByCategory(null)}
+                onClick={() => fetchAppsByCategory('all')}
                 className={`pointer nav-link nav-item ${
-                  category === null ? 'active' : ''
+                  categoryUrl === 'all' ? 'active' : ''
                 }`}
               >
                 All
               </li>
-              {optionsTags.map((nav) => {
+              {categories.map((nav) => {
                 return (
                   <li
                     onClick={() => fetchAppsByCategory(nav.value)}
                     className={`pointer nav-link nav-item ${
-                      category === nav.value ? 'active' : ''
+                      categoryUrl === nav.value ? 'active' : ''
                     }`}
                   >
                     {nav.label.charAt(0).toUpperCase() + nav.label.slice(1)}

@@ -201,4 +201,24 @@ export const optionsTags = [
   { value: 'cooking', label: 'cooking' },
 ];
 
+export const categories = [
+  { value: 'social', label: 'SOCIAL' },
+  { value: 'productivity', label: 'PRODUCTIVITY' },
+  { value: 'live_streaming', label: 'LIVE STREAMING' },
+  { value: 'marketplace', label: 'MARKETPLACE' },
+  { value: 'music', label: 'MUSIC' },
+  { value: 'video', label: 'VIDEO' },
+  { value: 'pictures', label: 'PICTURES' },
+  { value: 'storage', label: 'STORAGE' },
+  { value: 'dvm', label: 'DVM' },
+  { value: 'game', label: 'GAMES' },
+  { value: 'messaging', label: 'MESSAGING' },
+  { value: 'education', label: 'EDUCATION' },
+  { value: 'health', label: 'HEALTH' },
+  { value: 'dating', label: 'DATING' },
+  { value: 'adult', label: 'ADULT' },
+  { value: 'news', label: 'NEWS' },
+  { value: 'podcasts', label: 'PODCASTS' },
+];
+
 export const isTablet = window.screen.width < 615;
