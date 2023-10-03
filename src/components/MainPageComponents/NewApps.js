@@ -48,6 +48,7 @@ const NewApps = () => {
         categoryUrl && categoryUrl !== 'all' ? categoryUrl : undefined
       );
       const newAppsData = [];
+
       for (const name in info.apps) {
         const app = info.apps[name].handlers[0];
         newAppsData.push(app);
@@ -194,9 +195,9 @@ const NewApps = () => {
   return (
     <div>
       <Container className="ps-0 pe-0">
-        <h2>New apps:</h2>
+        <h2>Nostr apps</h2>
         {categoryUrl ? (
-          <div className="d-flex justify-content-center pt-4 pb-5">
+          <div className="d-flex justify-content-center pt-2 pb-3">
             <ul className="nav nav-pills d-flex justify-content-center ">
               <li
                 onClick={() => fetchAppsByCategory('all')}

@@ -219,6 +219,8 @@ export const categories = [
   { value: 'adult', label: 'Adult' },
   { value: 'news', label: 'News' },
   { value: 'podcasts', label: 'Podcasts' },
+  { value: 'tools', label: 'Tools' },
+  { value: 'micro_apps', label: 'Micro-apps' },
 ];
 
 export const isTablet = window.screen.width < 615;
