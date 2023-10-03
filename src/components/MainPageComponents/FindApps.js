@@ -6,11 +6,12 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Form from 'react-bootstrap/Form';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import './FindApps.scss';
 
 const FindApps = ({ setLink, link, open, go }) => {
   return (
     <div>
-      <Container className="ps-0 pe-0">
+      <Container className="ps-0 pe-0 find-apps-container">
         <h2>Paste a Nostr link to find an app:</h2>
         <Row>
           <Col>
@@ -25,9 +26,12 @@ const FindApps = ({ setLink, link, open, go }) => {
                 />
 
                 <OverlayTrigger
+                  className="find-apps-tooltip"
                   placement="bottom"
                   overlay={
-                    <Tooltip>View event and a list of suggested apps.</Tooltip>
+                    <Tooltip className="tooltip-find-apps">
+                      View events and a list of suggested apps.
+                    </Tooltip>
                   }
                 >
                   <Button
@@ -39,9 +43,10 @@ const FindApps = ({ setLink, link, open, go }) => {
                   </Button>
                 </OverlayTrigger>
                 <OverlayTrigger
+                  className="find-apps-tooltip"
                   placement="bottom"
                   overlay={
-                    <Tooltip>
+                    <Tooltip className="tooltip-find-apps">
                       Redirect to the app if you've already saved one. Just
                       press 'Enter'.
                     </Tooltip>

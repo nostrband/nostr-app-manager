@@ -61,7 +61,9 @@ const AppInfoView = () => {
     }
     const addr = data;
     setAddr(addr);
-
+    cmn.onAuthed(async () => {
+      setRecomms(await cmn.fetchRecomms(addr));
+    });
     // app info doesn't require authed user data
     const info = await cmn.fetchApps(addr.pubkey, addr);
     setInfo(info);
@@ -74,9 +76,8 @@ const AppInfoView = () => {
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-
     let profile;
-    if (cmn.getProfile(pubkey[1])) {
+    if (pubkey) {
       profile = await cmn.getProfile(pubkey[1]);
     }
 
@@ -90,9 +91,6 @@ const AppInfoView = () => {
       '#a': [addrForGetCountUser],
     });
     setCountUsers(count);
-    cmn.onAuthed(async () => {
-      setRecomms(await cmn.fetchRecomms(addr));
-    });
   }, [naddr]);
 
   // on the start

@@ -25,13 +25,18 @@
 .review {
   border: 1px solid #ffc700;
 }
+.action-buttons-app-info {
+  .tooltip-inner {
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}
 
-.tooltip-inner {
+.tooltip-zap .tooltip-inner {
   background-color: #9747ff;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 14px;
-  white-space: nowrap;
+  color: #fff;
 }
 
 .tooltip-like .tooltip-inner {

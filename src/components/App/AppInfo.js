@@ -278,7 +278,7 @@ const AppInfo = (props) => {
           </div>
           {props.children}
         </Col>
-        <Col xs="auto">
+        <Col xs="auto" className="action-buttons-app-info">
           <div className="d-flex flex-column align-items-center">
             {app.picture && (
               <img
