@@ -204,7 +204,7 @@ export const optionsTags = [
 export const categories = [
   { value: 'social', label: 'Social' },
   { value: 'productivity', label: 'Productivity' },
-  { value: 'live_streaming', label: 'Live Streaming' },
+  { value: 'live-streaming', label: 'Live Streaming' },
   { value: 'marketplace', label: 'Marketplace' },
   { value: 'music', label: 'Music' },
   { value: 'video', label: 'Video' },
@@ -220,7 +220,7 @@ export const categories = [
   { value: 'news', label: 'News' },
   { value: 'podcasts', label: 'Podcasts' },
   { value: 'tools', label: 'Tools' },
-  { value: 'micro_apps', label: 'Micro-apps' },
+  { value: 'micro-apps', label: 'Micro-apps' },
 ];
 
 export const isTablet = window.screen.width < 615;
