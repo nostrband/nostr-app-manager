@@ -204,7 +204,7 @@ export const optionsTags = [
 export const categories = [
   { value: 'social', label: 'Social' },
   { value: 'productivity', label: 'Productivity' },
-  { value: 'live-streaming', label: 'Live Streaming' },
+  { value: 'live streaming', label: 'Live Streaming' },
   { value: 'marketplace', label: 'Marketplace' },
   { value: 'music', label: 'Music' },
   { value: 'video', label: 'Video' },
