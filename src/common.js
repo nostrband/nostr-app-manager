@@ -569,12 +569,13 @@ export async function fetchAppsByKinds(
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
   const pubkeys = {};
 
-  const pubkeysForLabels = events.map((event) => event.pubkey);
   const filterForLabels = {
     kinds: [1985],
     '#L': ['org.nostrapps.ontology'],
     '#l': [category],
-    authors: pubkeysForLabels,
+    authors: [
+      '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
+    ],
   };
   let labels = await fetchAllEvents([startFetch(ndk, filterForLabels)]);
   const d_tags = [];
