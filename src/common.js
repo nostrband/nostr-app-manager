@@ -568,8 +568,37 @@ export async function fetchAppsByKinds(
   if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
   const pubkeys = {};
-  for (const e of events) pubkeys[e.pubkey] = 1;
 
+  const filterForLabels = {
+    kinds: [1985],
+    '#L': ['org.nostrapps.ontology'],
+    '#l': [category],
+    authors: [
+      '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
+    ],
+  };
+  let labels = await fetchAllEvents([startFetch(ndk, filterForLabels)]);
+  const d_tags = [];
+  const pubkeysLabel = [];
+  labels.forEach((label) => {
+    label.tags.forEach((tag) => {
+      if (tag[0] === 'a' && tag[1].startsWith('31990:')) {
+        const parts = tag[1].split(':');
+        if (parts.length === 3) {
+          pubkeysLabel.push(parts[1]);
+          d_tags.push(parts[2]);
+        }
+      }
+    });
+  });
+  const filterFetchAppsByLabels = {
+    kinds: [31990],
+    authors: pubkeysLabel,
+    '#d': d_tags,
+  };
+  const apps = await fetchAllEvents([startFetch(ndk, filterFetchAppsByLabels)]);
+  events = [...events, ...apps];
+  for (const e of events) pubkeys[e.pubkey] = 1;
   if (events.length > 0) {
     const metas = await fetchAllEvents([
       startFetch(ndk, {
