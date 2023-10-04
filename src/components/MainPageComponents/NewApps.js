@@ -64,7 +64,6 @@ const NewApps = () => {
         'MAIN_PAGE',
         category
       );
-      console.log(info, 'INFO');
       const newAppsData = [];
       for (const name in info.apps) {
         const app = info.apps[name].handlers[0];
@@ -72,7 +71,6 @@ const NewApps = () => {
       }
 
       const currentApps = appListState.allApps;
-      console.log(currentApps, 'CURRENT APPS');
       if (newAppsData.length > 0) {
         const filteredApps = newAppsData.filter(
           (newApp) =>
@@ -82,31 +80,31 @@ const NewApps = () => {
           setEmpty(true);
         }
 
-        console.log(filteredApps, 'FILTERED APPS');
-
-        updateState({
-          allApps: [...currentApps, ...filteredApps],
-          lastCreatedAt:
-            filteredApps.length > 0
-              ? filteredApps[filteredApps.length - 1].created_at
-              : undefined,
-          appAddrs: [
-            ...appListState.appAddrs,
-            ...filteredApps.map((app) => cmn.generateAddr(app)),
-          ],
-        });
+        if (filteredApps.length > 0) {
+          const lastApp = filteredApps[filteredApps.length - 1];
+          updateState({
+            allApps: [...currentApps, ...filteredApps],
+            lastCreatedAt: lastApp ? lastApp.created_at : null,
+            appAddrs: [
+              ...appListState.appAddrs,
+              ...filteredApps.map((app) => cmn.generateAddr(app)),
+            ],
+          });
+        } else {
+          updateState({ hasMore: false });
+        }
       } else {
         updateState({ hasMore: false });
       }
     } catch (error) {
-      console.error('Error fetching apps:', error);
+      console.log(error, 'ERRROR');
     } finally {
+      console.log('DONE FINALLY');
       updateState({ loading: false });
     }
   };
 
   const handleScroll = () => {
-    console.log({ loading: !loading, hasMore, lastCreatedAt, empty: !empty });
     if (!loading && hasMore && lastCreatedAt) {
       const scrollBottom = Math.abs(
         document.documentElement.scrollHeight -
@@ -296,6 +294,7 @@ const NewApps = () => {
             {loading && !empty && !activeCategory && !activePage && (
               <LoadingSpinner />
             )}
+            {console.log({ loading }, 'LOADING')}
             {loading &&
               allApps.length === 0 &&
               activeCategory &&

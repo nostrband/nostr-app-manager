@@ -28,17 +28,17 @@ const navs = [
     path: 'codes',
   },
   {
-    title: 'Find app for event ',
-    path: 'search',
-  },
-  {
     title: 'Reviews',
     path: 'reviews',
+  },
+  {
+    title: 'Find app for event ',
+    path: 'search',
   },
 ];
 
 const Index = () => {
-  const { activePage, activeCategory } = useParams();
+  const { activePage } = useParams();
   const [link, setLink] = useState('');
   const [apps, setApps] = useState([]);
   const [editShow, setEditShow] = useState(false);

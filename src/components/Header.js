@@ -129,44 +129,22 @@ const Header = () => {
                     </Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/apps/category/all');
-                        clearApps();
-                      }}
+                      to="/apps/category/all"
+                      as={Link}
+                      onClick={clearApps}
                     >
                       Apps
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/repos');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/repos">
                       Repositories
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/reviews');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/reviews">
                       Reviews
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/used-apps');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/used-apps">
                       Used apps
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/about');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/about">
                       What is it?
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -184,12 +162,9 @@ const Header = () => {
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(appsUrl);
-                      }}
+                      as={Link}
+                      to={appsUrl}
                       className="d-flex align-items-center"
-                      href={appsUrl}
                     >
                       <Avatar src={profile?.picture} />
                       <span className="mx-2">
@@ -200,64 +175,32 @@ const Header = () => {
                           : cmn.formatNpubShort(pubkey)}
                       </span>
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      href={createUrl}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(createUrl);
-                      }}
-                    >
+
+                    <Dropdown.Item to="/edit/" as={Link}>
                       Create app
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(createUrlForAddRepo);
-                      }}
-                    >
+                    <Dropdown.Item to="/create-repository/" as={Link}>
                       Create repository
                     </Dropdown.Item>
                     <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/apps/category/all');
-                        clearApps();
-                      }}
+                      to="/apps/category/all"
+                      as={Link}
+                      onClick={clearApps}
                     >
                       Apps
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/repos');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/repos">
                       Repositories
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/reviews');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/reviews">
                       Reviews
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/used-apps');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/used-apps">
                       Used apps
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/about');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/about">
                       What is it?
                     </Dropdown.Item>
                   </Dropdown.Menu>

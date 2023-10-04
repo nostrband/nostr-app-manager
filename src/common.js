@@ -564,10 +564,8 @@ export async function fetchAppsByKinds(
     ...(created_at ? { until: created_at } : {}),
     ...(category ? { '#t': [category] } : {}),
   };
-  console.log(filter, 'FILTER');
   if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
-  console.log(events, 'EVENTS');
   const pubkeys = {};
 
   const filterForLabels = {
