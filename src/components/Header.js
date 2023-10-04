@@ -17,6 +17,7 @@ import SearchApp from './SearchApp';
 import { isTablet } from '../const';
 import SearchButton from '../elements/SearchButton';
 import { Avatar } from '@mui/material';
+import { useAppState } from '../context/AppContext';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const Header = () => {
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
-  const [searchParams, setSearchParams] = useSearchParams();
   const [showSearchField, setShowSearchField] = useState(false);
+  const { setAppsLoaded, clearApps } = useAppState();
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -89,7 +90,7 @@ const Header = () => {
     // _after_ Link has changed the url
     setTimeout(() => {
       window.dispatchEvent(new Event('goHome'));
-      setSearchParams({ page: 'apps' });
+      clearApps();
     }, 0);
   };
 
@@ -131,6 +132,7 @@ const Header = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         navigate('/apps/category/all');
+                        clearApps();
                       }}
                     >
                       Apps
@@ -221,6 +223,7 @@ const Header = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         navigate('/apps/category/all');
+                        clearApps();
                       }}
                     >
                       Apps

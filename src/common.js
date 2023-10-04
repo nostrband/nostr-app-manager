@@ -564,9 +564,10 @@ export async function fetchAppsByKinds(
     ...(created_at ? { until: created_at } : {}),
     ...(category ? { '#t': [category] } : {}),
   };
-
+  console.log(filter, 'FILTER');
   if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
+  console.log(events, 'EVENTS');
   const pubkeys = {};
 
   const filterForLabels = {
@@ -577,6 +578,7 @@ export async function fetchAppsByKinds(
       '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
     ],
   };
+
   let labels = await fetchAllEvents([startFetch(ndk, filterForLabels)]);
   const d_tags = [];
   const pubkeysLabel = [];
@@ -591,6 +593,7 @@ export async function fetchAppsByKinds(
       }
     });
   });
+
   const filterFetchAppsByLabels = {
     kinds: [31990],
     authors: pubkeysLabel,
@@ -611,7 +614,6 @@ export async function fetchAppsByKinds(
 
   // parse
   const info = prepareHandlers(events);
-
   return info;
 }
 

@@ -4,7 +4,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
+import {
+  useSearchParams,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import UsedApps from './MainPageComponents/UsedApps';
@@ -33,13 +38,13 @@ const navs = [
 ];
 
 const Index = () => {
+  const { activePage, activeCategory } = useParams();
   const [link, setLink] = useState('');
   const [apps, setApps] = useState([]);
   const [editShow, setEditShow] = useState(false);
   const [editApp, setEditApp] = useState(null);
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
-  const [searchParams, setSearchParams] = useSearchParams({ page: 'apps' });
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -150,32 +155,32 @@ const Index = () => {
     cmn.writeAppSettings(aps);
     setUpdated(updated + 1);
   };
+  const setActivePage = (nav) => {
+    if (nav === 'apps') {
+      navigate(`/main/${nav}/social`);
+    } else {
+      navigate(`/main/${nav}`);
+    }
+  };
 
   const pageComponents = {
     search: <FindApps setLink={setLink} link={link} open={open} go={go} />,
     apps: <NewApps />,
     codes: <Repositories />,
-    reviews: <NewReviews showSpinner />,
+    reviews: <NewReviews />,
   };
 
   return (
     <main className="mt-1 pt-2">
       {pathname !== '/used-apps' ? (
-        <div className="d-flex justify-content-center pt-4 pb-5">
+        <div className="d-flex justify-content-center pt-2 pb-3">
           <ul className="nav nav-pills d-flex justify-content-center ">
             {navs.map((nav) => {
               return (
                 <li
-                  onClick={() => {
-                    navigate('/');
-                    setSearchParams({ page: nav.path }); // Set select=true when a nav is clicked
-                  }}
+                  onClick={() => setActivePage(nav.path)}
                   className={`pointer nav-link nav-item ${
-                    searchParams.get('page') === nav.path &&
-                    pathname !== '/about' &&
-                    pathname !== '/used-apps'
-                      ? 'active'
-                      : ''
+                    activePage === nav.path ? 'active' : ''
                   }`}
                 >
                   {nav.title}
@@ -186,7 +191,7 @@ const Index = () => {
         </div>
       ) : null}
       {pathname !== '/about' && pathname !== '/used-apps'
-        ? pageComponents[searchParams.get('page')]
+        ? pageComponents[activePage]
         : null}
       {pathname === '/used-apps' ? (
         <UsedApps apps={apps} onSelect={onSelect} />

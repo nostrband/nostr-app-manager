@@ -6,7 +6,7 @@ import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
@@ -38,6 +38,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const filteredReviews = reviews
     ?.filter((review) => review.app)
     .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
+  const { activePage } = useParams();
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -117,6 +118,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
           .filter((review) =>
             myReviews ? review.pubkey === profilePubkey : true
           )
+          ?.slice(activePage ? 0 : undefined, activePage ? 5 : undefined)
           .map((review) => {
             let count = cmn.getCountReview(review);
             let appProfile = review.app?.content
@@ -178,11 +180,22 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
               </ListGroupItem>
             );
           })}
-        {loading && !empty && showSpinner && <LoadingSpinner />}
-        {filteredReviews.length === 0 && !showSpinner ? (
+        {loading && !empty && !activePage && <LoadingSpinner />}
+        {loading && filteredReviews.length === 0 && activePage && (
+          <LoadingSpinner />
+        )}
+
+        {filteredReviews.length === 0 && !loading ? (
           <span> Nothing yet.</span>
         ) : null}
       </ListGroup>
+      {reviews.length > 0 && activePage ? (
+        <Link to="/reviews">
+          <button type="button" class="btn btn-primary show-more-button">
+            More reviews
+          </button>
+        </Link>
+      ) : null}
     </Container>
   );
 };
