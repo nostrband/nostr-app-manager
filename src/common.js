@@ -565,9 +565,9 @@ export async function fetchAppsByKinds(
     ...(category ? { '#t': [category] } : {}),
   };
   if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
+  console.log(filter, 'FILTER');
   let events = await fetchAllEvents([startFetch(ndk, filter)]);
   const pubkeys = {};
-
   const filterForLabels = {
     kinds: [1985],
     '#L': ['org.nostrapps.ontology'],

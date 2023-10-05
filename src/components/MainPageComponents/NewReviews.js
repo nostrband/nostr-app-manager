@@ -106,7 +106,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   }, []);
 
   return (
-    <Container>
+    <div className="pb-3">
       {myReviews ? (
         <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
       ) : (
@@ -196,7 +196,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
           </button>
         </Link>
       ) : null}
-    </Container>
+    </div>
   );
 };
 

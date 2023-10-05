@@ -64,6 +64,7 @@ const NewApps = () => {
         'MAIN_PAGE',
         category
       );
+      console.log(info, 'INFOOO');
       const newAppsData = [];
       for (const name in info.apps) {
         const app = info.apps[name].handlers[0];
@@ -218,11 +219,11 @@ const NewApps = () => {
   }, [appAddrs, followedPubkeys]);
 
   return (
-    <div>
+    <div className="pb- pt-1">
       <Container className="ps-0 pe-0">
         <h2>Nostr apps</h2>
         {categoryUrl ? (
-          <div className="d-flex justify-content-center pt-2 pb-3">
+          <div className="d-flex justify-content-center pt-2 pb-2">
             <ul className="nav nav-pills d-flex justify-content-center ">
               <li
                 onClick={() => fetchAppsByCategory('all')}

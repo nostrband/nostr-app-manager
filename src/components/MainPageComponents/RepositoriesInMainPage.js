@@ -75,7 +75,7 @@ const Repositories = () => {
   }, [hasMore, loading, lastCreatedAt]);
 
   return (
-    <div>
+    <div className="pb-3">
       <h2>Code repositories</h2>
       <ListGroup className="mb-3">
         {allRepositories.length > 0
