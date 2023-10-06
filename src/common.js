@@ -557,62 +557,91 @@ export async function fetchAppsByKinds(
   whereWeUse,
   category
 ) {
-  const ndk = await getNDK();
-  const filter = {
-    kinds: [cs.KIND_HANDLERS],
-    ...(whereWeUse === 'MAIN_PAGE' ? { limit: 10 } : {}),
-    ...(created_at ? { until: created_at } : {}),
-    ...(category ? { '#t': [category] } : {}),
-  };
-  if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
-  console.log(filter, 'FILTER');
-  let events = await fetchAllEvents([startFetch(ndk, filter)]);
-  const pubkeys = {};
-  const filterForLabels = {
-    kinds: [1985],
-    '#L': ['org.nostrapps.ontology'],
-    '#l': [category],
-    authors: [
-      '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
-    ],
-  };
+  try {
+    const ndk = await getNDK();
 
-  let labels = await fetchAllEvents([startFetch(ndk, filterForLabels)]);
-  const d_tags = [];
-  const pubkeysLabel = [];
-  labels.forEach((label) => {
-    label.tags.forEach((tag) => {
-      if (tag[0] === 'a' && tag[1].startsWith('31990:')) {
-        const parts = tag[1].split(':');
-        if (parts.length === 3) {
-          pubkeysLabel.push(parts[1]);
-          d_tags.push(parts[2]);
+    const filter = {
+      kinds: [cs.KIND_HANDLERS],
+      ...(whereWeUse === 'MAIN_PAGE' ? { limit: 10 } : {}),
+      ...(created_at ? { until: created_at } : {}),
+      ...(category ? { '#t': [category] } : {}),
+    };
+
+    if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
+    let events;
+    try {
+      events = await fetchAllEvents([startFetch(ndk, filter)]);
+    } catch (err) {
+      console.error('Ошибка при получении событий:', err);
+      throw err;
+    }
+    console.log(events, 'EVENTS');
+    const pubkeys = {};
+    const filterForLabels = {
+      kinds: [1985],
+      '#L': ['org.nostrapps.ontology'],
+      '#l': [category],
+      authors: [
+        '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
+      ],
+    };
+
+    let labels;
+    try {
+      labels = await fetchAllEvents([startFetch(ndk, filterForLabels)]);
+    } catch (err) {
+      console.error('Ошибка при получении меток (labels):', err);
+      throw err;
+    }
+    const d_tags = [];
+    const pubkeysLabel = [];
+    labels.forEach((label) => {
+      label.tags.forEach((tag) => {
+        if (tag[0] === 'a' && tag[1].startsWith('31990:')) {
+          const parts = tag[1].split(':');
+          if (parts.length === 3) {
+            pubkeysLabel.push(parts[1]);
+            d_tags.push(parts[2]);
+          }
         }
-      }
+      });
     });
-  });
-
-  const filterFetchAppsByLabels = {
-    kinds: [31990],
-    authors: pubkeysLabel,
-    '#d': d_tags,
-  };
-  const apps = await fetchAllEvents([startFetch(ndk, filterFetchAppsByLabels)]);
-  events = [...events, ...apps];
-  for (const e of events) pubkeys[e.pubkey] = 1;
-  if (events.length > 0) {
-    const metas = await fetchAllEvents([
-      startFetch(ndk, {
-        kinds: [cs.KIND_META],
-        authors: Object.keys(pubkeys),
-      }),
-    ]);
-    events = [...events, ...metas];
+    const filterFetchAppsByLabels = {
+      kinds: [31990],
+      authors: pubkeysLabel,
+      '#d': d_tags,
+    };
+    let apps;
+    try {
+      apps = await fetchAllEvents([startFetch(ndk, filterFetchAppsByLabels)]);
+    } catch (err) {
+      console.error('Ошибка при получении приложений (apps):', err);
+      throw err;
+    }
+    events = [...events, ...apps];
+    for (const e of events) pubkeys[e.pubkey] = 1;
+    if (events.length > 0) {
+      let metas;
+      try {
+        metas = await fetchAllEvents([
+          startFetch(ndk, {
+            kinds: [cs.KIND_META],
+            authors: Object.keys(pubkeys),
+          }),
+        ]);
+      } catch (err) {
+        console.error('Ошибка при получении метаинформации:', err);
+        throw err;
+      }
+      events = [...events, ...metas];
+    }
+    // parse
+    const info = prepareHandlers(events);
+    return info;
+  } catch (error) {
+    console.error('Общая ошибка в функции fetchAppsByKinds:', error);
+    throw error;
   }
-
-  // parse
-  const info = prepareHandlers(events);
-  return info;
 }
 
 export async function fetchAppByNaddr(naddr, platform) {

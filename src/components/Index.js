@@ -155,24 +155,20 @@ const Index = () => {
     cmn.writeAppSettings(aps);
     setUpdated(updated + 1);
   };
-  const setActivePage = (nav) => {
-    if (nav === 'apps') {
-      navigate(`/main/${nav}/social`);
-    } else {
-      navigate(`/main/${nav}`);
-    }
-  };
 
   return (
     <main className="mt-1 pt-2">
       {pathname === '/used-apps' ? (
         <UsedApps apps={apps} onSelect={onSelect} />
-      ) : null}
+      ) : (
+        <>
+          <NewApps />
+          <Repositories />
+          <NewReviews />
+          <FindApps setLink={setLink} link={link} open={open} go={go} />
+        </>
+      )}
 
-      <NewApps />
-      <Repositories />
-      <NewReviews />
-      <FindApps setLink={setLink} link={link} open={open} go={go} />
       <Modal show={editShow} onHide={handleEditClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit app</Modal.Title>

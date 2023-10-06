@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
@@ -7,12 +7,15 @@ import { useAuth } from '../../context/AuthContext';
 import { generateAddr } from '../../common';
 import { useAppState } from '../../context/AppContext';
 import { categories, categoriesTabMainPage } from '../../const';
-import { useLocation, useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { mainDataActions } from '../../redux/slices/mainData-slice';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
   const { category: categoryUrl, activeCategory, activePage } = useParams();
-  const { pathname } = useLocation();
+  const { apps: appsForMain } = useSelector((state) => state.mainData);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     appListState,
@@ -20,7 +23,6 @@ const NewApps = () => {
     empty,
     setEmpty,
     setAppsLoaded,
-    appsLoaded,
     clearApps,
   } = useAppState();
   const {
@@ -40,16 +42,11 @@ const NewApps = () => {
     }
   }, []);
 
-  useEffect(() => {
-    setEmpty(false);
-  }, [pathname]);
-
   const updateState = (changes) => {
     setAppListState((prevState) => ({ ...prevState, ...changes }));
   };
 
   const fetchApps = async (created_at) => {
-    console.log('DONE FETCH APPS');
     updateState({ loading: true });
     try {
       let category;
@@ -58,29 +55,24 @@ const NewApps = () => {
       } else if (activeCategory) {
         category = activeCategory;
       }
+
       const info = await cmn.fetchAppsByKinds(
         null,
         categoryUrl ? created_at : undefined,
         'MAIN_PAGE',
         category
       );
-      console.log(info, 'INFOOO');
       const newAppsData = [];
       for (const name in info.apps) {
         const app = info.apps[name].handlers[0];
         newAppsData.push(app);
       }
-
       const currentApps = appListState.allApps;
       if (newAppsData.length > 0) {
         const filteredApps = newAppsData.filter(
           (newApp) =>
             !currentApps.some((existingApp) => existingApp.id === newApp.id)
         );
-        if (filteredApps.length === 0) {
-          setEmpty(true);
-        }
-
         if (filteredApps.length > 0) {
           const lastApp = filteredApps[filteredApps.length - 1];
           updateState({
@@ -91,8 +83,14 @@ const NewApps = () => {
               ...filteredApps.map((app) => cmn.generateAddr(app)),
             ],
           });
+          if (activePage) {
+            const apps = filteredApps?.slice(0, 6);
+            console.log(apps, 'APPS FOR MAIN PAGE');
+            dispatch(mainDataActions.setApps(apps));
+          }
         } else {
           updateState({ hasMore: false });
+          setEmpty(true);
         }
       } else {
         updateState({ hasMore: false });
@@ -100,7 +98,6 @@ const NewApps = () => {
     } catch (error) {
       console.log(error, 'ERRROR');
     } finally {
-      console.log('DONE FINALLY');
       updateState({ loading: false });
     }
   };
@@ -119,29 +116,28 @@ const NewApps = () => {
   };
 
   useEffect(() => {
-    if (!appsLoaded) {
-      updateState({
-        allApps: [],
-        lastCreatedAt: null,
-        appAddrs: [],
-        category: categoryUrl,
-        hasMore: true,
-      });
-      if (allApps.length > 0) {
-        fetchApps(lastCreatedAt);
-      } else {
-        fetchApps(null);
-      }
-      setAppsLoaded(true);
+    updateState({
+      allApps: [],
+      lastCreatedAt: null,
+      appAddrs: [],
+      category: categoryUrl,
+      hasMore: true,
+    });
+    if (allApps.length > 0) {
+      fetchApps(lastCreatedAt);
+    } else {
+      fetchApps(null);
     }
+    setAppsLoaded(true);
   }, [categoryUrl, activeCategory]);
 
   const fetchAppsByCategory = (activeTab) => {
     clearApps();
     navigate(`/apps/category/${activeTab}`);
   };
+
   const setActiveCategoryInMainPage = (nav) => {
-    clearApps();
+    dispatch(mainDataActions.setApps([]));
     navigate(`/main/${activePage}/${nav}`);
   };
 
@@ -219,11 +215,11 @@ const NewApps = () => {
   }, [appAddrs, followedPubkeys]);
 
   return (
-    <div className="pb- pt-1">
+    <div className="pt-1">
       <Container className="ps-0 pe-0">
         <h2>Nostr apps</h2>
         {categoryUrl ? (
-          <div className="d-flex justify-content-center pt-2 pb-2">
+          <div className="d-flex justify-content-center pt-2 pb-1">
             <ul className="nav nav-pills d-flex justify-content-center ">
               <li
                 onClick={() => fetchAppsByCategory('all')}
@@ -248,7 +244,7 @@ const NewApps = () => {
             </ul>
           </div>
         ) : (
-          <div className="d-flex justify-content-center pt-2 pb-3">
+          <div className="d-flex justify-content-start pt-2 pb-3">
             <ul className="nav nav-pills d-flex justify-content-center ">
               {categoriesTabMainPage.map((nav) => {
                 return (
@@ -272,48 +268,66 @@ const NewApps = () => {
         )}
         <Row>
           <Col>
-            {allApps.length === 0 && !loading && 'Nothing found on relays.'}
-            <div className="container-apps">
-              {allApps
-                ?.slice(
-                  activeCategory && activePage && !categoryUrl ? 0 : undefined,
-                  activeCategory && activePage && !categoryUrl ? 6 : undefined
-                )
-                .map((app) => {
-                  const appAddr = generateAddr(app);
-                  return (
-                    <div key={app.id}>
-                      <ApplicationItem
-                        pubkey={pubkey}
-                        count={appCountsState[appAddr] || 0}
-                        app={app}
-                      />
-                    </div>
-                  );
-                })}
-            </div>
-            {loading && !empty && !activeCategory && !activePage && (
-              <LoadingSpinner />
-            )}
-            {console.log({ loading }, 'LOADING')}
-            {loading &&
-              allApps.length === 0 &&
-              activeCategory &&
-              activeCategory && <LoadingSpinner />}
+            {activePage ? (
+              <>
+                {appsForMain.length === 0 &&
+                  !loading &&
+                  'Nothing found on relays.'}
+                <div className="container-apps">
+                  {appsForMain.map((app) => {
+                    const appAddr = generateAddr(app);
+                    return (
+                      <div key={app.id}>
+                        <ApplicationItem
+                          pubkey={pubkey}
+                          count={appCountsState[appAddr] || 0}
+                          app={app}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                {loading && activePage && appsForMain.length === 0 && (
+                  <LoadingSpinner />
+                )}
+              </>
+            ) : null}
+            {!activePage ? (
+              <>
+                {allApps.length === 0 && !loading && 'Nothing found on relays.'}
+                <div className="container-apps">
+                  {allApps.map((app) => {
+                    const appAddr = generateAddr(app);
+                    return (
+                      <div key={app.id}>
+                        <ApplicationItem
+                          pubkey={pubkey}
+                          count={appCountsState[appAddr] || 0}
+                          app={app}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                {loading && !empty && categoryUrl && hasMore && (
+                  <LoadingSpinner />
+                )}
+              </>
+            ) : null}
+            {appsForMain.length > 0 && !categoryUrl ? (
+              <Link to="/apps/category/all">
+                <button
+                  onClick={clearApps}
+                  type="button"
+                  class="btn btn-primary show-more-button"
+                >
+                  More Nostr apps &rarr;
+                </button>
+              </Link>
+            ) : null}
           </Col>
         </Row>
       </Container>
-      {allApps.length > 0 && !categoryUrl ? (
-        <Link to="/apps/category/all">
-          <button
-            onClick={clearApps}
-            type="button"
-            class="btn btn-primary show-more-button"
-          >
-            More Nostr apps
-          </button>
-        </Link>
-      ) : null}
     </div>
   );
 };

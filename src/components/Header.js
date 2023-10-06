@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import './Header.scss';
 
 import * as cmn from '../common';
@@ -20,7 +20,7 @@ import { Avatar } from '@mui/material';
 import { useAppState } from '../context/AppContext';
 
 const Header = () => {
-  const navigate = useNavigate();
+  const { activePage } = useParams();
   const { pubkey, setPubkey } = useAuth();
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuthShowModal();
@@ -81,8 +81,6 @@ const Header = () => {
   }
 
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
-  const createUrl = cmn.formatAppEditUrl('');
-  const createUrlForAddRepo = cmn.formatRepositoryEditUrl('');
 
   const goHome = () => {
     // Link click changes the location.hash but doesn't cause the
@@ -90,7 +88,6 @@ const Header = () => {
     // _after_ Link has changed the url
     setTimeout(() => {
       window.dispatchEvent(new Event('goHome'));
-      clearApps();
     }, 0);
   };
 
@@ -99,7 +96,11 @@ const Header = () => {
       <Row>
         <Col className="d-flex align-items-center">
           <h4>
-            <Link className="logo" to="/" onClick={goHome}>
+            <Link
+              className="logo"
+              to={`${!activePage ? '/' : ''}`}
+              onClick={goHome}
+            >
               <Logo /> <span className="logo-text">App Manager</span>
             </Link>
           </h4>
