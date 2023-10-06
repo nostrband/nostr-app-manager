@@ -107,7 +107,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
 
   return (
     <Container className="ps-0 pe-0">
-      <div className="pb-3 pt-2">
+      <div className="pb-3 pt-5">
         {myReviews ? (
           <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
         ) : (
@@ -192,7 +192,10 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
         </ListGroup>
         {reviews.length > 0 && activePage ? (
           <Link to="/reviews">
-            <button type="button" class="btn btn-primary show-more-button">
+            <button
+              type="button"
+              class="btn btn-outline-primary show-more-button"
+            >
               More reviews &rarr;
             </button>
           </Link>

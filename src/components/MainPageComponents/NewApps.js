@@ -215,7 +215,7 @@ const NewApps = () => {
   }, [appAddrs, followedPubkeys]);
 
   return (
-    <div className="pt-1">
+    <div className="pt-3">
       <Container className="ps-0 pe-0">
         <h2>Nostr apps</h2>
         {categoryUrl ? (
@@ -319,7 +319,7 @@ const NewApps = () => {
                 <button
                   onClick={clearApps}
                   type="button"
-                  class="btn btn-primary show-more-button"
+                  class="btn btn-outline-primary show-more-button"
                 >
                   More Nostr apps &rarr;
                 </button>

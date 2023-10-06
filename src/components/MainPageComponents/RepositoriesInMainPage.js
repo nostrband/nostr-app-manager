@@ -84,7 +84,7 @@ const Repositories = () => {
 
   return (
     <Container className="ps-0 pe-0">
-      <div className="pb-2 pt-3">
+      <div className="pb-2 pt-5">
         <h2>Code repositories</h2>
         <ListGroup className="mb-3">
           {allRepositories.length > 0
@@ -110,7 +110,10 @@ const Repositories = () => {
         ) : null}
         {allRepositories.length > 0 && activePage ? (
           <Link to="/repos">
-            <button type="button" class="btn btn-primary show-more-button">
+            <button
+              type="button"
+              class="btn btn-outline-primary show-more-button"
+            >
               More code repositories &rarr;
             </button>
           </Link>
