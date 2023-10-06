@@ -19,10 +19,34 @@ export const AppStateProvider = ({ children }) => {
   });
 
   const [empty, setEmpty] = useState(false);
+  const [appsLoaded, setAppsLoaded] = useState(false);
+
+  const updateState = (changes) => {
+    setAppListState((prevState) => ({ ...prevState, ...changes }));
+  };
+
+  const clearApps = () => {
+    updateState({
+      allApps: [],
+      lastCreatedAt: null,
+      appAddrs: [],
+    });
+    setAppsLoaded(false);
+    setEmpty(false);
+  };
 
   return (
     <AppStateContext.Provider
-      value={{ appListState, setAppListState, empty, setEmpty }}
+      value={{
+        appListState,
+        setAppListState,
+        empty,
+        setEmpty,
+        setAppsLoaded,
+        appsLoaded,
+        updateState,
+        clearApps,
+      }}
     >
       {children}
     </AppStateContext.Provider>

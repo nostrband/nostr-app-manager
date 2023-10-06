@@ -29,11 +29,19 @@ import About from './About';
 import NewApps from './components/MainPageComponents/NewApps';
 import NewReviews from './components/MainPageComponents/NewReviews';
 import Repositories from './components/MainPageComponents/RepositoriesInMainPage';
+import { Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+
 const HTTP = new QueryClient();
 
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <Navigate to="/main/apps/social" />,
+  },
+  {
+    path: '/main/:activePage?/:activeCategory?',
     element: <Root />,
   },
   {
@@ -129,24 +137,26 @@ export const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <QueryClientProvider client={HTTP}>
-    <AuthProvider>
-      <AppStateProvider>
-        <NewReviewStateProvider>
-          <LoginModalProvider>
-            <ReviewModalProvider>
-              <UpdateAnswersReviewProvider>
-                <IntlProvider>
-                  <ThemeProvider>
-                    <RouterProvider router={router} />
-                    <ToastContainer />
-                  </ThemeProvider>
-                </IntlProvider>
-              </UpdateAnswersReviewProvider>
-            </ReviewModalProvider>
-          </LoginModalProvider>
-        </NewReviewStateProvider>
-      </AppStateProvider>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <AppStateProvider>
+          <NewReviewStateProvider>
+            <LoginModalProvider>
+              <ReviewModalProvider>
+                <UpdateAnswersReviewProvider>
+                  <IntlProvider>
+                    <ThemeProvider>
+                      <RouterProvider router={router} />
+                      <ToastContainer />
+                    </ThemeProvider>
+                  </IntlProvider>
+                </UpdateAnswersReviewProvider>
+              </ReviewModalProvider>
+            </LoginModalProvider>
+          </NewReviewStateProvider>
+        </AppStateProvider>
+      </AuthProvider>
+    </Provider>
   </QueryClientProvider>
 );
 

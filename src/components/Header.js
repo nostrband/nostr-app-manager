@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import './Header.scss';
 
 import * as cmn from '../common';
@@ -17,15 +17,16 @@ import SearchApp from './SearchApp';
 import { isTablet } from '../const';
 import SearchButton from '../elements/SearchButton';
 import { Avatar } from '@mui/material';
+import { useAppState } from '../context/AppContext';
 
 const Header = () => {
-  const navigate = useNavigate();
+  const { activePage } = useParams();
   const { pubkey, setPubkey } = useAuth();
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
-  const [searchParams, setSearchParams] = useSearchParams();
   const [showSearchField, setShowSearchField] = useState(false);
+  const { setAppsLoaded, clearApps } = useAppState();
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -80,8 +81,6 @@ const Header = () => {
   }
 
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
-  const createUrl = cmn.formatAppEditUrl('');
-  const createUrlForAddRepo = cmn.formatRepositoryEditUrl('');
 
   const goHome = () => {
     // Link click changes the location.hash but doesn't cause the
@@ -89,7 +88,6 @@ const Header = () => {
     // _after_ Link has changed the url
     setTimeout(() => {
       window.dispatchEvent(new Event('goHome'));
-      setSearchParams({ page: 'apps' });
     }, 0);
   };
 
@@ -98,7 +96,11 @@ const Header = () => {
       <Row>
         <Col className="d-flex align-items-center">
           <h4>
-            <Link className="logo" to="/" onClick={goHome}>
+            <Link
+              className="logo"
+              to={`${!activePage ? '/' : ''}`}
+              onClick={goHome}
+            >
               <Logo /> <span className="logo-text">App Manager</span>
             </Link>
           </h4>
@@ -128,43 +130,22 @@ const Header = () => {
                     </Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/apps/category/all');
-                      }}
+                      to="/apps/category/all"
+                      as={Link}
+                      onClick={clearApps}
                     >
                       Apps
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/repos');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/repos">
                       Repositories
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/reviews');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/reviews">
                       Reviews
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/used-apps');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/used-apps">
                       Used apps
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/about');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/about">
                       What is it?
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -182,12 +163,9 @@ const Header = () => {
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(appsUrl);
-                      }}
+                      as={Link}
+                      to={appsUrl}
                       className="d-flex align-items-center"
-                      href={appsUrl}
                     >
                       <Avatar src={profile?.picture} />
                       <span className="mx-2">
@@ -198,63 +176,32 @@ const Header = () => {
                           : cmn.formatNpubShort(pubkey)}
                       </span>
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      href={createUrl}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(createUrl);
-                      }}
-                    >
+
+                    <Dropdown.Item to="/edit/" as={Link}>
                       Create app
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(createUrlForAddRepo);
-                      }}
-                    >
+                    <Dropdown.Item to="/create-repository/" as={Link}>
                       Create repository
                     </Dropdown.Item>
                     <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/apps/category/all');
-                      }}
+                      to="/apps/category/all"
+                      as={Link}
+                      onClick={clearApps}
                     >
                       Apps
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/repos');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/repos">
                       Repositories
-                    </Dropdown.Item>{' '}
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/reviews');
-                      }}
-                    >
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to="/reviews">
                       Reviews
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/used-apps');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/used-apps">
                       Used apps
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate('/about');
-                      }}
-                    >
+                    <Dropdown.Item as={Link} to="/about">
                       What is it?
                     </Dropdown.Item>
                   </Dropdown.Menu>

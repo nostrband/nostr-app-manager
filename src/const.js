@@ -223,4 +223,10 @@ export const categories = [
   { value: 'micro-apps', label: 'Micro-apps' },
 ];
 
+export const categoriesTabMainPage = [
+  { value: 'social', label: 'Social' },
+  { value: 'productivity', label: 'Productivity' },
+  { value: 'dvm', label: 'DVM' },
+];
+
 export const isTablet = window.screen.width < 615;

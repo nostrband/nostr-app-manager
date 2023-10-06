@@ -6,7 +6,7 @@ import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
@@ -38,6 +38,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const filteredReviews = reviews
     ?.filter((review) => review.app)
     .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
+  const { activePage } = useParams();
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -105,84 +106,101 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   }, []);
 
   return (
-    <Container>
-      {myReviews ? (
-        <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
-      ) : (
-        <h2>Reviews</h2>
-      )}
-      <ListGroup className="reviews-container">
-        {reviews
-          ?.filter((review) => review.app)
-          .filter((review) =>
-            myReviews ? review.pubkey === profilePubkey : true
-          )
-          .map((review) => {
-            let count = cmn.getCountReview(review);
-            let appProfile = review.app?.content
-              ? cmn.convertContentToProfile([review.app])
-              : {};
-            let authorProfile = review.author?.content
-              ? cmn.convertContentToProfile([review.author])
-              : {};
-            return (
-              <ListGroupItem key={review.id} className="review-item">
-                <div className="app-profile">
-                  <Link to={review.app ? getUrl(review.app) : ''}>
-                    {appProfile.pubkey ? (
+    <Container className="ps-0 pe-0">
+      <div className="pb-3 pt-5">
+        {myReviews ? (
+          <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
+        ) : (
+          <h2>Reviews</h2>
+        )}
+        <ListGroup className="reviews-container">
+          {reviews
+            ?.filter((review) => review.app)
+            .filter((review) =>
+              myReviews ? review.pubkey === profilePubkey : true
+            )
+            ?.slice(activePage ? 0 : undefined, activePage ? 5 : undefined)
+            .map((review) => {
+              let count = cmn.getCountReview(review);
+              let appProfile = review.app?.content
+                ? cmn.convertContentToProfile([review.app])
+                : {};
+              let authorProfile = review.author?.content
+                ? cmn.convertContentToProfile([review.author])
+                : {};
+              return (
+                <ListGroupItem key={review.id} className="review-item">
+                  <div className="app-profile">
+                    <Link to={review.app ? getUrl(review.app) : ''}>
+                      {appProfile.pubkey ? (
+                        <Profile
+                          appLogo
+                          small
+                          removeLink
+                          profile={{ profile: appProfile }}
+                          pubkey={appProfile.pubkey}
+                        />
+                      ) : null}
+                    </Link>
+                  </div>
+                  <Link to={cmn.generateLinkForReviewPage(review.id)}>
+                    <div className="rating-content-container">
+                      <p>{review.content}</p>
+                      <Rating name="read-only" value={count} readOnly />
+                    </div>
+                  </Link>
+
+                  <div className="d-flex justify-content-between">
+                    {!myReviews ? (
                       <Profile
-                        appLogo
                         small
-                        removeLink
-                        profile={{ profile: appProfile }}
-                        pubkey={appProfile.pubkey}
+                        profile={{ profile: authorProfile }}
+                        pubkey={review.pubkey}
                       />
                     ) : null}
-                  </Link>
-                </div>
-                <Link to={cmn.generateLinkForReviewPage(review.id)}>
-                  <div className="rating-content-container">
-                    <p>{review.content}</p>
-                    <Rating name="read-only" value={count} readOnly />
+                    <div className="container-actions-icon">
+                      <ReviewLike
+                        like={review.like}
+                        countLikes={review.countLikes}
+                        setUpdateLike={setUpdateLike}
+                        review={review}
+                      />
+                      <ZapFunctional noteId={nip19.noteEncode(review.id)} />
+                      <AnswerReviewFunctional review={review} mainPage />
+                    </div>
                   </div>
-                </Link>
+                  <ReviewAnswers
+                    setShowAnswersById={() =>
+                      setShowAnswersById(
+                        showAnswersReviewById === review.id ? '' : review.id
+                      )
+                    }
+                    answers={review.answers}
+                    showAnswers={showAnswersReviewById === review.id}
+                  />
+                </ListGroupItem>
+              );
+            })}
+          {loading && !empty && !activePage && <LoadingSpinner />}
+          {loading && filteredReviews.length === 0 && activePage && (
+            <LoadingSpinner />
+          )}
 
-                <div className="d-flex justify-content-between">
-                  {!myReviews ? (
-                    <Profile
-                      small
-                      profile={{ profile: authorProfile }}
-                      pubkey={review.pubkey}
-                    />
-                  ) : null}
-                  <div className="container-actions-icon">
-                    <ReviewLike
-                      like={review.like}
-                      countLikes={review.countLikes}
-                      setUpdateLike={setUpdateLike}
-                      review={review}
-                    />
-                    <ZapFunctional noteId={nip19.noteEncode(review.id)} />
-                    <AnswerReviewFunctional review={review} mainPage />
-                  </div>
-                </div>
-                <ReviewAnswers
-                  setShowAnswersById={() =>
-                    setShowAnswersById(
-                      showAnswersReviewById === review.id ? '' : review.id
-                    )
-                  }
-                  answers={review.answers}
-                  showAnswers={showAnswersReviewById === review.id}
-                />
-              </ListGroupItem>
-            );
-          })}
-        {loading && !empty && showSpinner && <LoadingSpinner />}
-        {filteredReviews.length === 0 && !showSpinner ? (
-          <span> Nothing yet.</span>
+          {filteredReviews.length === 0 && !loading ? (
+            <span> Nothing yet.</span>
+          ) : null}
+        </ListGroup>
+        {reviews.length > 0 && activePage ? (
+          <Link to="/reviews">
+            <button
+              type="button"
+              class="btn btn-outline-primary show-more-button"
+            >
+              More reviews &rarr;
+            </button>
+          </Link>
         ) : null}
-      </ListGroup>
+      </div>
     </Container>
   );
 };
