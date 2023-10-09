@@ -16,6 +16,9 @@ import FollowersAppInfoView from './FollowersAppInfoView';
 import ReviewsAppInfoView from './Reviews/ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
+import { categories } from '../../const';
+import { assign } from 'lodash';
+import { getBottomNavigationActionUtilityClass } from '@mui/material';
 
 const tabs = [
   {
@@ -49,7 +52,7 @@ const AppInfoView = () => {
   const [author, setAuthor] = useState({});
   const [activeComponent, setActiveComponent] = useState('reviews');
   const navigate = useNavigate();
-
+  const [assignedCategory, setAssignedCategory] = useState('');
   const init = useCallback(async () => {
     const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
@@ -69,6 +72,7 @@ const AppInfoView = () => {
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
+    console.log(appInfo, 'APP INFO');
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
@@ -76,11 +80,11 @@ const AppInfoView = () => {
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
+
     let profile;
     if (pubkey) {
       profile = await cmn.getProfile(pubkey[1]);
     }
-
     setAuthor(profile);
     setTags(tags);
     setAddKinds(appInfo.kinds);
@@ -97,6 +101,39 @@ const AppInfoView = () => {
   useEffect(() => {
     init().catch(console.error);
   }, [init]);
+
+  useEffect(() => {
+    const { data } = nip19.decode(naddr);
+    const fetchAssignedCategory = async () => {
+      console.log('DONEN FETCH ASSIGNED CATEGORY');
+      const ndk = await cmn.getNDK();
+      const query = {
+        kinds: [1985],
+        authors: [
+          '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
+        ],
+        a: [{ kind: data?.pubkey, d_tag: +data?.identifier }],
+        '#L': ['org.nostrapps.ontology'],
+      };
+
+      console.log(query, 'QUERY');
+
+      const categoriesByArtur = await cmn.fetchAllEvents(
+        [cmn.startFetch(ndk, query)],
+        'CATEGORY'
+      );
+      console.log(categoriesByArtur, 'CATEGORIES BY ARTUR');
+      const categories = categoriesByArtur.map((event) =>
+        event.tags.find((tag) => tag[0] === 'l')
+      );
+      const assignedCategory = categories?.length > 0 ? categories[0][1] : null;
+      console.log(assignedCategory, 'ASSIGNED CATEGORY');
+      if (assignedCategory) {
+        setAssignedCategory(assignedCategory);
+      }
+    };
+    fetchAssignedCategory();
+  }, []);
 
   if (!naddr || !info || !Object.values(info.apps).length) return null;
 
@@ -169,7 +206,7 @@ const AppInfoView = () => {
                 </div>
               )}
             </div>
-            {app.kinds ? (
+            {app.kinds.length > 0 ? (
               <>
                 <h6 className="mt-3">Event kinds:</h6>
                 <div>
@@ -214,6 +251,21 @@ const AppInfoView = () => {
                 );
               })}
             </div>
+            {assignedCategory ? (
+              <>
+                <h6 className="mt-3">Assigned category:</h6>
+                <div>
+                  <button
+                    class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                    onClick={() =>
+                      navigate(`/apps/category/${assignedCategory}`)
+                    }
+                  >
+                    {assignedCategory}
+                  </button>
+                </div>
+              </>
+            ) : null}
           </AppInfo>
           <div className="d-flex  justify-content-center pt-4 pb-3">
             <ul className="nav nav-pills d-flex justify-content-center">

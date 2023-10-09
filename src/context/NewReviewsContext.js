@@ -149,7 +149,6 @@ export const NewReviewStateProvider = ({ children }) => {
           const reviewsWithAnswers = await cmn.associateAnswersWithReviews(
             reviewsWithAllLikes
           );
-          console.log(reviewsWithAnswers, 'REVIEWS WITH ANSWERS');
           updateState({
             reviews: [...currentApps, ...reviewsWithAnswers],
             lastCreatedAt:

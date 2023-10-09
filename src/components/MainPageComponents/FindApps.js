@@ -24,7 +24,6 @@ const FindApps = ({ setLink, link, open, go }) => {
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                 />
-
                 <OverlayTrigger
                   className="find-apps-tooltip"
                   placement="bottom"

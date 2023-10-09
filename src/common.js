@@ -382,7 +382,12 @@ export function naddrToAddr(naddr) {
   return data.kind + ':' + data.pubkey + ':' + data.identifier;
 }
 
-export async function fetchAllEvents(reqs) {
+export async function fetchAllEvents(reqs, category) {
+  if (category === 'CATEGORY') {
+    console.log('DONE FETCH ALL EVENTS');
+    console.log(reqs,'REQS')
+  }
+
   const results = await Promise.allSettled(reqs);
   let events = [];
   for (const r of results) {
@@ -393,6 +398,9 @@ export async function fetchAllEvents(reqs) {
         else events.push(r.value);
       }
     }
+  }
+  if (category === 'CATEGORY') {
+    console.log(events, 'EVENTS');
   }
   return dedupEvents(events);
 }
