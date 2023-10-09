@@ -10,7 +10,7 @@ import './FindApps.scss';
 
 const FindApps = ({ setLink, link, open, go }) => {
   return (
-    <div>
+    <div className="pt-4">
       <Container className="ps-0 pe-0 find-apps-container">
         <h2>Paste a Nostr link to find an app:</h2>
         <Row>
@@ -24,7 +24,6 @@ const FindApps = ({ setLink, link, open, go }) => {
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                 />
-
                 <OverlayTrigger
                   className="find-apps-tooltip"
                   placement="bottom"
