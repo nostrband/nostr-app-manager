@@ -16,9 +16,6 @@ import FollowersAppInfoView from './FollowersAppInfoView';
 import ReviewsAppInfoView from './Reviews/ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
-import { categories } from '../../const';
-import { assign } from 'lodash';
-import { getBottomNavigationActionUtilityClass } from '@mui/material';
 
 const tabs = [
   {

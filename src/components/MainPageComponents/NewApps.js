@@ -85,7 +85,6 @@ const NewApps = () => {
           });
           if (activePage) {
             const apps = filteredApps?.slice(0, 6);
-            console.log(apps, 'APPS FOR MAIN PAGE');
             dispatch(mainDataActions.setApps(apps));
           }
         } else {
