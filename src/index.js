@@ -69,7 +69,7 @@ export const router = createBrowserRouter([
     element: <Profile />,
   },
   {
-    path: '/a/:naddr',
+    path: '/a/:naddr/:review?',
     element: <AppInfo />,
   },
   {
