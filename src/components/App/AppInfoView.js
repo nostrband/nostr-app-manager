@@ -35,6 +35,7 @@ const tabs = [
 
 const AppInfoView = () => {
   const params = useParams();
+  console.log(params, 'PARAMS');
   const naddr = (params.naddr ?? '').toLowerCase();
   const [error, setError] = useState('');
   const [info, setInfo] = useState(null);

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../../common';
 import ConfirmDeleteModal from '../../elements/ConfirmDeleteModal';
@@ -22,8 +22,9 @@ import { useReviewModal } from '../../context/ShowReviewContext';
 import { decode as bolt11Decode } from 'light-bolt11-decoder';
 
 const AppInfo = (props) => {
+  const { naddr, review: reviewParams } = useParams();
   const [showModal, setShowModal] = useState(false);
-  const { showReviewModal, setShowReviewModal } = useReviewModal();
+  const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
   const [liked, setLiked] = useState(false);
   const [review, setReview] = useState(false);
@@ -35,7 +36,6 @@ const AppInfo = (props) => {
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
-  const naddr = cmn.getNaddr(props.app);
 
   const isAllowEdit = () => {
     return cmn.isAuthed() && cmn.getLoginPubkey() === props.app.pubkey;
@@ -235,9 +235,7 @@ const AppInfo = (props) => {
   }, []);
 
   const openReviewModalHandler = () => {
-    if (cmn.localGet('loginPubkey')) {
-      setShowReviewModal(true);
-    } else {
+    if (!cmn.localGet('loginPubkey')) {
       setShowLogin(true);
     }
   };
@@ -348,15 +346,22 @@ const AppInfo = (props) => {
                 </Tooltip>
               }
             >
-              <div
-                onClick={openReviewModalHandler}
-                className="review count-block"
+              <Link
+                to={cmn.localGet('loginPubkey') ? `/a/${naddr}/review` : ''}
               >
-                <span className="font-weight-bold" style={{ color: '#FFC700' }}>
-                  {review ? countReview : '+'}
-                </span>
-                {review ? <CheckedStar /> : <UnCheckedStar />}
-              </div>
+                <div
+                  onClick={openReviewModalHandler}
+                  className="review count-block"
+                >
+                  <span
+                    className="font-weight-bold"
+                    style={{ color: '#FFC700' }}
+                  >
+                    {review ? countReview : '+'}
+                  </span>
+                  {review ? <CheckedStar /> : <UnCheckedStar />}
+                </div>
+              </Link>
             </OverlayTrigger>
           </div>
 
@@ -399,7 +404,7 @@ const AppInfo = (props) => {
         textForShare={textForShare}
       />
 
-      {showReviewModal ? (
+      {reviewParams === 'review' ? (
         <ReviewModal
           hasReview={hasReview}
           countReview={countReview}
@@ -407,8 +412,8 @@ const AppInfo = (props) => {
           setCountReview={setCountReview}
           review={review}
           app={props.app}
-          showModal={showReviewModal}
-          handleCloseModal={() => setShowReviewModal(false)}
+          showModal={reviewParams === 'review'}
+          handleCloseModal={() => navigate(`/a/${naddr}`)}
         />
       ) : null}
     </div>
