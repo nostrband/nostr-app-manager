@@ -30,7 +30,6 @@ const NewApps = () => {
     loading,
     scrollPosition,
     appAddrs,
-    appCountsState,
     hasMore,
     lastCreatedAt,
     followedPubkeys,
@@ -62,40 +61,70 @@ const NewApps = () => {
         'MAIN_PAGE',
         category
       );
+
       const newAppsData = [];
       for (const name in info.apps) {
         const app = info.apps[name].handlers[0];
         newAppsData.push(app);
       }
+
       const currentApps = appListState.allApps;
-      if (newAppsData.length > 0) {
-        const filteredApps = newAppsData.filter(
-          (newApp) =>
-            !currentApps.some((existingApp) => existingApp.id === newApp.id)
-        );
-        if (filteredApps.length > 0) {
-          const lastApp = filteredApps[filteredApps.length - 1];
-          updateState({
-            allApps: [...currentApps, ...filteredApps],
-            lastCreatedAt: lastApp ? lastApp.created_at : null,
-            appAddrs: [
-              ...appListState.appAddrs,
-              ...filteredApps.map((app) => cmn.generateAddr(app)),
-            ],
-          });
-          if (activePage) {
-            const apps = filteredApps?.slice(0, 6);
-            dispatch(mainDataActions.setApps(apps));
+      const filteredApps = newAppsData.filter(
+        (newApp) =>
+          !currentApps.some((existingApp) => existingApp.id === newApp.id)
+      );
+
+      const ndk = await cmn.getNDK();
+      const newAppAddrs = filteredApps.map((app) => cmn.generateAddr(app));
+      const filter = pubkey
+        ? {
+            kinds: [31989],
+            '#a': newAppAddrs, // Только новые адреса
+            authors: followedPubkeys,
+            limit: 100,
           }
-        } else {
-          updateState({ hasMore: false });
-          setEmpty(true);
+        : { kinds: [31989], '#a': newAppAddrs, limit: 100 };
+
+      const recommendedApps = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filter),
+      ]);
+
+      const appUsers = {};
+      recommendedApps.forEach((recommendedApp) => {
+        const appAddrTags = recommendedApp.tags.filter((tag) => tag[0] === 'a');
+        appAddrTags.forEach((tag) => {
+          const addr = tag[1];
+
+          if (!appUsers[addr]) {
+            appUsers[addr] = new Set();
+          }
+          appUsers[addr].add(recommendedApp.pubkey);
+        });
+      });
+
+      filteredApps.forEach((app) => {
+        const addr = cmn.generateAddr(app);
+        app.count = appUsers[addr] ? appUsers[addr].size : 0;
+      });
+
+      if (filteredApps.length > 0) {
+        const lastApp = filteredApps[filteredApps.length - 1];
+        updateState({
+          allApps: [...currentApps, ...filteredApps],
+          lastCreatedAt: lastApp ? lastApp.created_at : null,
+          appAddrs: [...appAddrs, ...newAppAddrs],
+        });
+
+        if (activePage) {
+          const apps = filteredApps?.slice(0, 6);
+          dispatch(mainDataActions.setApps(apps));
         }
       } else {
         updateState({ hasMore: false });
+        setEmpty(true);
       }
     } catch (error) {
-      console.log(error, 'ERRROR');
+      console.log(error, 'ERROR');
     } finally {
       updateState({ loading: false });
     }
@@ -173,46 +202,6 @@ const NewApps = () => {
     fetchFollowedPubkeys();
   }, [pubkey]);
 
-  useEffect(() => {
-    const fetchRecommendedApps = async () => {
-      const ndk = await cmn.getNDK();
-      if (appAddrs?.length > 0) {
-        const filter = pubkey
-          ? {
-              kinds: [31989],
-              '#a': appAddrs,
-              authors: followedPubkeys,
-              limit: 100,
-            }
-          : { kinds: [31989], '#a': appAddrs, limit: 100 };
-        const recommendedApps = await cmn.fetchAllEvents([
-          cmn.startFetch(ndk, filter),
-        ]);
-
-        const appUsers = {};
-        recommendedApps.forEach((recommendedApp) => {
-          const appAddrTags = recommendedApp.tags.filter(
-            (tag) => tag[0] === 'a'
-          );
-          appAddrTags.forEach((tag) => {
-            const addr = tag[1];
-
-            if (!appUsers[addr]) {
-              appUsers[addr] = new Set();
-            }
-            appUsers[addr].add(recommendedApp.pubkey);
-          });
-        });
-        const appCounts = {};
-        for (const [addr, userSet] of Object.entries(appUsers)) {
-          appCounts[addr] = userSet.size;
-        }
-        updateState({ appCountsState: appCounts });
-      }
-    };
-    fetchRecommendedApps();
-  }, [appAddrs, followedPubkeys]);
-
   return (
     <div className="pt-3">
       <Container className="ps-0 pe-0">
@@ -279,7 +268,7 @@ const NewApps = () => {
                       <div key={app.id}>
                         <ApplicationItem
                           pubkey={pubkey}
-                          count={appCountsState[appAddr] || 0}
+                          count={app.count || 0}
                           app={app}
                         />
                       </div>
@@ -301,7 +290,7 @@ const NewApps = () => {
                       <div key={app.id}>
                         <ApplicationItem
                           pubkey={pubkey}
-                          count={appCountsState[appAddr] || 0}
+                          count={app.count || 0}
                           app={app}
                         />
                       </div>

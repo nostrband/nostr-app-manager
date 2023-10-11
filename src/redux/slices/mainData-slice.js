@@ -16,7 +16,6 @@ export const mainDataSlice = createSlice({
       state.apps = payload;
     },
     setRepos(state, { payload }) {
-      console.log(payload, 'PAYLOAD');
       state.repositoriesData.repos = [
         ...state?.repositoriesData?.repos,
         ...payload.repos,
