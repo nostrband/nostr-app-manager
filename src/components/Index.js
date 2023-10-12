@@ -9,7 +9,6 @@ import {
   Route,
   Routes,
   useLocation,
-  useNavigate,
   useParams,
 } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
@@ -28,7 +27,7 @@ const Index = ({ addr }) => {
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
   const { pathname } = useLocation();
-  console.log(pathname, 'PATHNAME');
+  const { activePage } = useParams();
 
   const handleEditClose = () => setEditShow(false);
 
@@ -139,7 +138,7 @@ const Index = ({ addr }) => {
 
   return (
     <main className="mt-1 pt-2">
-      {!addr && pathname !== '/used-apps' ? (
+      {!addr && pathname !== '/used-apps' && !activePage ? (
         <Routes>
           <Route path="/" element={<Navigate to="/apps/social" />} />
         </Routes>
