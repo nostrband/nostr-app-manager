@@ -98,7 +98,7 @@ const Header = () => {
           <h4>
             <Link
               className="logo"
-              to={`${!activePage ? '/' : ''}`}
+              to={`${!activePage ? '/apps/social' : ''}`}
               onClick={goHome}
             >
               <Logo /> <span className="logo-text">App Manager</span>

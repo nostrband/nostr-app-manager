@@ -6,7 +6,7 @@ import { nip19 } from '@nostrband/nostr-tools';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import NostrEvent from '../elements/Event';
 import AppSelectItem from '../elements/AppSelectItem';
@@ -23,6 +23,7 @@ const EventApps = () => {
   const [currentApp, setCurrentApp] = useState(null);
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
+  const navigate = useNavigate();
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
@@ -140,7 +141,6 @@ const EventApps = () => {
         return null;
       }
     }
-
     return addr;
   };
 
@@ -284,7 +284,7 @@ const EventApps = () => {
 
   // homepage
   if (addr === null) {
-    return <Index />;
+    return <Index addr={addr} />;
   }
 
   // save the app in local settings for this platform

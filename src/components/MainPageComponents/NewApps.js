@@ -69,10 +69,12 @@ const NewApps = () => {
       }
 
       const currentApps = appListState.allApps;
-      const filteredApps = newAppsData.filter(
-        (newApp) =>
-          !currentApps.some((existingApp) => existingApp.id === newApp.id)
-      ).sort((a, b) => b.created_at - a.created_at);
+      const filteredApps = newAppsData
+        .filter(
+          (newApp) =>
+            !currentApps.some((existingApp) => existingApp.id === newApp.id)
+        )
+        .sort((a, b) => b.created_at - a.created_at);
 
       const ndk = await cmn.getNDK();
       const newAppAddrs = filteredApps.map((app) => cmn.generateAddr(app));
@@ -166,7 +168,7 @@ const NewApps = () => {
 
   const setActiveCategoryInMainPage = (nav) => {
     dispatch(mainDataActions.setApps([]));
-    navigate(`/main/${activePage}/${nav}`);
+    navigate(`/${activePage}/${nav}`);
   };
 
   useEffect(() => {
