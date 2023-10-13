@@ -3,12 +3,13 @@ import * as cmn from '../../common';
 import { Container, ListGroup } from 'react-bootstrap';
 import RepositoryElement from '../../elements/RepositoryElement';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { mainDataActions } from '../../redux/slices/mainData-slice';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Repositories = () => {
-  const { category } = useParams();
+  const { pathname } = useLocation();
+  const onTheMainPage = pathname === '/';
   const dispatch = useDispatch();
   const { repositoriesData } = useSelector((state) => state.mainData);
   const { repos: allRepositories, last_created_at: lastCreatedAt } =
@@ -89,7 +90,10 @@ const Repositories = () => {
         <ListGroup className="mb-3">
           {allRepositories.length > 0
             ? allRepositories
-                ?.slice(!category ? 0 : undefined, !category ? 4 : undefined)
+                ?.slice(
+                  onTheMainPage ? 0 : undefined,
+                  onTheMainPage ? 4 : undefined
+                )
                 .map((repo) => {
                   return (
                     <RepositoryElement
@@ -101,14 +105,14 @@ const Repositories = () => {
                 })
             : null}
         </ListGroup>
-        {loading && !empty && category && <LoadingSpinner />}
-        {loading && allRepositories.length === 0 && !category && (
+        {loading && !empty && !onTheMainPage && <LoadingSpinner />}
+        {loading && allRepositories.length === 0 && onTheMainPage && (
           <LoadingSpinner />
         )}
         {!loading && allRepositories.length === 0 ? (
           <span>Nothing yet.</span>
         ) : null}
-        {allRepositories.length > 0 && !category ? (
+        {allRepositories.length > 0 && onTheMainPage ? (
           <Link to="/repos">
             <button
               type="button"

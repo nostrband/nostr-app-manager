@@ -6,7 +6,7 @@ import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
@@ -25,9 +25,11 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
+const NewReviews = ({ myReviews, profilePubkey }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
+  const { pathname } = useLocation();
+  const onTheMainPage = pathname === '/';
   const { reviews, loading, lastCreatedAt, hasMore } = newReview;
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
@@ -38,7 +40,6 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const filteredReviews = reviews
     ?.filter((review) => review.app)
     .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
-  const { category } = useParams();
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -119,7 +120,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
             .filter((review) =>
               myReviews ? review.pubkey === profilePubkey : true
             )
-            ?.slice(!category ? 0 : undefined, !category ? 5 : undefined)
+            ?.slice(onTheMainPage ? 0 : undefined, onTheMainPage ? 5 : undefined)
             .map((review) => {
               let count = cmn.getCountReview(review);
               let appProfile = review.app?.content
@@ -181,8 +182,8 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
                 </ListGroupItem>
               );
             })}
-          {loading && !empty && category && <LoadingSpinner />}
-          {loading && filteredReviews.length === 0 && !category && (
+          {loading && !empty && !onTheMainPage && <LoadingSpinner />}
+          {loading && filteredReviews.length === 0 && onTheMainPage && (
             <LoadingSpinner />
           )}
 
@@ -190,7 +191,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
             <span> Nothing yet.</span>
           ) : null}
         </ListGroup>
-        {reviews.length > 0 && !category ? (
+        {reviews.length > 0 && onTheMainPage ? (
           <Link to="/reviews">
             <button
               type="button"
