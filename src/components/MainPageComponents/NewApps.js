@@ -13,8 +13,9 @@ import { mainDataActions } from '../../redux/slices/mainData-slice';
 
 const NewApps = () => {
   const { pubkey } = useAuth();
-  const { category: categoryUrl, activeCategory, activePage } = useParams();
+  const { category: categoryUrl } = useParams();
   const { apps: appsForMain } = useSelector((state) => state.mainData);
+  const [activeCategory, setActiveCategory] = useState('social');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
@@ -54,7 +55,7 @@ const NewApps = () => {
       } else if (activeCategory) {
         category = activeCategory;
       }
-
+      console.log(category, 'CATEGORY FETCH NEW APPS');
       const info = await cmn.fetchAppsByKinds(
         null,
         categoryUrl ? created_at : undefined,
@@ -117,7 +118,7 @@ const NewApps = () => {
           appAddrs: [...appAddrs, ...newAppAddrs],
         });
 
-        if (activePage) {
+        if (!categoryUrl) {
           const apps = filteredApps?.slice(0, 6);
           dispatch(mainDataActions.setApps(apps));
         }
@@ -168,7 +169,7 @@ const NewApps = () => {
 
   const setActiveCategoryInMainPage = (nav) => {
     dispatch(mainDataActions.setApps([]));
-    navigate(`/${activePage}/${nav}`);
+    setActiveCategory(nav);
   };
 
   useEffect(() => {
@@ -258,7 +259,7 @@ const NewApps = () => {
         )}
         <Row>
           <Col>
-            {activePage ? (
+            {!categoryUrl ? (
               <>
                 {appsForMain.length === 0 &&
                   !loading &&
@@ -277,12 +278,12 @@ const NewApps = () => {
                     );
                   })}
                 </div>
-                {loading && activePage && appsForMain.length === 0 && (
+                {loading && !categoryUrl && appsForMain.length === 0 && (
                   <LoadingSpinner />
                 )}
               </>
             ) : null}
-            {!activePage ? (
+            {categoryUrl ? (
               <>
                 {allApps.length === 0 && !loading && 'Nothing found on relays.'}
                 <div className="container-apps">

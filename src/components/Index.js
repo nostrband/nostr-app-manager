@@ -27,7 +27,6 @@ const Index = ({ addr }) => {
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
   const { pathname } = useLocation();
-  const { activePage } = useParams();
 
   const handleEditClose = () => setEditShow(false);
 
@@ -138,12 +137,6 @@ const Index = ({ addr }) => {
 
   return (
     <main className="mt-1 pt-2">
-      {!addr && pathname !== '/used-apps' && !activePage ? (
-        <Routes>
-          <Route path="/" element={<Navigate to="/apps/social" />} />
-        </Routes>
-      ) : null}
-
       {pathname === '/used-apps' ? (
         <UsedApps apps={apps} onSelect={onSelect} />
       ) : (

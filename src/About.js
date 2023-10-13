@@ -5,9 +5,6 @@ import { Link } from 'react-router-dom';
 
 import './About.scss';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
-
 function About() {
   return (
     <Container className="About">
