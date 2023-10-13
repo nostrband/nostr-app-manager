@@ -52,10 +52,11 @@ const NewApps = () => {
       let category;
       if (categoryUrl && categoryUrl !== 'all') {
         category = categoryUrl;
+      } else if (categoryUrl === 'all') {
+        category = null;
       } else if (activeCategory) {
         category = activeCategory;
       }
-      console.log(category, 'CATEGORY FETCH NEW APPS');
       const info = await cmn.fetchAppsByKinds(
         null,
         categoryUrl ? created_at : undefined,
