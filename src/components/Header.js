@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import './Header.scss';
 
 import * as cmn from '../common';
@@ -26,7 +26,8 @@ const Header = () => {
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
   const [showSearchField, setShowSearchField] = useState(false);
-  const { setAppsLoaded, clearApps } = useAppState();
+  const { clearApps } = useAppState();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -98,7 +99,7 @@ const Header = () => {
           <h4>
             <Link
               className="logo"
-              to={`${!activePage ? '/' : ''}`}
+              to={`${!activePage ? '/apps/social' : ''}`}
               onClick={goHome}
             >
               <Logo /> <span className="logo-text">App Manager</span>

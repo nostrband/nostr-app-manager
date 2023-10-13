@@ -5,9 +5,10 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import {
-  useSearchParams,
+  Navigate,
+  Route,
+  Routes,
   useLocation,
-  useNavigate,
   useParams,
 } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
@@ -18,27 +19,7 @@ import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
 import NewReviews from './MainPageComponents/NewReviews';
 
-const navs = [
-  {
-    title: 'Apps',
-    path: 'apps',
-  },
-  {
-    title: 'Code',
-    path: 'codes',
-  },
-  {
-    title: 'Reviews',
-    path: 'reviews',
-  },
-  {
-    title: 'Find app for event ',
-    path: 'search',
-  },
-];
-
-const Index = () => {
-  const { activePage } = useParams();
+const Index = ({ addr }) => {
   const [link, setLink] = useState('');
   const [apps, setApps] = useState([]);
   const [editShow, setEditShow] = useState(false);
@@ -46,7 +27,7 @@ const Index = () => {
   const [offForKinds, setOffForKinds] = useState([]);
   const [updated, setUpdated] = useState(0);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
+  const { activePage } = useParams();
 
   const handleEditClose = () => setEditShow(false);
 
@@ -65,7 +46,6 @@ const Index = () => {
 
   const redirect = (select) => {
     if (!link) return;
-
     const id =
       get('npub1', link) ||
       get('note1', link) ||
@@ -158,6 +138,12 @@ const Index = () => {
 
   return (
     <main className="mt-1 pt-2">
+      {!addr && pathname !== '/used-apps' && !activePage ? (
+        <Routes>
+          <Route path="/" element={<Navigate to="/apps/social" />} />
+        </Routes>
+      ) : null}
+
       {pathname === '/used-apps' ? (
         <UsedApps apps={apps} onSelect={onSelect} />
       ) : (
@@ -168,7 +154,6 @@ const Index = () => {
           <FindApps setLink={setLink} link={link} open={open} go={go} />
         </>
       )}
-
       <Modal show={editShow} onHide={handleEditClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit app</Modal.Title>
