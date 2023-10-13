@@ -385,7 +385,7 @@ export function naddrToAddr(naddr) {
 export async function fetchAllEvents(reqs, category) {
   if (category === 'CATEGORY') {
     console.log('DONE FETCH ALL EVENTS');
-    console.log(reqs,'REQS')
+    console.log(reqs, 'REQS');
   }
 
   const results = await Promise.allSettled(reqs);
@@ -574,7 +574,7 @@ export async function fetchAppsByKinds(
       ...(created_at ? { until: created_at } : {}),
       ...(category ? { '#t': [category] } : {}),
     };
-
+    console.log(filter, 'FILTER');
     if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
     let events;
     try {
@@ -583,7 +583,6 @@ export async function fetchAppsByKinds(
       console.error('Ошибка при получении событий:', err);
       throw err;
     }
-    console.log(events, 'EVENTS');
     const pubkeys = {};
     const filterForLabels = {
       kinds: [1985],
