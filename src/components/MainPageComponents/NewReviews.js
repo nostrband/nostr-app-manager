@@ -38,7 +38,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
   const filteredReviews = reviews
     ?.filter((review) => review.app)
     .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
-  const { activePage } = useParams();
+  const { category } = useParams();
 
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
@@ -119,7 +119,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
             .filter((review) =>
               myReviews ? review.pubkey === profilePubkey : true
             )
-            ?.slice(activePage ? 0 : undefined, activePage ? 5 : undefined)
+            ?.slice(!category ? 0 : undefined, !category ? 5 : undefined)
             .map((review) => {
               let count = cmn.getCountReview(review);
               let appProfile = review.app?.content
@@ -181,8 +181,8 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
                 </ListGroupItem>
               );
             })}
-          {loading && !empty && !activePage && <LoadingSpinner />}
-          {loading && filteredReviews.length === 0 && activePage && (
+          {loading && !empty && category && <LoadingSpinner />}
+          {loading && filteredReviews.length === 0 && !category && (
             <LoadingSpinner />
           )}
 
@@ -190,7 +190,7 @@ const NewReviews = ({ myReviews, profilePubkey, showSpinner }) => {
             <span> Nothing yet.</span>
           ) : null}
         </ListGroup>
-        {reviews.length > 0 && activePage ? (
+        {reviews.length > 0 && !category ? (
           <Link to="/reviews">
             <button
               type="button"

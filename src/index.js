@@ -36,7 +36,7 @@ const HTTP = new QueryClient();
 
 export const router = createBrowserRouter([
   {
-    path: '/:activePage?/:activeCategory?',
+    path: '/',
     element: <Root />,
   },
   {
