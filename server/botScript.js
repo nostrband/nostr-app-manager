@@ -1,5 +1,9 @@
-const { default: NDK } = require('@nostr-dev-kit/ndk');
-const { NDKRelaySet, NDKEvent } = require('@nostr-dev-kit/ndk').default;
+const {
+  default: NDK,
+  default: NDKEvent,
+  NDKRelaySet,
+} = require('@nostr-dev-kit/ndk');
+
 const axios = require('axios').default;
 
 const BOT_PUBKEY =
@@ -17,12 +21,14 @@ const ndk = new NDK({
 });
 
 async function publishRepo(repo) {
+  console.log(repo, 'REPO');
   const published_at = repo.created_at;
   const content = {
     description: repo.description.slice(0, 300),
     license: repo.license?.key || 'none',
     tags: repo.topics,
   };
+
   const ndkEvent = new NDKEvent(ndk);
   ndkEvent.kind = KIND_TEST;
   ndkEvent.pubkey = BOT_PUBKEY;
@@ -42,6 +48,7 @@ async function publishRepo(repo) {
     ],
     ndk
   );
+
   await ndkEvent.publish(relaySet);
 }
 
