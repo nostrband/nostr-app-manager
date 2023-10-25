@@ -120,7 +120,10 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
             .filter((review) =>
               myReviews ? review.pubkey === profilePubkey : true
             )
-            ?.slice(onTheMainPage ? 0 : undefined, onTheMainPage ? 5 : undefined)
+            ?.slice(
+              onTheMainPage ? 0 : undefined,
+              onTheMainPage ? 5 : undefined
+            )
             .map((review) => {
               let count = cmn.getCountReview(review);
               let appProfile = review.app?.content

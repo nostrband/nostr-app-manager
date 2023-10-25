@@ -35,7 +35,6 @@ const tabs = [
 
 const AppInfoView = () => {
   const params = useParams();
-  console.log(params, 'PARAMS');
   const naddr = (params.naddr ?? '').toLowerCase();
   const [error, setError] = useState('');
   const [info, setInfo] = useState(null);
@@ -113,8 +112,6 @@ const AppInfoView = () => {
         a: [{ kind: data?.pubkey, d_tag: +data?.identifier }],
         '#L': ['org.nostrapps.ontology'],
       };
-
-      console.log(query, 'QUERY');
 
       const categoriesByArtur = await cmn.fetchAllEvents(
         [cmn.startFetch(ndk, query)],

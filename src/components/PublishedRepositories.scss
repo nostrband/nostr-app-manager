@@ -27,9 +27,24 @@
 }
 .github-icon {
   width: 85px;
-  padding-top: 7px;
 }
 
 .description {
   margin: 10px 0;
+}
+
+.zap-button-repository {
+  svg {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+.repository-info-zap-button {
+  border: 1px solid #9747ff;
+  color: #9747ff;
+  border-radius: 10px;
+  padding: 18px 12px;
+  background: none;
+  cursor: default !important;
 }
