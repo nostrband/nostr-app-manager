@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import * as cmn from '../common';
 import LoadingSpinner from '../elements/LoadingSpinner';
@@ -139,17 +139,26 @@ const RepositoryView = () => {
       ) : (
         <Container className="mt-4 repository-view d-flex justify-content-between">
           <ul>
-            <div className="container-name">
-              <h2 className="font-weight-bold">
-                {`${
-                  repository?.tags.find((tag) => tag[0] === 'title')?.[1] || ''
-                }`}
-              </h2>
-              <GitHubIconWithStar link={linkTagValue} />
-              <div className="zap-button-repository">
-                <ZapFunctional noteId={nip19.noteEncode(repository.id)} />
+            <Container className="container-name">
+              <div>
+                <h2 className="font-weight-bold">
+                  {`${
+                    repository?.tags.find((tag) => tag[0] === 'title')?.[1] ||
+                    ''
+                  }`}
+                </h2>
+                <GitHubIconWithStar link={linkTagValue} />
               </div>
-            </div>
+
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
+              >
+                <button className="repository-info-zap-button">
+                  <ZapFunctional noteId={nip19.noteEncode(repository.id)} />
+                </button>
+              </OverlayTrigger>
+            </Container>
 
             {linkTagValue ? (
               <li>
