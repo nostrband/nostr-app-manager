@@ -11,6 +11,7 @@ import ReasubleModal from '../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
 import GitHubIconWithStar from '../elements/GitHubIconWithStar';
 import './PublishedRepositories.scss';
+import ZapFunctional from './MainPageComponents/ReviewsActions/ZapFunctional';
 
 const dynamicTags = [
   {
@@ -145,6 +146,9 @@ const RepositoryView = () => {
                 }`}
               </h2>
               <GitHubIconWithStar link={linkTagValue} />
+              <div className="zap-button-repository">
+                <ZapFunctional noteId={nip19.noteEncode(repository.id)} />
+              </div>
             </div>
 
             {linkTagValue ? (

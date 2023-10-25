@@ -2,6 +2,8 @@ import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import GitHubIconWithStar from './GitHubIconWithStar';
+import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';
+import { nip19 } from '@nostrband/nostr-tools';
 
 const RepositoryElement = ({ repo, getUrl }) => {
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
@@ -31,7 +33,7 @@ const RepositoryElement = ({ repo, getUrl }) => {
       </Link>
       {link ? (
         <a
-          className="link-to-github "
+          className="link-to-github"
           href={link[1]}
           target="_blank"
           rel="noopener noreferrer"
@@ -39,6 +41,9 @@ const RepositoryElement = ({ repo, getUrl }) => {
           <GitHubIconWithStar link={link[1]} />
         </a>
       ) : null}
+      <div className="zap-button-repository">
+        <ZapFunctional noteId={nip19.noteEncode(repo.id)} />
+      </div>
     </ListGroup.Item>
   );
 };

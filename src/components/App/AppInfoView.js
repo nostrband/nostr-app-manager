@@ -114,8 +114,6 @@ const AppInfoView = () => {
         '#L': ['org.nostrapps.ontology'],
       };
 
-      console.log(query, 'QUERY');
-
       const categoriesByArtur = await cmn.fetchAllEvents(
         [cmn.startFetch(ndk, query)],
         'CATEGORY'
