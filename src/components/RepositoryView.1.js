@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Container,
-  ListGroup,
-  ListGroupItem,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Button, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import * as cmn from '../common';
 import LoadingSpinner from '../elements/LoadingSpinner';
@@ -17,21 +10,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import ReasubleModal from '../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
 import GitHubIconWithStar from '../elements/GitHubIconWithStar';
-import './PublishedRepositories.scss';
 import ZapFunctional from './MainPageComponents/ReviewsActions/ZapFunctional';
+import { dynamicTags } from './RepositoryView';
 
-const dynamicTags = [
-  {
-    title: 'Programming languages:',
-    key: 'programmingLanguages',
-  },
-  {
-    title: 'Supported NIPs',
-    key: 'nips',
-  },
-];
-
-const RepositoryView = () => {
+export const RepositoryView = () => {
   const [loading, setLoading] = useState(true);
   const [repository, setRepository] = useState({
     tags: [],
@@ -73,38 +55,16 @@ const RepositoryView = () => {
     if (authorTag) {
       profile = await cmn.getProfile(authorTag[1]);
     }
-    const contributorTags = resultFetchAllEvents[0]?.tags?.filter(
-      (tag) => tag[0] === 'zap'
+    console.log(resultFetchAllEvents, 'RESULT');
+    const contributorTags = resultFetchAllEvents[0].tags?.filter(
+      (tag) => tag[3] === 'contributor'
     );
+    console.log(contributorTags, 'TAGSS');
 
-    const filterForAuthorsOfEmptyContentApps = {
-      kinds: [0],
-      authors: contributorTags.map((contributor) => contributor[1]),
-    };
-
-    const authorProfileContributions = await cmn.fetchAllEvents([
-      cmn.startFetch(ndk, filterForAuthorsOfEmptyContentApps),
-    ]);
-
-    const contributors = authorProfileContributions.map(
-      (profileContribution) => {
-        const correspondingTag = contributorTags.find(
-          (tag) => tag[1] === profileContribution.pubkey
-        );
-
-        if (correspondingTag) {
-          return {
-            ...profileContribution,
-            countContributions: parseInt(correspondingTag[3], 10),
-          };
-        } else {
-          return profileContribution;
-        }
-      }
-    );
-
-    setContributors(contributors);
-
+    // const contributorProfiles = await Promise.all(
+    //   contributorTags.map((tag) => cmn.getProfile(tag[1]))
+    // );
+    // setContributors(contributorProfiles);
     const repositoryData = resultFetchAllEvents[0];
     setRepository({
       ...repositoryData,
@@ -287,30 +247,6 @@ const RepositoryView = () => {
                 </div>
               ) : null}
             </li>
-            <li className="mt-4">
-              {contributors.length > 0 ? <strong>Contributions</strong> : null}
-              <ListGroup>
-                {contributors.map((r) => {
-                  const profile = r.content ? JSON.parse(r.content) : {};
-                  return (
-                    <ListGroupItem className="darked">
-                      <div className="d-flex align-items-center">
-                        <Profile
-                          key={r.id}
-                          profile={{ profile }}
-                          pubkey={r.pubkey}
-                          small={true}
-                        />
-
-                        <strong className="mx-1 ">
-                          ({r.countContributions})
-                        </strong>
-                      </div>
-                    </ListGroupItem>
-                  );
-                })}
-              </ListGroup>
-            </li>
           </ul>
 
           {allowEditDelete ? (
@@ -359,5 +295,3 @@ const RepositoryView = () => {
     </>
   );
 };
-
-export default RepositoryView;
