@@ -102,7 +102,6 @@ const AppInfoView = () => {
   useEffect(() => {
     const { data } = nip19.decode(naddr);
     const fetchAssignedCategory = async () => {
-      console.log('DONEN FETCH ASSIGNED CATEGORY');
       const ndk = await cmn.getNDK();
       const query = {
         kinds: [1985],
