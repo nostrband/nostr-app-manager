@@ -33,20 +33,41 @@ const Repositories = () => {
         cmn.startFetch(ndk, addrForFilter),
       ]);
       if (resultFetchAllEvents.length > 0) {
-        const filteredRepositories = resultFetchAllEvents.filter(
-          (newRepo) =>
-            !allRepositories.some(
-              (existingRepo) => existingRepo.id === newRepo.id
-            )
-        ).sort((a, b) => b.created_at - a.created_at);
+        const filteredRepositories = resultFetchAllEvents
+          .filter(
+            (newRepo) =>
+              !allRepositories.some(
+                (existingRepo) => existingRepo.id === newRepo.id
+              )
+          )
+          .sort((a, b) => b.created_at - a.created_at);
 
         if (filteredRepositories.length === 0) {
           setEmpty(true);
         }
 
+        const addContributionCounts = (repositories) => {
+          return repositories.map((repo) => {
+            const zapValues = (repo.tags || []).filter(
+              (tag) => tag[0] === 'zap'
+            );
+            const sumForRepo = zapValues.reduce(
+              (sum, zap) => sum + (Number(zap[3]) || 0),
+              0
+            );
+            return {
+              ...repo,
+              countContributions: sumForRepo,
+            };
+          });
+        };
+
+        const repositoriesWithCounts =
+          addContributionCounts(filteredRepositories);
+
         dispatch(
           mainDataActions.setRepos({
-            repos: filteredRepositories,
+            repos: repositoriesWithCounts,
             last_created_at:
               filteredRepositories[filteredRepositories.length - 1].created_at,
           })
@@ -101,6 +122,7 @@ const Repositories = () => {
                       key={repo.id}
                       repo={repo}
                       getUrl={cmn.getRepositoryUrl}
+                      countContributions={repo.countContributions}
                     />
                   );
                 })

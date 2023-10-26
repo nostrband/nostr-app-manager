@@ -17,7 +17,23 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
     const resultFetchAllEvents = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, addrForFilter),
     ]);
-    setPublishedRepositories(resultFetchAllEvents);
+
+    const addContributionCounts = (repositories) => {
+      return repositories.map((repo) => {
+        const zapValues = (repo.tags || []).filter((tag) => tag[0] === 'zap');
+        const sumForRepo = zapValues.reduce(
+          (sum, zap) => sum + (Number(zap[3]) || 0),
+          0
+        );
+        return {
+          ...repo,
+          countContributions: sumForRepo,
+        };
+      });
+    };
+
+    const repositoriesWithCounts = addContributionCounts(resultFetchAllEvents);
+    setPublishedRepositories(repositoriesWithCounts);
   };
 
   useEffect(() => {
@@ -28,6 +44,8 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
     return viewUrl;
   };
+
+  console.log(publishedRepositories, 'PUBLISHED REPOS');
 
   return (
     <div>
@@ -45,7 +63,13 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
       <ListGroup>
         {publishedRepositories.length > 0 ? (
           publishedRepositories?.map((repo) => {
-            return <RepositoryElement repo={repo} getUrl={getUrl} />;
+            return (
+              <RepositoryElement
+                countContributions={repo.countContributions}
+                repo={repo}
+                getUrl={getUrl}
+              />
+            );
           })
         ) : (
           <span>Nothing yet.</span>

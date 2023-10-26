@@ -86,8 +86,8 @@ const RepositoryView = () => {
       cmn.startFetch(ndk, filterForAuthorsOfEmptyContentApps),
     ]);
 
-    const contributors = authorProfileContributions.map(
-      (profileContribution) => {
+    const contributors = authorProfileContributions
+      .map((profileContribution) => {
         const correspondingTag = contributorTags.find(
           (tag) => tag[1] === profileContribution.pubkey
         );
@@ -100,8 +100,8 @@ const RepositoryView = () => {
         } else {
           return profileContribution;
         }
-      }
-    ).sort((a, b) => b.countContributions - a.countContributions);
+      })
+      .sort((a, b) => b.countContributions - a.countContributions);
 
     setContributors(contributors);
 
