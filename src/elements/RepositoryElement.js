@@ -10,6 +10,7 @@ const RepositoryElement = ({ repo, getUrl }) => {
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
 
   const link = repo.tags.find((tag) => tag[0] === 'r');
+  const url = link && link.length > 1 ? link[1] : ''
   let limitedDescription = '';
   if (descriptionTag) {
     const cleanDescription = descriptionTag[1].replace(/<br\s*\/?>/gi, ' ');
@@ -38,11 +39,11 @@ const RepositoryElement = ({ repo, getUrl }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <GitHubIconWithStar link={link[1]} />
+          <GitHubIconWithStar link={url} />
         </a>
       ) : null}
       <div className="zap-button-repository">
-        <ZapFunctional noteId={nip19.noteEncode(repo.id)} />
+        <ZapFunctional noteId={nip19.noteEncode(repo.id)} comment={url ? `For ${url}` : ''} />
       </div>
     </ListGroup.Item>
   );
