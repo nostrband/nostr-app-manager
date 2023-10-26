@@ -101,7 +101,7 @@ const RepositoryView = () => {
           return profileContribution;
         }
       }
-    );
+    ).sort((a, b) => b.countContributions - a.countContributions);
 
     setContributors(contributors);
 
