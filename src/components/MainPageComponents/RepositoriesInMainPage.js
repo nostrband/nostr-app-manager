@@ -38,7 +38,8 @@ const Repositories = () => {
             !allRepositories.some(
               (existingRepo) => existingRepo.id === newRepo.id
             )
-        );
+        ).sort((a, b) => b.created_at - a.created_at);
+
         if (filteredRepositories.length === 0) {
           setEmpty(true);
         }

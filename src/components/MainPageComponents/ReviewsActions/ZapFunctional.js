@@ -1,8 +1,8 @@
 import React from 'react';
 
-const ZapFunctional = ({ noteId }) => {
+const ZapFunctional = ({ noteId, comment }) => {
   return (
-    <a href={`https://zapper.nostrapps.org/zap?id=${noteId}`} target="_blank">
+    <a href={`https://zapper.nostrapps.org/zap?id=${noteId}&comment=${encodeURIComponent(comment)}`} target="_blank">
       <svg
         style={{ cursor: 'pointer' }}
         className="svg-inline--fa fa-pointer"

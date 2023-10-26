@@ -155,7 +155,7 @@ const RepositoryView = () => {
                 overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
               >
                 <button className="repository-info-zap-button">
-                  <ZapFunctional noteId={nip19.noteEncode(repository.id)} />
+                  <ZapFunctional noteId={nip19.noteEncode(repository.id)} comment={linkTagValue ? `For ${linkTagValue}` : ''}/>
                 </button>
               </OverlayTrigger>
             </Container>
