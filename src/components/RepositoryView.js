@@ -103,7 +103,9 @@ const RepositoryView = () => {
       }
     );
 
-    setContributors(contributors);
+    setContributors(
+      contributors.sort((a, b) => b.countContributions - a.countContributions)
+    );
 
     const repositoryData = resultFetchAllEvents[0];
     setRepository({
