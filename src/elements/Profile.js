@@ -30,7 +30,7 @@ const Profile = (props) => {
               style={{
                 borderRadius: props.appLogo ? '7px' : '50%',
               }}
-              alt={p?.name}
+              alt=''
               width={size}
               height={size}
               src={p?.picture}
@@ -41,7 +41,7 @@ const Profile = (props) => {
           )}
           {!p?.picture && props.appLogo && (
             <div className="default-image-app-review">
-              <img src={defaultImage} alt={name} />
+              <img src={defaultImage} alt='' />
             </div>
           )}
         </Link>
