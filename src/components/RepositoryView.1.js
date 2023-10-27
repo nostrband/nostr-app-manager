@@ -55,11 +55,9 @@ export const RepositoryView = () => {
     if (authorTag) {
       profile = await cmn.getProfile(authorTag[1]);
     }
-    console.log(resultFetchAllEvents, 'RESULT');
     const contributorTags = resultFetchAllEvents[0].tags?.filter(
       (tag) => tag[3] === 'contributor'
     );
-    console.log(contributorTags, 'TAGSS');
 
     // const contributorProfiles = await Promise.all(
     //   contributorTags.map((tag) => cmn.getProfile(tag[1]))

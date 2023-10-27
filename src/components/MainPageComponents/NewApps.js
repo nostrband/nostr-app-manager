@@ -18,6 +18,7 @@ const NewApps = () => {
   const [activeCategory, setActiveCategory] = useState('social');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const {
     appListState,
     setAppListState,

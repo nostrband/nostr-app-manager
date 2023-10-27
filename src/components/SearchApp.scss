@@ -1,6 +1,8 @@
 .search-field-container {
-  width: 100%;
-  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 5px;
 }
 
 .app-logo-option {
@@ -26,5 +28,16 @@
   img {
     width: 25px;
     height: 25px;
+  }
+}
+
+.search-button {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 40px;
+  @media (max-width: 615) {
+    width: 60px;
   }
 }

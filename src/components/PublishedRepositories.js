@@ -18,21 +18,8 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
       cmn.startFetch(ndk, addrForFilter),
     ]);
 
-    const addContributionCounts = (repositories) => {
-      return repositories.map((repo) => {
-        const zapValues = (repo.tags || []).filter((tag) => tag[0] === 'zap');
-        const sumForRepo = zapValues.reduce(
-          (sum, zap) => sum + (Number(zap[3]) || 0),
-          0
-        );
-        return {
-          ...repo,
-          countContributions: sumForRepo,
-        };
-      });
-    };
-
-    const repositoriesWithCounts = addContributionCounts(resultFetchAllEvents);
+    const repositoriesWithCounts =
+      cmn.addContributionCounts(resultFetchAllEvents);
     setPublishedRepositories(repositoriesWithCounts);
   };
 
@@ -44,8 +31,6 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
     return viewUrl;
   };
-
-  console.log(publishedRepositories, 'PUBLISHED REPOS');
 
   return (
     <div>

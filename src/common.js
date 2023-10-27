@@ -383,11 +383,6 @@ export function naddrToAddr(naddr) {
 }
 
 export async function fetchAllEvents(reqs, category) {
-  if (category === 'CATEGORY') {
-    console.log('DONE FETCH ALL EVENTS');
-    console.log(reqs, 'REQS');
-  }
-
   const results = await Promise.allSettled(reqs);
   let events = [];
   for (const r of results) {
@@ -398,9 +393,6 @@ export async function fetchAllEvents(reqs, category) {
         else events.push(r.value);
       }
     }
-  }
-  if (category === 'CATEGORY') {
-    console.log(events, 'EVENTS');
   }
   return dedupEvents(events);
 }
@@ -1315,3 +1307,17 @@ export function formatNumber(num) {
   });
   return formatter.format(num);
 }
+
+export const addContributionCounts = (repositories) => {
+  return repositories.map((repo) => {
+    const zapValues = (repo.tags || []).filter((tag) => tag[0] === 'zap');
+    const sumForRepo = zapValues.reduce(
+      (sum, zap) => sum + (Number(zap[3]) || 0),
+      0
+    );
+    return {
+      ...repo,
+      countContributions: sumForRepo,
+    };
+  });
+};
