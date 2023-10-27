@@ -35,7 +35,7 @@ const AppsBySearch = () => {
           );
         })}
       </ListGroup>
-      {!loading && apps.length === 0 ? <span> Nothing found </span> : null}
+      {!loading && apps.length === 0 ? <span> Nothing found, try Repositories </span> : null}
       {loading && apps.length === 0 ? <LoadingSpinner /> : null}
     </div>
   );

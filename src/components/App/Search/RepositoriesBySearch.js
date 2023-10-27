@@ -38,7 +38,7 @@ const RepositoriesBySearch = () => {
         })}
       </ListGroup>
       {!loading && repositories.length === 0 ? (
-        <span> Nothing found </span>
+        <span> Nothing found, check Apps </span>
       ) : null}
       {loading && repositories.length === 0 ? <LoadingSpinner /> : null}
     </div>
