@@ -6,7 +6,7 @@ export const fetchAppsBySearchQuery = createAsyncThunk(
   async (searchValue) => {
     const ndk = await cmn.getNDK();
     if (searchValue.length > 0) {
-      const filterApps = { kinds: [31990], search: searchValue };
+      const filterApps = { kinds: [31990], search: `${searchValue} include:spam` };
       let apps = await cmn.fetchAllEvents([cmn.startFetch(ndk, filterApps)]);
       return apps;
     }
@@ -18,7 +18,7 @@ export const fetchReposBySearchQuery = createAsyncThunk(
   async (searchValue) => {
     const ndk = await cmn.getNDK();
     if (searchValue.length > 0) {
-      const filterRepos = { kinds: [30117], search: searchValue };
+      const filterRepos = { kinds: [30117], search: `${searchValue} include:spam` };
       let repos = await cmn.fetchAllEvents([cmn.startFetch(ndk, filterRepos)]);
       return cmn.addContributionCounts(repos);
     }

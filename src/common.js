@@ -1317,6 +1317,7 @@ export const addContributionCounts = (repositories) => {
     );
     return {
       ...repo,
+      countContributors: zapValues.length,
       countContributions: sumForRepo,
     };
   });

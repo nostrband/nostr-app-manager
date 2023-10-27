@@ -5,7 +5,7 @@ import GitHubIconWithStar from './GitHubIconWithStar';
 import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';
 import { nip19 } from '@nostrband/nostr-tools';
 
-const RepositoryElement = ({ repo, getUrl, countContributions }) => {
+const RepositoryElement = ({ repo, getUrl, countContributors, countContributions }) => {
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
 
@@ -30,9 +30,9 @@ const RepositoryElement = ({ repo, getUrl, countContributions }) => {
         </div>
         <div>
           <p className="mb-2">{limitedDescription}</p>
-          {countContributions > 0 ? (
+          {countContributors > 0 ? (
             <span>
-              <strong>{countContributions}</strong> contributors
+              <strong>{countContributors}</strong> contributors
             </span>
           ) : null}
         </div>

@@ -31,6 +31,7 @@ const RepositoriesBySearch = () => {
               key={repo.id}
               repo={repo}
               getUrl={cmn.getRepositoryUrl}
+              countContributors={repo.countContributors}
               countContributions={repo.countContributions}
             />
           );
