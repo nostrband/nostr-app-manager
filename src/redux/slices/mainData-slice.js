@@ -6,6 +6,7 @@ const initialState = {
     repos: [],
     last_created_at: null,
   },
+  searchResultApps: [],
 };
 
 export const mainDataSlice = createSlice({

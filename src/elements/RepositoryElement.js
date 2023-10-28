@@ -5,12 +5,12 @@ import GitHubIconWithStar from './GitHubIconWithStar';
 import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';
 import { nip19 } from '@nostrband/nostr-tools';
 
-const RepositoryElement = ({ repo, getUrl }) => {
+const RepositoryElement = ({ repo, getUrl, countContributors, countContributions }) => {
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
 
   const link = repo.tags.find((tag) => tag[0] === 'r');
-  const url = link && link.length > 1 ? link[1] : ''
+  const url = link && link.length > 1 ? link[1] : '';
   let limitedDescription = '';
   if (descriptionTag) {
     const cleanDescription = descriptionTag[1].replace(/<br\s*\/?>/gi, ' ');
@@ -29,7 +29,12 @@ const RepositoryElement = ({ repo, getUrl }) => {
           <strong>{titleTag && titleTag[1]}</strong>
         </div>
         <div>
-          <p>{limitedDescription}</p>
+          <p className="mb-2">{limitedDescription}</p>
+          {countContributors > 0 ? (
+            <span>
+              <strong>{countContributors}</strong> contributors
+            </span>
+          ) : null}
         </div>
       </Link>
       {link ? (
@@ -43,7 +48,10 @@ const RepositoryElement = ({ repo, getUrl }) => {
         </a>
       ) : null}
       <div className="zap-button-repository">
-        <ZapFunctional noteId={nip19.noteEncode(repo.id)} comment={url ? `For ${url}` : ''} />
+        <ZapFunctional
+          noteId={nip19.noteEncode(repo.id)}
+          comment={url ? `For ${url}` : ''}
+        />
       </div>
     </ListGroup.Item>
   );

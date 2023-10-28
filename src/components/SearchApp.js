@@ -1,109 +1,48 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { debounce } from 'lodash';
-import * as cmn from '../common';
-import SearchIcon from '../icons/Search';
-import InputAdornment from '@mui/material/InputAdornment';
 import './SearchApp.scss';
-import SearchOptionAppElement from './SearchOptionAppElement';
-import LoadingSpinner from '../elements/LoadingSpinner';
+import SearchButton from '../elements/SearchButton';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchAppsBySearchQuery,
+  resultSearchActions,
+  fetchReposBySearchQuery,
+} from '../redux/slices/resultSearchData-slice';
+import { clearSearchResults } from '../redux/slices/resultSearchData-slice';
+import { useDispatch } from 'react-redux';
 
 const SearchApp = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [options, setOptions] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { searchValue } = useParams();
+  const [searchTerm, setSearchTerm] = useState(searchValue);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const transformData = (data) => {
-    return {
-      id: data.id,
-      name:
-        JSON.parse(data.content).display_name || JSON.parse(data.content).name,
-      picture: JSON.parse(data.content).picture,
-      app: data,
-    };
+  const searchAppsAndRepositories = (event) => {
+    event.preventDefault();
+    dispatch(clearSearchResults());
+    dispatch(fetchAppsBySearchQuery(searchTerm));
+    dispatch(fetchReposBySearchQuery(searchTerm));
+    navigate(`/search/${searchTerm}`);
   };
-  const getAppsBySearchQuery = async (searchValue) => {
-    const ndk = await cmn.getNDK();
-    setLoading(true);
-    try {
-      const filter = { kinds: [31990], search: searchValue };
-      let rawResult = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
-      let result = rawResult.map(transformData);
-      setOptions(result);
-    } catch (error) {
-      setOptions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const searchFunction = useCallback(
-    debounce((query) => {
-      getAppsBySearchQuery(query);
-    }, 500),
-    []
-  );
-
-  useEffect(() => {
-    if (searchTerm) {
-      searchFunction(searchTerm);
-    }
-    return () => searchFunction.cancel();
-  }, [searchTerm, searchFunction]);
 
   return (
-    <div
-      style={{
-        zIndex: 10,
-        position: 'relative',
-      }}
-      className="search-field-container w-100"
-    >
-      <Autocomplete
-        open={isOpen}
-        loading={loading}
-        loadingText={<LoadingSpinner removeSpace />}
-        onOpen={() => setIsOpen(true)}
-        onClose={() => setIsOpen(false)}
-        options={options}
-        noOptionsText="Sorry, nothing was found."
-        getOptionLabel={(option) => option.name}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <SearchOptionAppElement option={option} />
-          </li>
-        )}
-        value={selectedOption}
-        onChange={(event, newValue) => setSelectedOption(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            fullWidth
-            size="small"
-            variant="outlined"
-            value={selectedOption ? selectedOption.name : searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setSelectedOption(null);
-            }}
-            placeholder="Search..."
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <>
-                  <InputAdornment style={{ margin: '0 5px' }} position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                  {params.InputProps.startAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
-      />
-    </div>
+    <form onSubmit={searchAppsAndRepositories}>
+      <div className="search-field-container w-100">
+        <TextField
+          fullWidth
+          size="small"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+          }}
+          placeholder="Search..."
+        />
+        <Link onClick={searchAppsAndRepositories} to={`/search/${searchTerm}`}>
+          <SearchButton>Search</SearchButton>
+        </Link>
+      </div>
+    </form>
   );
 };
 

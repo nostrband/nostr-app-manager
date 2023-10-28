@@ -75,7 +75,6 @@ export const NewReviewStateProvider = ({ children }) => {
     };
     try {
       const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
-      console.log(response, 'RESPONSE');
       const currentApps = newReview.reviews;
 
       if (response.length > 0) {

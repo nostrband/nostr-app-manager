@@ -25,7 +25,6 @@ const Header = () => {
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
-  const [showSearchField, setShowSearchField] = useState(false);
   const { clearApps } = useAppState();
 
   useEffect(() => {
@@ -107,13 +106,7 @@ const Header = () => {
         </Col>
         <Col style={{ width: isTablet ? '45%' : '60%' }} xs="auto">
           <div className="d-flex justify-content-end">
-            {!isTablet ? (
-              <SearchApp />
-            ) : (
-              <SearchButton
-                onClick={() => setShowSearchField((prev) => !prev)}
-              />
-            )}
+            {!isTablet ? <SearchApp /> : null}
             {!pubkey && (
               <div>
                 <Dropdown drop="down-left">
@@ -211,7 +204,7 @@ const Header = () => {
           </div>
         </Col>
       </Row>
-      {isTablet && showSearchField ? (
+      {isTablet ? (
         <Col>
           <div className="fade-in mt-2">
             <SearchApp />

@@ -69,7 +69,6 @@ const AppInfoView = () => {
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
-    console.log(appInfo, 'APP INFO');
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
@@ -116,12 +115,10 @@ const AppInfoView = () => {
         [cmn.startFetch(ndk, query)],
         'CATEGORY'
       );
-      console.log(categoriesByArtur, 'CATEGORIES BY ARTUR');
       const categories = categoriesByArtur.map((event) =>
         event.tags.find((tag) => tag[0] === 'l')
       );
       const assignedCategory = categories?.length > 0 ? categories[0][1] : null;
-      console.log(assignedCategory, 'ASSIGNED CATEGORY');
       if (assignedCategory) {
         setAssignedCategory(assignedCategory);
       }

@@ -31,6 +31,7 @@ import NewReviews from './components/MainPageComponents/NewReviews';
 import Repositories from './components/MainPageComponents/RepositoriesInMainPage';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import SearchResultApps from './components/App/SearchResultApps';
 
 const HTTP = new QueryClient();
 
@@ -124,6 +125,14 @@ export const router = createBrowserRouter([
     element: (
       <ContainerWithHeaderFooter>
         <Repositories />
+      </ContainerWithHeaderFooter>
+    ),
+  },
+  {
+    path: '/search/:searchValue?',
+    element: (
+      <ContainerWithHeaderFooter>
+        <SearchResultApps />
       </ContainerWithHeaderFooter>
     ),
   },

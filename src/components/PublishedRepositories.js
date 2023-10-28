@@ -17,7 +17,10 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
     const resultFetchAllEvents = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, addrForFilter),
     ]);
-    setPublishedRepositories(resultFetchAllEvents);
+
+    const repositoriesWithCounts =
+      cmn.addContributionCounts(resultFetchAllEvents);
+    setPublishedRepositories(repositoriesWithCounts);
   };
 
   useEffect(() => {
@@ -45,7 +48,13 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
       <ListGroup>
         {publishedRepositories.length > 0 ? (
           publishedRepositories?.map((repo) => {
-            return <RepositoryElement repo={repo} getUrl={getUrl} />;
+            return (
+              <RepositoryElement
+                countContributions={repo.countContributions}
+                repo={repo}
+                getUrl={getUrl}
+              />
+            );
           })
         ) : (
           <span>Nothing yet.</span>
