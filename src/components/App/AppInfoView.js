@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { nip19 } from '@nostrband/nostr-tools';
 
@@ -16,6 +16,8 @@ import FollowersAppInfoView from './FollowersAppInfoView';
 import ReviewsAppInfoView from './Reviews/ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
+import RepositoryElement from '../../elements/RepositoryElement';
+import { isTablet } from '../../const';
 
 const tabs = [
   {
@@ -50,6 +52,36 @@ const AppInfoView = () => {
   const [activeComponent, setActiveComponent] = useState('reviews');
   const navigate = useNavigate();
   const [assignedCategory, setAssignedCategory] = useState('');
+  const [repositoryLink, setRepositoryLink] = useState({
+    type: '',
+    link: '',
+  });
+
+  const fetchRepositoryEventByRepoLink = async (repoLink) => {
+    const ndk = await cmn.getNDK();
+    const filter = {
+      kinds: [30117],
+      '#r': [repoLink],
+      authors: [
+        'a3396742d16e209dbef6de785024818e7fb5b7f68d9a6c3ee7f21a7725a13f55',
+      ],
+    };
+    const resultFetchAllEvents = await cmn.fetchAllEvents([
+      cmn.startFetch(ndk, filter),
+    ]);
+    if (resultFetchAllEvents[0]) {
+      setRepositoryLink({
+        type: 'REPOSITORY',
+        link: resultFetchAllEvents[0],
+      });
+    } else {
+      setRepositoryLink({
+        type: 'GITHUB',
+        link: repoLink,
+      });
+    }
+  };
+
   const init = useCallback(async () => {
     const ndk = await cmn.getNDK();
     const { type, data } = nip19.decode(naddr);
@@ -66,9 +98,14 @@ const AppInfoView = () => {
     });
     // app info doesn't require authed user data
     const info = await cmn.fetchApps(addr.pubkey, addr);
+
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
+    const repositoryLink = appInfo?.tags?.find((tag) => tag[2] === 'source');
+    if (repositoryLink[1]) {
+      fetchRepositoryEventByRepoLink(repositoryLink[1]);
+    }
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
@@ -165,6 +202,26 @@ const AppInfoView = () => {
     reactions: <ReacitonsAppInfoView app={appInfo} />,
   };
 
+  const repositoryElement = () => {
+    return (
+      <div>
+        {repositoryLink.link ? <h6 className="mt-3">Source code:</h6> : null}
+        {repositoryLink.type === 'REPOSITORY' && repositoryLink.link ? (
+          <div className="repo-app-info">
+            <RepositoryElement
+              repo={repositoryLink.link}
+              getUrl={cmn.getRepositoryUrl}
+            />
+          </div>
+        ) : (
+          <a href={repositoryLink.link} target="blank">
+            {repositoryLink.link}
+          </a>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       {info === null && (
@@ -257,7 +314,9 @@ const AppInfoView = () => {
                 </div>
               </>
             ) : null}
+            {!isTablet ? repositoryElement() : null}
           </AppInfo>
+          {isTablet ? repositoryElement() : null}
           <div className="d-flex  justify-content-center pt-4 pb-3">
             <ul className="nav nav-pills d-flex justify-content-center">
               {tabs.map((nav) => {

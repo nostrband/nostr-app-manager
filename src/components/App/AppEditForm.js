@@ -33,6 +33,7 @@ const AppEditForm = (props) => {
   const [inherit, setInherit] = useState(false);
   const [name, setName] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [repositoryLink, setRepositoryLink] = useState('');
   const [author, setAuthor] = useState('');
   const [nip05, setNip05] = useState('');
   const [picture, setPicture] = useState('');
@@ -61,7 +62,6 @@ const AppEditForm = (props) => {
   const toggleInherit = (v) => {
     setInherit(v);
     const meta = v ? props.profileMeta : props.app ?? {};
-    console.log(meta, 'META');
     setName(meta.profile?.name || '');
     setDisplayName(meta.profile?.display_name || '');
     setNip05(meta.profile?.nip05 || '');
@@ -73,6 +73,11 @@ const AppEditForm = (props) => {
     const authorTag = meta?.tags?.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
+    const repositoryLink = meta?.tags?.find((tag) => tag[2] === 'source');
+    if (repositoryLink) {
+      setRepositoryLink(repositoryLink[1]);
+    }
+
     if (authorTag) {
       const npub = nip19.npubEncode(authorTag[1]);
       setAuthor(npub);
@@ -177,6 +182,11 @@ const AppEditForm = (props) => {
       event.tags.push(['alt', `Nostr App: ${name}`]);
     }
 
+    if (repositoryLink) {
+      event.tags = event.tags.filter((tag) => tag[2] !== 'source');
+      event.tags.push(['r', repositoryLink, 'source']);
+    }
+
     if (author) {
       const { type, data } = nip19.decode(author);
       if (type === 'npub') {
@@ -228,6 +238,7 @@ const AppEditForm = (props) => {
     });
 
     setSending(true);
+    console.log(event, 'EVEEEENT PUBLISH');
     const r = await cmn.publishEvent(event);
     setSending(false);
     if (!r || r.error) {
@@ -399,6 +410,17 @@ const AppEditForm = (props) => {
             <Form.Text className="text-muted">
               Human-readable name of your app
             </Form.Text>
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="metaName">
+            <Form.Label>Repository link</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Write a link to the repository"
+              disabled={inherit}
+              value={repositoryLink}
+              onChange={(e) => setRepositoryLink(e.target.value)}
+            />
           </Form.Group>
           <Form.Group className="mb-3" controlId="author">
             <Form.Label>Author npub</Form.Label>
