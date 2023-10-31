@@ -1,0 +1,15 @@
+.releases-item-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.arrow {
+  transform: rotate(180deg);
+  margin-bottom: 5px;
+}
+
+.arrow.reverse {
+  transform: rotate(360deg);
+}
