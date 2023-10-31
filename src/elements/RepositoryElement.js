@@ -5,7 +5,12 @@ import GitHubIconWithStar from './GitHubIconWithStar';
 import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';
 import { nip19 } from '@nostrband/nostr-tools';
 
-const RepositoryElement = ({ repo, getUrl, countContributors, countContributions }) => {
+const RepositoryElement = ({
+  repo,
+  getUrl,
+  countContributors,
+  countContributions,
+}) => {
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
 
@@ -37,21 +42,23 @@ const RepositoryElement = ({ repo, getUrl, countContributors, countContributions
           ) : null}
         </div>
       </Link>
-      {link ? (
-        <a
-          className="link-to-github"
-          href={link[1]}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <GitHubIconWithStar link={url} />
-        </a>
-      ) : null}
-      <div className="zap-button-repository">
-        <ZapFunctional
-          noteId={nip19.noteEncode(repo.id)}
-          comment={url ? `For ${url}` : ''}
-        />
+      <div className="actions">
+        {link ? (
+          <a
+            className="link-to-github"
+            href={link[1]}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <GitHubIconWithStar link={url} />
+          </a>
+        ) : null}
+        <div className="zap-button-repository">
+          <ZapFunctional
+            noteId={nip19.noteEncode(repo.id)}
+            comment={url ? `For ${url}` : ''}
+          />
+        </div>
       </div>
     </ListGroup.Item>
   );

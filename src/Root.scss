@@ -85,6 +85,15 @@ img.banner {
     }
   }
 }
+
+.repo-app-info {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  .repository-card {
+    padding: 5px;
+  }
+}
+
 .AppInfo {
   @media (max-width: 450px) {
     .lud-16 {
