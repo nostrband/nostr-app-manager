@@ -10,13 +10,17 @@ const ReleasesAppInfoView = ({ repoLink }) => {
   const [loading, setLoading] = useState(false);
 
   const getReleasesFromGithub = async (repoLink) => {
-    const repoName = repoLink?.replace('https://github.com/', '');
+    let repoName = repoLink?.replace('https://github.com/', '');
+    if (repoName.endsWith('/')) {
+      repoName = repoName.slice(0, -1);
+    }
+
     const response = await fetch(
       `https://api.github.com/repos/${repoName}/releases`
     );
+
     return await response.json();
   };
-
   useEffect(() => {
     setLoading(true);
     let githubLink;
@@ -25,7 +29,6 @@ const ReleasesAppInfoView = ({ repoLink }) => {
     } else {
       githubLink = repoLink;
     }
-
     getReleasesFromGithub(githubLink)
       .then((data) => {
         if (Array.isArray(data)) {
