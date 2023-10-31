@@ -28,13 +28,16 @@ const ReleasesAppInfoView = ({ repoLink }) => {
 
     getReleasesFromGithub(githubLink)
       .then((data) => {
-        setReleases(data);
+        if (Array.isArray(data)) {
+          setReleases(data);
+        }
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
       });
   }, [repoLink]);
+
   return (
     <div>
       <ListGroup>
@@ -58,7 +61,12 @@ const ReleasesAppInfoView = ({ repoLink }) => {
 
             {selectedRelease === release.id && (
               <div>
-                <p>{release.body}</p>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: release.body.replace(/\r\n/g, '<br>'),
+                  }}
+                ></p>
+
                 <a
                   href={release.html_url}
                   target="_blank"

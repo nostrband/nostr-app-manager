@@ -343,7 +343,7 @@ const AppInfoView = () => {
             </ul>
           </div>
           {appInfoViewComponents[activeComponent]}
-          {activeComponent !== 'reviews' ? (
+          {activeComponent === 'users' ? (
             <div className="mt-2">
               <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
                 Add app to my list
