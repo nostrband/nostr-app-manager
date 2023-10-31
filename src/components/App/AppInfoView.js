@@ -18,6 +18,7 @@ import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
 import RepositoryElement from '../../elements/RepositoryElement';
 import { isTablet } from '../../const';
+import ReleasesAppInfoView from './ReleasesAppInfoView';
 
 const tabs = [
   {
@@ -32,6 +33,10 @@ const tabs = [
   {
     title: 'Reactions',
     path: 'reactions',
+  },
+  {
+    title: 'Releases',
+    path: 'releases',
   },
 ];
 
@@ -69,6 +74,7 @@ const AppInfoView = () => {
     const resultFetchAllEvents = await cmn.fetchAllEvents([
       cmn.startFetch(ndk, filter),
     ]);
+
     if (resultFetchAllEvents[0]) {
       setRepositoryLink({
         type: 'REPOSITORY',
@@ -200,6 +206,7 @@ const AppInfoView = () => {
     users: <FollowersAppInfoView app={appInfo} recomms={recomms} />,
     reviews: <ReviewsAppInfoView app={appInfo} />,
     reactions: <ReacitonsAppInfoView app={appInfo} />,
+    releases: <ReleasesAppInfoView repoLink={repositoryLink.link} />,
   };
 
   const repositoryElement = () => {
