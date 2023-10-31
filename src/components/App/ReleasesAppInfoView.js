@@ -72,7 +72,7 @@ const ReleasesAppInfoView = ({ repoLink }) => {
         ))}
       </ListGroup>
       {loading ? <LoadingSpinner /> : null}
-      {!loading && releases.length === 0 ? <span>Nothing yet.</span> : null}
+      {!loading && releases?.length === 0 ? <span>Nothing yet.</span> : null}
     </div>
   );
 };
