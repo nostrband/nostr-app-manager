@@ -51,7 +51,7 @@ const ReleasesAppInfoView = ({ repoLink }) => {
               }
               className="d-flex releases-item-title"
             >
-              <h5>{release.name || release.tag_name}</h5>
+              <h6>{release.name || release.tag_name}</h6>
               <ArrowIcon
                 className={`arrow ${
                   release.id === selectedRelease ? 'reverse' : ''
