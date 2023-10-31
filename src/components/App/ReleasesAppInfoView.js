@@ -5,7 +5,7 @@ import './ReleasesAppInfoView.scss';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 
 const ReleasesAppInfoView = ({ repoLink }) => {
-  const [releases, setReleases] = useState();
+  const [releases, setReleases] = useState([]);
   const [selectedRelease, setSelectedRelease] = useState(null);
   const [loading, setLoading] = useState(false);
 
