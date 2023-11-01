@@ -63,6 +63,10 @@ const tabs = [
     path: 'repos',
   },
   {
+    title: 'Collaborative Repositories',
+    path: 'contributor-repositories',
+  },
+  {
     title: 'Used apps',
     path: 'used-apps',
   },
@@ -88,6 +92,7 @@ const ProfileView = () => {
     },
     kinds: [],
   });
+
   const [activeComponent, setActiveComponent] = useState('apps');
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
@@ -111,7 +116,26 @@ const ProfileView = () => {
   const profileViewComponents = {
     apps: <Apps apps={apps} isLogged={isLogged} />,
     repos: (
-      <PublishedRepositories pubkey={pubkey} isLogged={isLogged} showButton />
+      <PublishedRepositories
+        filter={{
+          kinds: [30117],
+          authors: [pubkey],
+        }}
+        pubkey={pubkey}
+        isLogged={isLogged}
+        showButton
+      />
+    ),
+    ['contributor-repositories']: (
+      <PublishedRepositories
+        filter={{
+          kinds: [30117],
+          '#p': [pubkey],
+        }}
+        pubkey={pubkey}
+        isLogged={isLogged}
+        showButton
+      />
     ),
     ['used-apps']: (
       <UsedApps

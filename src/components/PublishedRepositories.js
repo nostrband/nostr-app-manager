@@ -4,86 +4,35 @@ import { Button, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
 import RepositoryElement from '../elements/RepositoryElement';
+import LoadingSpinner from '../elements/LoadingSpinner';
 
-const tabs = [
-  {
-    title: 'Repositories',
-    path: 'repositories',
-  },
-  {
-    title: 'Collaborative Repositories',
-    path: 'contributor-repositories',
-  },
-];
-const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
+const PublishedRepositories = ({ filter, showButton, isLogged }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
-  const [repositoriesByContributor, setRepositoriesByContributor] = useState(
-    []
-  );
-  const [selectedTab, setSelectedTab] = useState('repositories');
+  const [loading, setLoading] = useState(false);
 
   const fetchPublishedRepositories = async () => {
-    const ndk = await cmn.getNDK();
-    const addrForFilter = {
-      kinds: [30117],
-      authors: [pubkey],
-    };
-    const resultFetchAllEvents = await cmn.fetchAllEvents([
-      cmn.startFetch(ndk, addrForFilter),
-    ]);
-
-    const repositoriesWithCounts =
-      cmn.addContributionCounts(resultFetchAllEvents);
-    setPublishedRepositories(repositoriesWithCounts);
-  };
-
-  const fetchRepositoriesByContributor = async () => {
-    const ndk = await cmn.getNDK();
-    const addrForFilter = {
-      kinds: [30117],
-      '#p': [pubkey],
-    };
-    const resultFetchAllEvents = await cmn.fetchAllEvents([
-      cmn.startFetch(ndk, addrForFilter),
-    ]);
-    const repositoriesWithCounts =
-      cmn.addContributionCounts(resultFetchAllEvents);
-    setRepositoriesByContributor(repositoriesWithCounts);
+    setLoading(true);
+    try {
+      const ndk = await cmn.getNDK();
+      const resultFetchAllEvents = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filter),
+      ]);
+      const repositoriesWithCounts =
+        cmn.addContributionCounts(resultFetchAllEvents);
+      setPublishedRepositories(repositoriesWithCounts);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchPublishedRepositories();
-    fetchRepositoriesByContributor();
-  }, []);
+  }, [filter]);
 
   const getUrl = (event) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
     return viewUrl;
-  };
-
-  const renderRepositories = (repositories) => {
-    return (
-      <ListGroup>
-        {repositories?.length > 0 ? (
-          repositories?.map((repo) => {
-            return (
-              <RepositoryElement
-                countContributions={repo.countContributions}
-                repo={repo}
-                getUrl={getUrl}
-              />
-            );
-          })
-        ) : (
-          <span>Nothing yet.</span>
-        )}
-      </ListGroup>
-    );
-  };
-
-  const repositoriesByTab = {
-    repositories: renderRepositories(publishedRepositories),
-    ['contributor-repositories']: renderRepositories(repositoriesByContributor),
   };
 
   return (
@@ -98,23 +47,24 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
           </div>
         ) : null}
       </div>
-      <ul className="nav nav-pills d-flex  pb-4">
-        {tabs.map((nav) => {
-          return (
-            <li
-              onClick={() => {
-                setSelectedTab(nav.path);
-              }}
-              className={`pointer nav-link nav-item ${
-                selectedTab === nav.path ? 'active' : ''
-              }`}
-            >
-              {nav.title}
-            </li>
-          );
-        })}
-      </ul>
-      {repositoriesByTab[selectedTab]}
+
+      <ListGroup>
+        {loading ? (
+          <LoadingSpinner />
+        ) : publishedRepositories?.length > 0 ? (
+          publishedRepositories?.map((repo) => {
+            return (
+              <RepositoryElement
+                countContributions={repo.countContributions}
+                repo={repo}
+                getUrl={getUrl}
+              />
+            );
+          })
+        ) : (
+          <span>Nothing yet.</span>
+        )}
+      </ListGroup>
     </div>
   );
 };
