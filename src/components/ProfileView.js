@@ -92,6 +92,7 @@ const ProfileView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
   const { newReview } = useNewReviewState();
+
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
