@@ -4,28 +4,31 @@ import { Button, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
 import RepositoryElement from '../elements/RepositoryElement';
+import LoadingSpinner from '../elements/LoadingSpinner';
 
-const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
+const PublishedRepositories = ({ title, filter, showButton, isLogged }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchPublishedRepositories = async () => {
-    const ndk = await cmn.getNDK();
-    const addrForFilter = {
-      kinds: [30117],
-      authors: [pubkey],
-    };
-    const resultFetchAllEvents = await cmn.fetchAllEvents([
-      cmn.startFetch(ndk, addrForFilter),
-    ]);
-
-    const repositoriesWithCounts =
-      cmn.addContributionCounts(resultFetchAllEvents);
-    setPublishedRepositories(repositoriesWithCounts);
+    setLoading(true);
+    try {
+      const ndk = await cmn.getNDK();
+      const resultFetchAllEvents = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filter),
+      ]);
+      const repositoriesWithCounts =
+        cmn.addContributionCounts(resultFetchAllEvents);
+      setPublishedRepositories(repositoriesWithCounts);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchPublishedRepositories();
-  }, []);
+  }, [filter]);
 
   const getUrl = (event) => {
     const viewUrl = '/r/' + cmn.getNaddr(event);
@@ -35,7 +38,7 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center pb-2">
-        <h4>Published repositories:</h4>
+        <h4>{title}:</h4>
         {isLogged && showButton ? (
           <div className="mt-2">
             <Link to={cmn.formatRepositoryEditUrl('')}>
@@ -46,7 +49,9 @@ const PublishedRepositories = ({ pubkey, showButton, isLogged }) => {
       </div>
 
       <ListGroup>
-        {publishedRepositories.length > 0 ? (
+        {loading ? (
+          <LoadingSpinner />
+        ) : publishedRepositories?.length > 0 ? (
           publishedRepositories?.map((repo) => {
             return (
               <RepositoryElement

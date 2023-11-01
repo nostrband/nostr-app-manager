@@ -63,6 +63,10 @@ const tabs = [
     path: 'repos',
   },
   {
+    title: 'Contributions',
+    path: 'contributor-repositories',
+  },
+  {
     title: 'Used apps',
     path: 'used-apps',
   },
@@ -88,10 +92,12 @@ const ProfileView = () => {
     },
     kinds: [],
   });
+
   const [activeComponent, setActiveComponent] = useState('apps');
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
   const { newReview } = useNewReviewState();
+
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
     init(npub, setPubkey, setApps, setRecomms)
@@ -110,7 +116,28 @@ const ProfileView = () => {
   const profileViewComponents = {
     apps: <Apps apps={apps} isLogged={isLogged} />,
     repos: (
-      <PublishedRepositories pubkey={pubkey} isLogged={isLogged} showButton />
+      <PublishedRepositories
+        filter={{
+          kinds: [30117],
+          authors: [pubkey],
+        }}
+        title="Published repositories"
+        pubkey={pubkey}
+        isLogged={isLogged}
+        showButton
+      />
+    ),
+    ['contributor-repositories']: (
+      <PublishedRepositories
+        filter={{
+          kinds: [30117],
+          '#p': [pubkey],
+        }}
+        title="Contributions to repositories"
+        pubkey={pubkey}
+        isLogged={isLogged}
+        showButton
+      />
     ),
     ['used-apps']: (
       <UsedApps

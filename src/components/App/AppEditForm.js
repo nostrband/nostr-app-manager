@@ -431,19 +431,7 @@ const AppEditForm = (props) => {
               onChange={(e) => setAuthor(e.target.value)}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId="metaNip05">
-            <Form.Label>Nip-05 identifier</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder={inherit ? '' : '_@app.com'}
-              disabled={inherit}
-              value={nip05}
-              onChange={(e) => setNip05(e.target.value)}
-            />
-            <Form.Text className="text-muted">
-              Preferably _@domain.com to make it trustworthy
-            </Form.Text>
-          </Form.Group>
+
           <Form.Group className="mb-3" controlId="metaPicture">
             <Form.Label>Icon</Form.Label>
             <Form.Control
