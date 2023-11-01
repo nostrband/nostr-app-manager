@@ -63,7 +63,7 @@ const tabs = [
     path: 'repos',
   },
   {
-    title: 'Collaborative Repositories',
+    title: 'Contributions',
     path: 'contributor-repositories',
   },
   {
@@ -133,7 +133,7 @@ const ProfileView = () => {
           kinds: [30117],
           '#p': [pubkey],
         }}
-        title="Contributions to repositories:"
+        title="Contributions to repositories"
         pubkey={pubkey}
         isLogged={isLogged}
         showButton
