@@ -121,6 +121,7 @@ const ProfileView = () => {
           kinds: [30117],
           authors: [pubkey],
         }}
+        title="Published repositories"
         pubkey={pubkey}
         isLogged={isLogged}
         showButton
@@ -132,6 +133,7 @@ const ProfileView = () => {
           kinds: [30117],
           '#p': [pubkey],
         }}
+        title="Contributions to repositories:"
         pubkey={pubkey}
         isLogged={isLogged}
         showButton

@@ -6,7 +6,7 @@ import './PublishedRepositories.scss';
 import RepositoryElement from '../elements/RepositoryElement';
 import LoadingSpinner from '../elements/LoadingSpinner';
 
-const PublishedRepositories = ({ filter, showButton, isLogged }) => {
+const PublishedRepositories = ({ title, filter, showButton, isLogged }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +38,7 @@ const PublishedRepositories = ({ filter, showButton, isLogged }) => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center pb-2">
-        <h4>Published repositories:</h4>
+        <h4>{title}:</h4>
         {isLogged && showButton ? (
           <div className="mt-2">
             <Link to={cmn.formatRepositoryEditUrl('')}>
