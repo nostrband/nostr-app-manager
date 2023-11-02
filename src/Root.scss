@@ -50,13 +50,13 @@ img.banner {
 }
 
 .kind-element {
-  min-width: 70px;
   display: inline-block;
   text-align: center;
   padding: 6px 10px;
   border: 1px solid #0c6dfd;
   color: #0c6dfd;
   border-radius: 5px;
+  white-space: nowrap;
 }
 
 .description-repository {
@@ -90,7 +90,8 @@ img.banner {
   border: 1px solid #dee2e6;
   border-radius: 5px;
   .repository-card {
-    padding: 5px;
+    width: 100%;
+    padding: 15px;
   }
 }
 

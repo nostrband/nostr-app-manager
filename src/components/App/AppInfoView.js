@@ -321,9 +321,8 @@ const AppInfoView = () => {
                 </div>
               </>
             ) : null}
-            {!isTablet ? repositoryElement() : null}
           </AppInfo>
-          {isTablet ? repositoryElement() : null}
+          {repositoryElement()}
           <div className="d-flex  justify-content-center pt-4 pb-3">
             <ul className="nav nav-pills d-flex justify-content-center">
               {tabs.map((nav) => {

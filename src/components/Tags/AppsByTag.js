@@ -32,7 +32,7 @@ const AppsByTag = () => {
       }
     };
     getAppsByTag();
-  }, []);
+  }, [tag]);
 
   return (
     <>
