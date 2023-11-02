@@ -95,7 +95,7 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
           <div ref={tagsContainerRef} className="tags-container">
             {license ? (
               <div className="license">
-                <KindElement>{license[1]}</KindElement>
+                <KindElement>{license[1].toUpperCase()}</KindElement>
               </div>
             ) : null}
 
