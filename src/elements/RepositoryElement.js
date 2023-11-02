@@ -1,5 +1,5 @@
-import React from 'react';
-import { ListGroup } from 'react-bootstrap';
+import React, { useEffect, useRef } from 'react';
+import { Button, ListGroup } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import GitHubIconWithStar from './GitHubIconWithStar';
 import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';
@@ -10,6 +10,7 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
   const navigate = useNavigate();
   const titleTag = repo.tags.find((tag) => tag[0] === 'title');
   const descriptionTag = repo.tags.find((tag) => tag[0] === 'description');
+  const tagsContainerRef = useRef(null);
 
   const programmingLanguages = repo.tags
     .filter((item) => item[0] === 'l')
@@ -33,6 +34,24 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
         ? singleSpaceDescription.substring(0, 170) + '...'
         : singleSpaceDescription;
   }
+
+  useEffect(() => {
+    const handleWheel = (event) => {
+      if (tagsContainerRef.current) {
+        event.preventDefault();
+        const { deltaX, deltaY } = event;
+        tagsContainerRef.current.scrollLeft += deltaY + deltaX;
+      }
+    };
+    const tagsContainerEl = tagsContainerRef.current;
+    tagsContainerEl.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      if (tagsContainerEl) {
+        tagsContainerEl.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
 
   return (
     <ListGroup.Item className="repository-card">
@@ -72,27 +91,27 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
       </div>
 
       <div>
-        {tags.length > 0 ? (
-          <div className="d-flex align-items-center">
-            <div className="tags-container">
-              {license ? (
-                <div className="license">
-                  <KindElement>{license[1]}</KindElement>
-                </div>
-              ) : null}
+        <div className="d-flex align-items-center">
+          <div ref={tagsContainerRef} className="tags-container">
+            {license ? (
+              <div className="license">
+                <KindElement>{license[1]}</KindElement>
+              </div>
+            ) : null}
 
-              {programmingLanguages.length > 0 ? (
-                <div className="programming-languages-container">
-                  {programmingLanguages.map((language) => {
-                    return <KindElement key={language}>{language}</KindElement>;
-                  })}
-                </div>
-              ) : null}
+            {programmingLanguages.length > 0 ? (
+              <div className="programming-languages-container">
+                {programmingLanguages.map((language) => {
+                  return <KindElement key={language}>{language}</KindElement>;
+                })}
+              </div>
+            ) : null}
+            {tags.length > 0 ? (
               <div className="tags">
                 {tags.map((tag) => {
                   return (
                     <button
-                      class="tag-button-repository-element btn btn-outline-primary mx-1"
+                      class="tag-button-repository-element btn btn-outline-primary"
                       onClick={() => navigate(`/tag/${tag}`)}
                       key={tag}
                     >
@@ -101,9 +120,9 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
                   );
                 })}
               </div>
-            </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
       </div>
     </ListGroup.Item>
   );
