@@ -30,7 +30,7 @@ const RepositoriesByTag = () => {
       }
     };
     getRepositoriesByTag();
-  }, []);
+  }, [tag]);
 
   return (
     <>
