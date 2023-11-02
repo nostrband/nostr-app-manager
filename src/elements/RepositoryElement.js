@@ -76,28 +76,31 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
           <div className="d-flex align-items-center">
             <div className="tags-container">
               {license ? (
-                <>
+                <div className="license">
                   <KindElement>{license[1]}</KindElement>
-                </>
+                </div>
               ) : null}
+
               {programmingLanguages.length > 0 ? (
-                <>
+                <div className="programming-languages-container">
                   {programmingLanguages.map((language) => {
                     return <KindElement key={language}>{language}</KindElement>;
                   })}
-                </>
+                </div>
               ) : null}
-              {tags.map((tag) => {
-                return (
-                  <button
-                    class="tag-button-repository-element btn btn-outline-primary mx-1"
-                    onClick={() => navigate(`/tag/${tag}`)}
-                    key={tag}
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
+              <div className="tags">
+                {tags.map((tag) => {
+                  return (
+                    <button
+                      class="tag-button-repository-element btn btn-outline-primary mx-1"
+                      onClick={() => navigate(`/tag/${tag}`)}
+                      key={tag}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         ) : null}

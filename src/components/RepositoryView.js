@@ -189,18 +189,6 @@ const RepositoryView = () => {
                 </h2>
                 <GitHubIconWithStar link={linkTagValue} />
               </div>
-
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
-              >
-                <button className="repository-info-zap-button">
-                  <ZapFunctional
-                    noteId={nip19.noteEncode(repository.id)}
-                    comment={linkTagValue ? `For ${linkTagValue}` : ''}
-                  />
-                </button>
-              </OverlayTrigger>
             </Container>
 
             {linkTagValue ? (
@@ -313,28 +301,41 @@ const RepositoryView = () => {
             </li>
           </ul>
 
-          {allowEditDelete ? (
-            <div>
-              <div className="mt-2 d-flex justify-content-center">
-                <Link className="w-100" to={editUrl}>
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    className="w-100"
-                  >
-                    Edit
-                  </Button>
-                </Link>
+          <div>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
+            >
+              <button className="repository-info-zap-button">
+                <ZapFunctional
+                  noteId={nip19.noteEncode(repository.id)}
+                  comment={linkTagValue ? `For ${linkTagValue}` : ''}
+                />
+              </button>
+            </OverlayTrigger>
+            {allowEditDelete ? (
+              <div>
+                <div className="mt-2 d-flex justify-content-center">
+                  <Link className="w-100" to={editUrl}>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      className="w-100"
+                    >
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
+                <Button
+                  onClick={() => setOpenConfirmDeleteModal(true)}
+                  size="sm"
+                  className="btn-danger w-100 mt-2"
+                >
+                  Delete
+                </Button>
               </div>
-              <Button
-                onClick={() => setOpenConfirmDeleteModal(true)}
-                size="sm"
-                className="btn-danger w-100 mt-2"
-              >
-                Delete
-              </Button>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
 
           <ReasubleModal
             showModal={openConfirmDeleteModal}

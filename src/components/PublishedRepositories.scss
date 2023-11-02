@@ -70,8 +70,17 @@
     height: 40px;
     white-space: nowrap;
   }
-  .kind-element {
-    margin-right: 15px !important;
+  .programming-languages-container {
+    margin-right: 10px;
+  }
+  .license {
+    margin-right: 10px;
+  }
+  .tags {
+    display: flex;
+    .kind-element {
+      margin: 0 !important;
+    }
   }
 }
 
