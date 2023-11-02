@@ -66,17 +66,19 @@
   display: flex;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  font-size: 0.9rem;
   .kind-element {
     margin: 0 !important;
-    height: 32px;
+    height: 24px;
     display: flex;
     align-items: center;
   }
   .tag-button-repository-element {
     display: flex;
     align-items: center;
-    height: 32px;
+    height: 24px;
     white-space: nowrap;
+    font-size: 0.9rem;
   }
 
   .programming-languages-container {
