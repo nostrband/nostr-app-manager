@@ -72,41 +72,21 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
       </div>
 
       <div>
-        {license ? (
-          <>
-            <span>License: </span>
-            <KindElement
-              className="mx-1 mt-2"
-              size="sm"
-              variant="outline-primary"
-            >
-              {license[1]}
-            </KindElement>
-          </>
-        ) : null}
-        <br />
-        {programmingLanguages.length > 0 ? (
-          <>
-            <span>Programming languages: </span>
-            {programmingLanguages.map((language) => {
-              return (
-                <KindElement
-                  key={language}
-                  className="mx-1 mt-2"
-                  size="sm"
-                  variant="outline-primary"
-                >
-                  {language}
-                </KindElement>
-              );
-            })}
-          </>
-        ) : null}
-        <br />
         {tags.length > 0 ? (
           <div className="d-flex align-items-center">
-            <span className="pb-2">Tags:</span>
             <div className="tags-container">
+              {license ? (
+                <>
+                  <KindElement>{license[1]}</KindElement>
+                </>
+              ) : null}
+              {programmingLanguages.length > 0 ? (
+                <>
+                  {programmingLanguages.map((language) => {
+                    return <KindElement key={language}>{language}</KindElement>;
+                  })}
+                </>
+              ) : null}
               {tags.map((tag) => {
                 return (
                   <button

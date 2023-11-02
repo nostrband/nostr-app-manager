@@ -66,11 +66,17 @@
   display: flex;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin-top: 5px;
-  padding-bottom: 10px;
   .tag-button-repository-element {
+    height: 40px;
     white-space: nowrap;
   }
+  .kind-element {
+    margin-right: 15px !important;
+  }
+}
+
+.tags-container::-webkit-scrollbar {
+  display: none;
 }
 
 .repository-link-actions-container {
