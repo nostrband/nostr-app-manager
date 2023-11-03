@@ -63,11 +63,13 @@ const Releases = ({ repoLink }) => {
 
             {selectedRelease === release.id && (
               <div>
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: release.body.replace(/\r\n/g, '<br>'),
-                  }}
-                ></p>
+                {release.body ? (
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: release.body.replace(/\r\n/g, '<br>'),
+                    }}
+                  ></p>
+                ) : null}
 
                 <a
                   href={release.html_url}
