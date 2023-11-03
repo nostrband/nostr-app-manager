@@ -4,7 +4,7 @@ import { nip19 } from '@nostrband/nostr-tools';
 import Profile from '../elements/Profile';
 import * as cmn from '../common';
 import { Spinner } from 'react-bootstrap';
-import PublishedRepositories from './PublishedRepositories';
+import PublishedRepositories from './Repository/PublishedRepositories';
 import { useAuth } from '../context/AuthContext';
 import Apps from './Profile/Apps';
 import UsedApps from './Profile/UsedApps';

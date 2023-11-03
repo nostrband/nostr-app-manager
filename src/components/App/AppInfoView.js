@@ -17,8 +17,7 @@ import ReviewsAppInfoView from './Reviews/ReviewsAppInfoView';
 import ReacitonsAppInfoView from './ReactionsAppInfoView';
 import KindElement from '../../elements/KindElement';
 import RepositoryElement from '../../elements/RepositoryElement';
-import { isTablet } from '../../const';
-import ReleasesAppInfoView from './ReleasesAppInfoView';
+import Releases from '../Releases';
 
 const tabs = [
   {
@@ -206,7 +205,7 @@ const AppInfoView = () => {
     users: <FollowersAppInfoView app={appInfo} recomms={recomms} />,
     reviews: <ReviewsAppInfoView app={appInfo} />,
     reactions: <ReacitonsAppInfoView app={appInfo} />,
-    releases: <ReleasesAppInfoView repoLink={repositoryLink.link} />,
+    releases: <Releases repoLink={repositoryLink.link} />,
   };
 
   const repositoryElement = () => {
