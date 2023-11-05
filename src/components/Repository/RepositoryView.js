@@ -57,6 +57,7 @@ const RepositoryView = () => {
   const [contributors, setContributors] = useState([]);
   const [githubLink, setGithubLink] = useState([]);
   const [activeComponent, setActiveComponent] = useState('releases');
+  const [zapCount, setZapCount] = useState(0);
 
   const npub = cmn?.getLoginPubkey()
     ? nip19?.npubEncode(cmn?.getLoginPubkey())
@@ -94,6 +95,8 @@ const RepositoryView = () => {
       (tag) => tag[0] === 'zap'
     );
 
+    const totalZapAmount = await cmn.fetchZapCounts(resultFetchAllEvents[0]);
+    setZapCount(totalZapAmount / 1000);
     const filterForAuthorsOfEmptyContentApps = {
       kinds: [0],
       authors: contributorTags.map((contributor) => contributor[1]),
@@ -336,6 +339,9 @@ const RepositoryView = () => {
               overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
             >
               <button className="repository-info-zap-button">
+                <span className="font-weight-bold">
+                  {cmn.formatNumber(zapCount)}
+                </span>
                 <ZapFunctional
                   noteId={nip19.noteEncode(repository.id)}
                   comment={linkTagValue ? `For ${linkTagValue}` : ''}
