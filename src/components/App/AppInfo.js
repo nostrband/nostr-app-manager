@@ -19,7 +19,6 @@ import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './Reviews/ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
 import { useReviewModal } from '../../context/ShowReviewContext';
-import { decode as bolt11Decode } from 'light-bolt11-decoder';
 
 const AppInfo = (props) => {
   const { naddr, review: reviewParams } = useParams();
@@ -197,35 +196,8 @@ const AppInfo = (props) => {
   const fetchCountShared = () => fetchCounts(1, setShareCount);
 
   const fetchCountsZap = async () => {
-    const ndk = await cmn.getNDK();
-    try {
-      const zapQuery = {
-        kinds: [9735],
-        '#a': [cmn.naddrToAddr(cmn.getNaddr(props.app))],
-        limit: 100,
-      };
-      const zapResponse = await cmn.fetchAllEvents([
-        cmn.startFetch(ndk, zapQuery),
-      ]);
-      let totalZapAmount = 0;
-      for (const zap of zapResponse) {
-        const bolt11Tag = zap.tags.find((tag) => tag[0] === 'bolt11');
-        if (bolt11Tag) {
-          const invoice = bolt11Tag[1];
-          try {
-            const i = bolt11Decode(invoice);
-            const amountSection = i?.sections?.find((s) => s.name === 'amount');
-            const amountValue = Number(amountSection?.value || 0);
-            totalZapAmount += amountValue;
-          } catch (e) {
-            console.error('Error parsing invoice:', e);
-          }
-        }
-      }
-      setZapCount(totalZapAmount / 1000);
-    } catch (error) {
-      console.error('Error fetching zap counts:', error);
-    }
+    const totalZapAmount = await cmn.fetchZapCounts(props.app);
+    setZapCount(totalZapAmount / 1000);
   };
 
   useEffect(() => {

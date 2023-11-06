@@ -6,6 +6,7 @@ import NDK, {
   NDKRelaySet,
 } from '@nostrband/ndk';
 import { getPublicKey, nip19 } from '@nostrband/nostr-tools';
+import { decode as bolt11Decode } from 'light-bolt11-decoder';
 
 import * as cs from './const';
 
@@ -1321,4 +1322,36 @@ export const addContributionCounts = (repositories) => {
       countContributions: sumForRepo,
     };
   });
+};
+
+export const fetchZapCounts = async (event) => {
+  const ndk = await getNDK();
+
+  try {
+    const zapQuery = {
+      kinds: [9735],
+      '#a': [naddrToAddr(getNaddr(event))],
+      limit: 100,
+    };
+    console.log(zapQuery,'ZAP QUERY')
+    const zapResponse = await fetchAllEvents([startFetch(ndk, zapQuery)]);
+    let totalZapAmount = 0;
+    for (const zap of zapResponse) {
+      const bolt11Tag = zap.tags.find((tag) => tag[0] === 'bolt11');
+      if (bolt11Tag) {
+        const invoice = bolt11Tag[1];
+        try {
+          const i = bolt11Decode(invoice);
+          const amountSection = i?.sections?.find((s) => s.name === 'amount');
+          const amountValue = Number(amountSection?.value || 0);
+          totalZapAmount += amountValue;
+        } catch (e) {
+          console.error('Error parsing invoice:', e);
+        }
+      }
+    }
+    return totalZapAmount;
+  } catch (error) {
+    return error;
+  }
 };
