@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ListGroup, ListGroupItem } from 'react-bootstrap';
-import ArrowIcon from '../../icons/Arrow';
-import './ReleasesAppInfoView.scss';
-import LoadingSpinner from '../../elements/LoadingSpinner';
+import ArrowIcon from '../icons/Arrow';
+import './Releases.scss';
+import LoadingSpinner from '../elements/LoadingSpinner';
 
-const ReleasesAppInfoView = ({ repoLink }) => {
+const Releases = ({ repoLink }) => {
   const [releases, setReleases] = useState([]);
   const [selectedRelease, setSelectedRelease] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,13 +14,12 @@ const ReleasesAppInfoView = ({ repoLink }) => {
     if (repoName.endsWith('/')) {
       repoName = repoName.slice(0, -1);
     }
-
     const response = await fetch(
       `https://api.github.com/repos/${repoName}/releases`
     );
-
     return await response.json();
   };
+
   useEffect(() => {
     setLoading(true);
     let githubLink;
@@ -64,11 +63,13 @@ const ReleasesAppInfoView = ({ repoLink }) => {
 
             {selectedRelease === release.id && (
               <div>
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: release.body.replace(/\r\n/g, '<br>'),
-                  }}
-                ></p>
+                {release.body ? (
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: release.body.replace(/\r\n/g, '<br>'),
+                    }}
+                  ></p>
+                ) : null}
 
                 <a
                   href={release.html_url}
@@ -88,4 +89,4 @@ const ReleasesAppInfoView = ({ repoLink }) => {
   );
 };
 
-export default ReleasesAppInfoView;
+export default Releases;

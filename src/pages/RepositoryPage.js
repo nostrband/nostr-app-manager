@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import CodeRepositoryForm from '../components/AddCodeRepositoriesForm';
+import CodeRepositoryForm from '../components/Repository/AddCodeRepositoriesForm';
 
 const RepositoryPage = () => {
   return (

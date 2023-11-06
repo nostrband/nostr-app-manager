@@ -5,12 +5,12 @@ import {
   optionsLicensies,
   programmingLanguages,
   validationSchemaForFormAddApp,
-} from '../const';
-import * as cmn from '../common';
+} from '../../const';
+import * as cmn from '../../common';
 import CreatableSelect from 'react-select/creatable';
 import { useNavigate, useParams } from 'react-router-dom';
 import TextAreaAutosize from 'react-textarea-autosize';
-import { optionsNips } from '../const';
+import { optionsNips } from '../../const';
 import { nip19 } from '@nostrband/nostr-tools';
 
 const CodeRepositoryForm = () => {

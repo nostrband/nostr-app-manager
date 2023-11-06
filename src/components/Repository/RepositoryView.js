@@ -1,19 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {
+  Button,
+  Container,
+  ListGroup,
+  ListGroupItem,
+  OverlayTrigger,
+  Tooltip,
+} from 'react-bootstrap';
 import { useParams } from 'react-router';
-import * as cmn from '../common';
-import LoadingSpinner from '../elements/LoadingSpinner';
-import ShareIconForRepository from '../icons/ShareForRepository';
-import KindElement from '../elements/KindElement';
-import Profile from '../elements/Profile';
+import * as cmn from '../../common';
+import LoadingSpinner from '../../elements/LoadingSpinner';
+import ShareIconForRepository from '../../icons/ShareForRepository';
+import KindElement from '../../elements/KindElement';
+import Profile from '../../elements/Profile';
 import { Link, useNavigate } from 'react-router-dom';
-import ReasubleModal from '../elements/Modal';
+import ReasubleModal from '../../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
-import GitHubIconWithStar from '../elements/GitHubIconWithStar';
-import ZapFunctional from './MainPageComponents/ReviewsActions/ZapFunctional';
-import { dynamicTags } from './RepositoryView';
+import GitHubIconWithStar from '../../elements/GitHubIconWithStar';
+import './PublishedRepositories.scss';
+import ZapFunctional from '../MainPageComponents/ReviewsActions/ZapFunctional';
+import Releases from '../Releases';
+import RepositoryContributions from './RepositoryContributions';
 
-export const RepositoryView = () => {
+const tabs = [
+  {
+    title: 'Releases',
+    path: 'releases',
+  },
+  {
+    title: 'Contributions',
+    path: 'contributor-repositories',
+  },
+];
+
+const dynamicTags = [
+  {
+    title: 'Programming languages:',
+    key: 'programmingLanguages',
+  },
+  {
+    title: 'Supported NIPs',
+    key: 'nips',
+  },
+];
+
+const RepositoryView = () => {
   const [loading, setLoading] = useState(true);
   const [repository, setRepository] = useState({
     tags: [],
@@ -24,9 +55,13 @@ export const RepositoryView = () => {
   const [pubkey, setPubKey] = useState('');
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
   const [contributors, setContributors] = useState([]);
+  const [githubLink, setGithubLink] = useState([]);
+  const [activeComponent, setActiveComponent] = useState('releases');
+
   const npub = cmn?.getLoginPubkey()
     ? nip19?.npubEncode(cmn?.getLoginPubkey())
     : '';
+
   const navigate = useNavigate();
   const allowEditDelete =
     cmn.isAuthed() && cmn.getLoginPubkey() === repository?.pubkey;
@@ -55,14 +90,44 @@ export const RepositoryView = () => {
     if (authorTag) {
       profile = await cmn.getProfile(authorTag[1]);
     }
-    const contributorTags = resultFetchAllEvents[0].tags?.filter(
-      (tag) => tag[3] === 'contributor'
+    const contributorTags = resultFetchAllEvents[0]?.tags?.filter(
+      (tag) => tag[0] === 'zap'
     );
 
-    // const contributorProfiles = await Promise.all(
-    //   contributorTags.map((tag) => cmn.getProfile(tag[1]))
-    // );
-    // setContributors(contributorProfiles);
+    const filterForAuthorsOfEmptyContentApps = {
+      kinds: [0],
+      authors: contributorTags.map((contributor) => contributor[1]),
+    };
+
+    const authorProfileContributions = await cmn.fetchAllEvents([
+      cmn.startFetch(ndk, filterForAuthorsOfEmptyContentApps),
+    ]);
+
+    const githubLink = resultFetchAllEvents[0]?.tags?.find(
+      (tag) => tag[0] === 'r'
+    );
+
+    setGithubLink(githubLink[1]);
+
+    const contributors = authorProfileContributions
+      .map((profileContribution) => {
+        const correspondingTag = contributorTags.find(
+          (tag) => tag[1] === profileContribution.pubkey
+        );
+
+        if (correspondingTag) {
+          return {
+            ...profileContribution,
+            countContributions: parseInt(correspondingTag[3], 10),
+          };
+        } else {
+          return profileContribution;
+        }
+      })
+      .sort((a, b) => b.countContributions - a.countContributions);
+
+    setContributors(contributors);
+
     const repositoryData = resultFetchAllEvents[0];
     setRepository({
       ...repositoryData,
@@ -108,6 +173,7 @@ export const RepositoryView = () => {
       tags: [['e', repository?.id]],
       content: 'Deleting the repository',
     };
+
     try {
       setLoading(true);
       const result = await cmn.publishEvent(deleteEventRepository);
@@ -120,6 +186,7 @@ export const RepositoryView = () => {
       setLoading(false);
     }
   };
+
   const getTagValue = (tagName) =>
     repository?.tags.find((tag) => tag[0] === tagName)?.[1] || '';
 
@@ -129,6 +196,13 @@ export const RepositoryView = () => {
   const processedDescription = descriptionTagValue
     .replace(/<br><br>/g, '\n')
     .replace(/<br>/g, '\n');
+
+  const appInfoViewComponents = {
+    releases: <Releases repoLink={githubLink} />,
+    ['contributor-repositories']: (
+      <RepositoryContributions contributors={contributors} />
+    ),
+  };
 
   return (
     <>
@@ -147,18 +221,6 @@ export const RepositoryView = () => {
                 </h2>
                 <GitHubIconWithStar link={linkTagValue} />
               </div>
-
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
-              >
-                <button className="repository-info-zap-button">
-                  <ZapFunctional
-                    noteId={nip19.noteEncode(repository.id)}
-                    comment={linkTagValue ? `For ${linkTagValue}` : ''}
-                  />
-                </button>
-              </OverlayTrigger>
             </Container>
 
             {linkTagValue ? (
@@ -195,7 +257,7 @@ export const RepositoryView = () => {
               {repository.otherTags.map((item) => {
                 return (
                   <button
-                    class="btn btn-outline-primary mx-1"
+                    class="btn btn-outline-primary mx-1 mb-2"
                     onClick={() => navigate(`/tag/${item}`)}
                     key={item}
                   >
@@ -245,30 +307,64 @@ export const RepositoryView = () => {
                 </div>
               ) : null}
             </li>
+
+            <div className="d-flex  justify-content-center pt-4 pb-3">
+              <ul className="nav nav-pills d-flex justify-content-center">
+                {tabs.map((nav) => {
+                  return (
+                    <li
+                      onClick={() => {
+                        setActiveComponent(nav.path);
+                      }}
+                      className={`pointer nav-link nav-item ${
+                        activeComponent === nav.path ? 'active' : ''
+                      }`}
+                    >
+                      {nav.title}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {appInfoViewComponents[activeComponent]}
           </ul>
 
-          {allowEditDelete ? (
-            <div>
-              <div className="mt-2 d-flex justify-content-center">
-                <Link className="w-100" to={editUrl}>
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    className="w-100"
-                  >
-                    Edit
-                  </Button>
-                </Link>
+          <div>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
+            >
+              <button className="repository-info-zap-button">
+                <ZapFunctional
+                  noteId={nip19.noteEncode(repository.id)}
+                  comment={linkTagValue ? `For ${linkTagValue}` : ''}
+                />
+              </button>
+            </OverlayTrigger>
+            {allowEditDelete ? (
+              <div>
+                <div className="mt-2 d-flex justify-content-center">
+                  <Link className="w-100" to={editUrl}>
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      className="w-100"
+                    >
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
+                <Button
+                  onClick={() => setOpenConfirmDeleteModal(true)}
+                  size="sm"
+                  className="btn-danger w-100 mt-2"
+                >
+                  Delete
+                </Button>
               </div>
-              <Button
-                onClick={() => setOpenConfirmDeleteModal(true)}
-                size="sm"
-                className="btn-danger w-100 mt-2"
-              >
-                Delete
-              </Button>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
 
           <ReasubleModal
             showModal={openConfirmDeleteModal}
@@ -293,3 +389,5 @@ export const RepositoryView = () => {
     </>
   );
 };
+
+export default RepositoryView;

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import * as cmn from '../common';
+import * as cmn from '../../common';
 import { Button, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './PublishedRepositories.scss';
-import RepositoryElement from '../elements/RepositoryElement';
-import LoadingSpinner from '../elements/LoadingSpinner';
+import RepositoryElement from '../../elements/RepositoryElement';
+import LoadingSpinner from '../../elements/LoadingSpinner';
 
 const PublishedRepositories = ({ title, filter, showButton, isLogged }) => {
   const [publishedRepositories, setPublishedRepositories] = useState([]);
