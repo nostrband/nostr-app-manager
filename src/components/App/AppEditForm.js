@@ -238,7 +238,6 @@ const AppEditForm = (props) => {
     });
 
     setSending(true);
-    console.log(event, 'EVEEEENT PUBLISH');
     const r = await cmn.publishEvent(event);
     setSending(false);
     if (!r || r.error) {
