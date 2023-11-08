@@ -149,7 +149,7 @@ const AppInfoView = () => {
         authors: [
           '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
         ],
-        a: [{ kind: data?.pubkey, d_tag: +data?.identifier }],
+        '#a': [{ kind: data?.pubkey, d_tag: +data?.identifier }],
         '#L': ['org.nostrapps.ontology'],
       };
 
