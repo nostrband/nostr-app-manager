@@ -149,7 +149,7 @@ const AppInfoView = () => {
         authors: [
           '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd',
         ],
-        a: [{ kind: data?.pubkey, d_tag: +data?.identifier }],
+        '#a': [{ kind: data?.pubkey, d_tag: +data?.identifier }],
         '#L': ['org.nostrapps.ontology'],
       };
 
@@ -157,12 +157,22 @@ const AppInfoView = () => {
         [cmn.startFetch(ndk, query)],
         'CATEGORY'
       );
-      const categories = categoriesByArtur.map((event) =>
-        event.tags.find((tag) => tag[0] === 'l')
+
+      const authorPubkey =
+        '3356de61b39647931ce8b2140b2bab837e0810c0ef515bbe92de0248040b8bdd';
+      const assignedCategoryEvent = categoriesByArtur.find(
+        (event) =>
+          event.pubkey === authorPubkey &&
+          event.tags.some((tag) => tag[0] === 'l')
       );
-      const assignedCategory = categories?.length > 0 ? categories[0][1] : null;
-      if (assignedCategory) {
-        setAssignedCategory(assignedCategory);
+
+      if (assignedCategoryEvent) {
+        const assignedCategoryTag = assignedCategoryEvent.tags.find(
+          (tag) => tag[0] === 'l'
+        );
+        if (assignedCategoryTag) {
+          setAssignedCategory(assignedCategoryTag[1]);
+        }
       }
     };
     fetchAssignedCategory();
