@@ -7,7 +7,6 @@ const RepositoryIssues = ({ repoLink }) => {
   const [loading, setLoading] = useState(false);
 
   const getIssuesFromGithub = async (repoLink) => {
-    console.log(repoLink, 'REPO LINK');
     let repoName = repoLink?.replace('https://github.com/', '');
     if (repoName.endsWith('/')) {
       repoName = repoName.slice(0, -1);
@@ -28,7 +27,6 @@ const RepositoryIssues = ({ repoLink }) => {
     }
     getIssuesFromGithub(githubLink)
       .then((data) => {
-        console.log(data, 'DATAAA');
         if (Array.isArray(data)) {
           setIssues(data);
         }
