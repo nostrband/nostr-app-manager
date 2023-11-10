@@ -66,7 +66,7 @@ const Releases = ({ repoLink }) => {
                 {release.body ? (
                   <p
                     dangerouslySetInnerHTML={{
-                      __html: release.body.replace(/\r\n/g, '<br>'),
+                      __html: release.body?.replace(/\r\n/g, '<br>'),
                     }}
                   ></p>
                 ) : null}

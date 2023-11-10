@@ -21,6 +21,7 @@ import './PublishedRepositories.scss';
 import ZapFunctional from '../MainPageComponents/ReviewsActions/ZapFunctional';
 import Releases from '../Releases';
 import RepositoryContributions from './RepositoryContributions';
+import RepositoryIssues from './RepositoryIssues';
 
 const tabs = [
   {
@@ -30,6 +31,10 @@ const tabs = [
   {
     title: 'Contributions',
     path: 'contributor-repositories',
+  },
+  {
+    title: 'Issues',
+    path: 'issues',
   },
 ];
 
@@ -205,6 +210,7 @@ const RepositoryView = () => {
     ['contributor-repositories']: (
       <RepositoryContributions contributors={contributors} />
     ),
+    issues: <RepositoryIssues repoLink={githubLink} />,
   };
 
   return (
