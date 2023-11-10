@@ -7,6 +7,7 @@ const RepositoryIssues = ({ repoLink }) => {
   const [loading, setLoading] = useState(false);
 
   const getIssuesFromGithub = async (repoLink) => {
+    console.log(repoLink, 'REPO LINK');
     let repoName = repoLink?.replace('https://github.com/', '');
     if (repoName.endsWith('/')) {
       repoName = repoName.slice(0, -1);
@@ -43,14 +44,22 @@ const RepositoryIssues = ({ repoLink }) => {
       {issues.length > 0 && (
         <ListGroup>
           {issues.map((issue) => (
-            <ListGroupItem key={issue.id}>
+            <ListGroupItem className="d-flex flex-column" key={issue.id}>
               <strong>{issue.title}</strong>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: issue.body.replace(/\r\n/g, '<br>'),
-                }}
-              ></p>
-              {issue.comments > 0 ? <p>Comments: {issue.comments}</p> : null}
+              {issue.body ? (
+                <p
+                  className="description"
+                  dangerouslySetInnerHTML={{
+                    __html: issue.body?.replace(/\r\n/g, '<br>'),
+                  }}
+                ></p>
+              ) : null}
+
+              {issue.comments > 0 ? (
+                <p style={{ margin: 0 }}>
+                  Comments: <strong>{issue.comments}</strong>
+                </p>
+              ) : null}
               <a
                 href={issue.html_url}
                 target="_blank"
