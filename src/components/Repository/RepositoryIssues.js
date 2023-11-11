@@ -8,16 +8,11 @@ const RepositoryIssues = ({ repoLink }) => {
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const getIssuesFromGithub = async (repoLink) => {
-    let repoName = repoLink?.replace('https://github.com/', '');
-    if (repoName.endsWith('/')) {
-      repoName = repoName.slice(0, -1);
-    }
+  const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
-      `https://api.github.com/repos/${repoName}/issues`
+      `https://api.github.com/repos/${repoName}/issues?page=${page}&per_page=30`
     );
     const issuesAndPullRequests = await response.json();
-
     const issuesOnly = issuesAndPullRequests.filter(
       (issue) => !issue.pull_request
     );
@@ -25,24 +20,35 @@ const RepositoryIssues = ({ repoLink }) => {
   };
 
   useEffect(() => {
-    setLoading(true);
-    let githubLink;
-    if (typeof repoLink !== 'string') {
-      githubLink = repoLink.tags.find((tag) => tag[0] === 'r')[1];
-    } else {
-      githubLink = repoLink;
-    }
-    getIssuesFromGithub(githubLink)
-      .then((data) => {
-        if (Array.isArray(data)) {
-          console.log(data, 'DATAAA');
-          setIssues(data);
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-      });
+    const fetchAllIssues = async () => {
+      setLoading(true);
+      let githubLink;
+      if (typeof repoLink !== 'string') {
+        githubLink = repoLink.tags.find((tag) => tag[0] === 'r')[1];
+      } else {
+        githubLink = repoLink;
+      }
+      let repoName = githubLink.replace('https://github.com/', '');
+      if (repoName.endsWith('/')) {
+        repoName = repoName.slice(0, -1);
+      }
+
+      let allIssues = [];
+      let page = 1;
+      let issues;
+      do {
+        issues = await getIssuesFromGithub(repoName, page);
+        allIssues = allIssues.concat(issues);
+        page++;
+      } while (issues.length > 0);
+      setIssues(allIssues);
+      setLoading(false);
+    };
+
+    fetchAllIssues().catch((error) => {
+      console.error(error);
+      setLoading(false);
+    });
   }, [repoLink]);
 
   return (
