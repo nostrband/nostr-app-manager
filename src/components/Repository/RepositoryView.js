@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Container,
-  ListGroup,
-  ListGroupItem,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { Button, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useParams } from 'react-router';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
@@ -25,13 +18,14 @@ import RepositoryIssues from './RepositoryIssues';
 
 const tabs = [
   {
+    title: 'Contributors',
+    path: 'contributor-repositories',
+  },
+  {
     title: 'Releases',
     path: 'releases',
   },
-  {
-    title: 'Contributions',
-    path: 'contributor-repositories',
-  },
+
   {
     title: 'Issues',
     path: 'issues',
@@ -61,7 +55,9 @@ const RepositoryView = () => {
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
   const [contributors, setContributors] = useState([]);
   const [githubLink, setGithubLink] = useState([]);
-  const [activeComponent, setActiveComponent] = useState('releases');
+  const [activeComponent, setActiveComponent] = useState(
+    'contributor-repositories'
+  );
   const [zapCount, setZapCount] = useState(0);
 
   const npub = cmn?.getLoginPubkey()
