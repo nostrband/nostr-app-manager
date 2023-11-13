@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import * as cmn from '../../common';
 
 const BountySchema = Yup.object().shape({
   satoshi: Yup.number()
@@ -11,10 +12,29 @@ const BountySchema = Yup.object().shape({
 });
 
 const BountyModal = ({ show, handleClose, issueUrl }) => {
-  const submitForm = (values, { setSubmitting }) => {
-    console.log(values);
-    setSubmitting(false);
-    handleClose();
+  const sendBounty = async (values) => {
+    const event = {
+      kind: 100119,
+      content: values.comment,
+      tags: [
+        ['r', issueUrl],
+        ['bounty', values.satoshi],
+      ],
+    };
+    return cmn.publishEvent(event);
+  };
+
+  const submitForm = async (values, { setSubmitting }) => {
+    try {
+      const response = await sendBounty(values);
+      if (response) {
+        handleClose();
+      }
+    } catch (error) {
+      console.log('ERROR:', error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -34,6 +54,7 @@ const BountyModal = ({ show, handleClose, issueUrl }) => {
                 <Form.Group className="mb-3">
                   <Form.Label>Amount in Satoshi</Form.Label>
                   <Field
+                    min={0}
                     name="satoshi"
                     type="number"
                     className="form-control"
