@@ -206,7 +206,7 @@ const RepositoryView = () => {
     ['contributor-repositories']: (
       <RepositoryContributions contributors={contributors} />
     ),
-    issues: <RepositoryIssues repoLink={githubLink} />,
+    issues: <RepositoryIssues naddr={naddr} repoLink={githubLink} />,
   };
 
   return (

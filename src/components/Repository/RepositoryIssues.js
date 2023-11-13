@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ArrowIcon from '../../icons/Arrow';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
+import BountyModal from './BountyModal';
 
-const RepositoryIssues = ({ repoLink }) => {
+const RepositoryIssues = ({ repoLink, naddr }) => {
+  const { pathname } = useLocation();
   const [issues, setIssues] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const issueUrl = searchParams.get('issue');
+  const navigate = useNavigate();
 
   const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
@@ -97,10 +108,21 @@ const RepositoryIssues = ({ repoLink }) => {
                   >
                     View on Github
                   </a>
+                  <Link
+                    to={`/r/${naddr}/bounty?issue=${issue.html_url}`}
+                    className="mt-1 mb-1"
+                  >
+                    <Button>Add bounty</Button>
+                  </Link>
                 </>
               ) : null}
             </ListGroupItem>
           ))}
+          <BountyModal
+            issueUrl={issueUrl}
+            handleClose={() => navigate(`/r/${naddr}`)}
+            show={pathname === `/r/${naddr}/bounty`}
+          />
         </ListGroup>
       )}
       {loading ? <LoadingSpinner /> : null}
