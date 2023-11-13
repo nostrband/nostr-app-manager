@@ -11,14 +11,26 @@ const BountySchema = Yup.object().shape({
   comment: Yup.string().required('Required'),
 });
 
-const BountyModal = ({ show, handleClose, issueUrl }) => {
+const BountyModal = ({
+  show,
+  handleClose,
+  issueUrl,
+  linkToRepo,
+  topTenContributorPubkeys,
+}) => {
   const sendBounty = async (values) => {
+    const contributorTags = topTenContributorPubkeys.map((pubkey) => [
+      'p',
+      pubkey,
+    ]);
     const event = {
       kind: 100119,
       content: values.comment,
       tags: [
         ['r', issueUrl],
         ['bounty', values.satoshi],
+        ['a', linkToRepo],
+        ...contributorTags,
       ],
     };
     return cmn.publishEvent(event);

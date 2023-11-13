@@ -10,7 +10,12 @@ import {
 } from 'react-router-dom';
 import BountyModal from './BountyModal';
 
-const RepositoryIssues = ({ repoLink, naddr }) => {
+const RepositoryIssues = ({
+  repoLink,
+  naddr,
+  linkToRepo,
+  topTenContributorPubkeys,
+}) => {
   const { pathname } = useLocation();
   const [issues, setIssues] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
@@ -119,9 +124,11 @@ const RepositoryIssues = ({ repoLink, naddr }) => {
             </ListGroupItem>
           ))}
           <BountyModal
+            linkToRepo={linkToRepo}
             issueUrl={issueUrl}
             handleClose={() => navigate(`/r/${naddr}`)}
             show={pathname === `/r/${naddr}/bounty`}
+            topTenContributorPubkeys={topTenContributorPubkeys}
           />
         </ListGroup>
       )}
