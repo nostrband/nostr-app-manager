@@ -63,6 +63,9 @@ img.banner {
   max-width: 550px;
   word-wrap: break-word;
 }
+.description-issue {
+  word-wrap: break-word;
+}
 
 .limited-text {
   max-width: 600px;
@@ -71,6 +74,7 @@ img.banner {
     margin-left: 6px;
   }
 }
+
 .description {
   word-wrap: break-word;
 }

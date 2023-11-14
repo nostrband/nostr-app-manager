@@ -9,6 +9,9 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import BountyModal from './BountyModal';
+import { useAuthShowModal } from '../../context/ShowModalContext';
+import * as cmn from '../../common';
+import { useAuth } from '../../context/AuthContext';
 
 const RepositoryIssues = ({
   repoLink,
@@ -23,6 +26,8 @@ const RepositoryIssues = ({
   const [searchParams] = useSearchParams();
   const issueUrl = searchParams.get('issue');
   const navigate = useNavigate();
+  const { setShowLogin } = useAuthShowModal();
+  const { pubkey } = useAuth();
 
   const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
@@ -67,6 +72,12 @@ const RepositoryIssues = ({
     });
   }, [repoLink]);
 
+  const showAuthModal = () => {
+    if (!pubkey) {
+      setShowLogin(true);
+    }
+  };
+
   return (
     <>
       {issues.length > 0 && (
@@ -92,9 +103,30 @@ const RepositoryIssues = ({
               </div>
               {issue.id === selectedIssueId ? (
                 <>
+                  <div className="d-flex align-items-center">
+                    <a
+                      href={issue.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button size="sm">Open on Github</Button>
+                    </a>
+                    <Link
+                      onClick={showAuthModal}
+                      to={
+                        cmn.isAuthed()
+                          ? `/r/${naddr}/bounty?issue=${issue.html_url}`
+                          : ''
+                      }
+                      className="mt-1 mb-1 mx-2"
+                    >
+                      <Button size="sm">Add bounty</Button>
+                    </Link>
+                  </div>
+
                   {issue.body ? (
                     <p
-                      className="description"
+                      className="description-issue"
                       dangerouslySetInnerHTML={{
                         __html: issue.body?.replace(/\r\n/g, '<br>'),
                       }}
@@ -106,28 +138,15 @@ const RepositoryIssues = ({
                       Comments: <strong>{issue.comments}</strong>
                     </p>
                   ) : null}
-                  <a
-                    href={issue.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View on Github
-                  </a>
-                  <Link
-                    to={`/r/${naddr}/bounty?issue=${issue.html_url}`}
-                    className="mt-1 mb-1"
-                  >
-                    <Button>Add bounty</Button>
-                  </Link>
                 </>
               ) : null}
             </ListGroupItem>
           ))}
           <BountyModal
-            linkToRepo={linkToRepo}
             issueUrl={issueUrl}
             handleClose={() => navigate(`/r/${naddr}`)}
             show={pathname === `/r/${naddr}/bounty`}
+            naddr={naddr}
             topTenContributorPubkeys={topTenContributorPubkeys}
           />
         </ListGroup>

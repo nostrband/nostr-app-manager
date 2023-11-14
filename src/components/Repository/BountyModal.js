@@ -3,8 +3,6 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import * as cmn from '../../common';
-import { toast } from 'react-toastify';
-import errorToast from '../../elements/ErrorToast';
 
 const BountySchema = Yup.object().shape({
   satoshi: Yup.number()
@@ -17,8 +15,8 @@ const BountyModal = ({
   show,
   handleClose,
   issueUrl,
-  linkToRepo,
   topTenContributorPubkeys,
+  naddr,
 }) => {
   const submitForm = async (values) => {
     const contributorTags = topTenContributorPubkeys.map((pubkey) => [
@@ -30,7 +28,7 @@ const BountyModal = ({
       tags: [
         ['r', issueUrl],
         ['bounty', values.satoshi.toString()],
-        ['a', linkToRepo],
+        ['a', naddr],
         ...contributorTags,
       ],
       content: values.comment,
