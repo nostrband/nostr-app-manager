@@ -111,7 +111,9 @@ const RepositoryView = () => {
       (tag) => tag[0] === 'r'
     );
 
-    setGithubLink(githubLink[1]);
+    if (githubLink) {
+      setGithubLink(githubLink[1]);
+    }
 
     const contributors = authorProfileContributions
       .map((profileContribution) => {

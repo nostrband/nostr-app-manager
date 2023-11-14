@@ -3,6 +3,8 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import * as cmn from '../../common';
+import { toast } from 'react-toastify';
+import errorToast from '../../elements/ErrorToast';
 
 const BountySchema = Yup.object().shape({
   satoshi: Yup.number()
@@ -18,34 +20,24 @@ const BountyModal = ({
   linkToRepo,
   topTenContributorPubkeys,
 }) => {
-  const sendBounty = async (values) => {
+  const submitForm = async (values) => {
     const contributorTags = topTenContributorPubkeys.map((pubkey) => [
       'p',
       pubkey,
     ]);
     const event = {
       kind: 100119,
-      content: values.comment,
       tags: [
         ['r', issueUrl],
-        ['bounty', values.satoshi],
+        ['bounty', values.satoshi.toString()],
         ['a', linkToRepo],
         ...contributorTags,
       ],
+      content: values.comment,
     };
-    return cmn.publishEvent(event);
-  };
-
-  const submitForm = async (values, { setSubmitting }) => {
-    try {
-      const response = await sendBounty(values);
-      if (response) {
-        handleClose();
-      }
-    } catch (error) {
-      console.log('ERROR:', error);
-    } finally {
-      setSubmitting(false);
+    const response = await cmn.publishEvent(event);
+    if (response) {
+      handleClose();
     }
   };
 
