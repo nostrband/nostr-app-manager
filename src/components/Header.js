@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Header.scss';
 
 import * as cmn from '../common';
@@ -15,7 +15,6 @@ import { useAuthShowModal } from '../context/ShowModalContext';
 import { useAuth } from '../context/AuthContext';
 import SearchApp from './SearchApp';
 import { isTablet } from '../const';
-import SearchButton from '../elements/SearchButton';
 import { Avatar } from '@mui/material';
 import { useAppState } from '../context/AppContext';
 

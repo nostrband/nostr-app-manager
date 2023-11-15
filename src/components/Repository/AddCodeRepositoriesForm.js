@@ -78,6 +78,7 @@ const CodeRepositoryForm = () => {
       );
     }
     event.tags = event.tags.filter((tag) => tag[1]);
+    console.log(event, 'EVENT REPO POST');
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
       kind: 30117,

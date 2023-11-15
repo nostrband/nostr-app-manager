@@ -1333,7 +1333,7 @@ export const fetchZapCounts = async (event) => {
       '#a': [naddrToAddr(getNaddr(event))],
       limit: 100,
     };
-    console.log(zapQuery,'ZAP QUERY')
+    console.log(zapQuery, 'ZAP QUERY');
     const zapResponse = await fetchAllEvents([startFetch(ndk, zapQuery)]);
     let totalZapAmount = 0;
     for (const zap of zapResponse) {

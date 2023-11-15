@@ -1,12 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ArrowIcon from '../../icons/Arrow';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
+import BountyModal from './BountyModal';
+import { useAuthShowModal } from '../../context/ShowModalContext';
+import * as cmn from '../../common';
+import { useAuth } from '../../context/AuthContext';
 
-const RepositoryIssues = ({ repoLink }) => {
+const RepositoryIssues = ({
+  repoLink,
+  naddr,
+  linkToRepo,
+  topTenContributorPubkeys,
+}) => {
+  const { pathname } = useLocation();
   const [issues, setIssues] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const issueUrl = searchParams.get('issue');
+  const navigate = useNavigate();
+  const { setShowLogin } = useAuthShowModal();
+  const { pubkey } = useAuth();
 
   const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
@@ -51,6 +72,12 @@ const RepositoryIssues = ({ repoLink }) => {
     });
   }, [repoLink]);
 
+  const showAuthModal = () => {
+    if (!pubkey) {
+      setShowLogin(true);
+    }
+  };
+
   return (
     <>
       {issues.length > 0 && (
@@ -76,9 +103,30 @@ const RepositoryIssues = ({ repoLink }) => {
               </div>
               {issue.id === selectedIssueId ? (
                 <>
+                  <div className="d-flex align-items-center">
+                    <a
+                      href={issue.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button size="sm">Open on Github</Button>
+                    </a>
+                    <Link
+                      onClick={showAuthModal}
+                      to={
+                        cmn.isAuthed()
+                          ? `/r/${naddr}/bounty?issue=${issue.html_url}`
+                          : ''
+                      }
+                      className="mt-1 mb-1 mx-2"
+                    >
+                      <Button size="sm">Add bounty</Button>
+                    </Link>
+                  </div>
+
                   {issue.body ? (
                     <p
-                      className="description"
+                      className="description-issue"
                       dangerouslySetInnerHTML={{
                         __html: issue.body?.replace(/\r\n/g, '<br>'),
                       }}
@@ -90,17 +138,17 @@ const RepositoryIssues = ({ repoLink }) => {
                       Comments: <strong>{issue.comments}</strong>
                     </p>
                   ) : null}
-                  <a
-                    href={issue.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View on Github
-                  </a>
                 </>
               ) : null}
             </ListGroupItem>
           ))}
+          <BountyModal
+            issueUrl={issueUrl}
+            handleClose={() => navigate(`/r/${naddr}`)}
+            show={pathname === `/r/${naddr}/bounty`}
+            naddr={naddr}
+            // topTenContributorPubkeys={topTenContributorPubkeys}
+          />
         </ListGroup>
       )}
       {loading ? <LoadingSpinner /> : null}

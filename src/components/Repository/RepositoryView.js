@@ -111,7 +111,9 @@ const RepositoryView = () => {
       (tag) => tag[0] === 'r'
     );
 
-    setGithubLink(githubLink[1]);
+    if (githubLink) {
+      setGithubLink(githubLink[1]);
+    }
 
     const contributors = authorProfileContributions
       .map((profileContribution) => {
@@ -201,12 +203,26 @@ const RepositoryView = () => {
     .replace(/<br><br>/g, '\n')
     .replace(/<br>/g, '\n');
 
+  let processedPubkeys;
+  if (contributors.length > 0) {
+    processedPubkeys = contributors
+      .map((contributor) => contributor.pubkey)
+      .slice(0, 10);
+  }
+
   const appInfoViewComponents = {
     releases: <Releases repoLink={githubLink} />,
     ['contributor-repositories']: (
       <RepositoryContributions contributors={contributors} />
     ),
-    issues: <RepositoryIssues repoLink={githubLink} />,
+    issues: (
+      <RepositoryIssues
+        linkToRepo={linkTagValue}
+        naddr={naddr}
+        repoLink={githubLink}
+        topTenContributorPubkeys={processedPubkeys}
+      />
+    ),
   };
 
   return (
