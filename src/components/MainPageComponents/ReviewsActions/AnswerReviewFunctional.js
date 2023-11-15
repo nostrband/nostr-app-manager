@@ -7,6 +7,7 @@ import TextAreaAutosize from 'react-textarea-autosize';
 import { useAuthShowModal } from '../../../context/ShowModalContext';
 import { useUpdateAnswersReviewState } from '../../../context/UpdateAnswersContext';
 import { useNewReviewState } from '../../../context/NewReviewsContext';
+import { KIND_NOTES } from '../../../const';
 
 const AnswerReviewFunctional = ({ review, mainPage }) => {
   const [showModal, setShowModal] = useState(false);
@@ -43,7 +44,7 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
   const submitReviewReply = async () => {
     try {
       const event = {
-        kind: 1,
+        kind: KIND_NOTES,
         tags: [
           ['p', review.pubkey],
           ['e', review.id],

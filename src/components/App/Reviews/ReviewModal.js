@@ -6,6 +6,7 @@ import Toast from '../../../elements/Toast';
 import { toast } from 'react-toastify';
 import * as cmn from '../../../common';
 import { useReviewModal } from '../../../context/ShowReviewContext';
+import { KIND_REMOVE_EVENT, KIND_REVIEW } from '../../../const';
 
 const ReviewModal = ({
   showModal,
@@ -55,7 +56,7 @@ const ReviewModal = ({
     const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     const qualityValue = countReview / 5;
     const event = {
-      kind: 1985,
+      kind: KIND_REVIEW,
       tags: [
         [
           'l',
@@ -105,7 +106,7 @@ const ReviewModal = ({
 
   const editReviewQuery = async (edit) => {
     const event = {
-      kind: 5,
+      kind: KIND_REMOVE_EVENT,
       pubkey: review.pubkey,
       tags: [['e', review.id]],
       content: 'Delete review',

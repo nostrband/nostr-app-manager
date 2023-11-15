@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { Formik, Field } from 'formik';
 import {
+  KIND_REPOSITORY,
   optionsLicensies,
   programmingLanguages,
   validationSchemaForFormAddApp,
@@ -45,7 +46,7 @@ const CodeRepositoryForm = () => {
     const { type, data } = npub ? nip19.decode(npub) : { type: null };
 
     const event = {
-      kind: 30117,
+      kind: KIND_REPOSITORY,
       tags: [
         ['title', values.name],
         ['description', description],
@@ -78,10 +79,9 @@ const CodeRepositoryForm = () => {
       );
     }
     event.tags = event.tags.filter((tag) => tag[1]);
-    console.log(event, 'EVENT REPO POST');
     const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
-      kind: 30117,
+      kind: KIND_REPOSITORY,
       pubkey: cmn.getLoginPubkey(),
       identifier: d,
     });

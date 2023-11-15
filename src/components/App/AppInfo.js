@@ -19,6 +19,7 @@ import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './Reviews/ReviewModal';
 import CheckedStar from '../../icons/CheckedStar';
 import { useReviewModal } from '../../context/ShowReviewContext';
+import { KIND_LIKE, KIND_REMOVE_EVENT, REMOVE_EVENT_KIND } from '../../const';
 
 const AppInfo = (props) => {
   const { naddr, review: reviewParams } = useParams();
@@ -50,7 +51,7 @@ const AppInfo = (props) => {
     if (cmn.localGet('loginPubkey')) {
       if (liked.length === 0 || !liked) {
         const event = {
-          kind: 7,
+          kind: KIND_LIKE,
           tags: [
             ['p', props.app.pubkey],
             ['a', cmn.naddrToAddr(cmn.getNaddr(props.app))],
@@ -74,7 +75,7 @@ const AppInfo = (props) => {
         }
       } else {
         const deletedEventWithLike = {
-          kind: 5,
+          kind: KIND_REMOVE_EVENT,
           pubkey: cmn.localGet('loginPubkey'),
           tags: [['e', liked[0]?.id]],
           content: 'Deleting the app',

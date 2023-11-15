@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Toast from '../../elements/Toast';
 import * as cmn from '../../common';
 import { toast } from 'react-toastify';
+import { KIND_NOTES } from '../../const';
 
 const ShareAppModal = ({
   showModal,
@@ -26,7 +27,7 @@ const ShareAppModal = ({
   const shareApp = async () => {
     const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     const event = {
-      kind: 1,
+      kind: KIND_NOTES,
       tags: [
         ['p', selectedApp.pubkey],
         ['a', cmn.naddrToAddr(cmn.getNaddr(selectedApp))],

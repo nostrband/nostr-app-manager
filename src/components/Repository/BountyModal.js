@@ -3,6 +3,8 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import * as cmn from '../../common';
+import { KIND_BOUNTY } from '../../const';
+import { toast } from 'react-toastify';
 
 const BountySchema = Yup.object().shape({
   satoshi: Yup.number()
@@ -15,27 +17,35 @@ const BountyModal = ({
   show,
   handleClose,
   issueUrl,
-//  topTenContributorPubkeys,
+  //  topTenContributorPubkeys,
   naddr,
 }) => {
   const submitForm = async (values) => {
+    const toastId = toast('Loading...', { type: 'pending', autoClose: false });
     // const contributorTags = topTenContributorPubkeys.map((pubkey) => [
     //   'p',
     //   pubkey,
     // ]);
     const event = {
-      kind: 9042,
+      kind: KIND_BOUNTY,
       tags: [
         ['r', issueUrl],
         ['amount', values.satoshi.toString()],
         ['a', naddr],
-      // ...contributorTags,
+        // ...contributorTags,
       ],
       content: values.comment,
     };
     const response = await cmn.publishEvent(event);
     if (response) {
       handleClose();
+      toast.update(toastId, {
+        render: 'Bounty posted!',
+        type: 'success',
+        autoClose: 3000,
+      });
+    } else {
+      toast.dismiss(toastId);
     }
   };
 
