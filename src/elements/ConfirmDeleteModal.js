@@ -8,6 +8,7 @@ import * as cmn from '../common';
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
+import { KIND_REMOVE_EVENT } from '../const';
 
 const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const ConfirmDeleteModal = ({ showModal, selectedApp, handleCloseModal }) => {
 
   const deleteAppHandler = async () => {
     const deletionEvent = {
-      kind: 5,
+      kind: KIND_REMOVE_EVENT,
       pubkey: selectedApp?.pubkey,
       tags: [['e', selectedApp?.id]],
       content: 'Deleting the app',

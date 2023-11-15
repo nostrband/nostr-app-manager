@@ -3,6 +3,12 @@ import * as Yup from 'yup';
 export const KIND_META = 0;
 export const KIND_RECOMM = 31989;
 export const KIND_HANDLERS = 31990;
+export const KIND_BOUNTY = 9042;
+export const KIND_LIKE = 7;
+export const KIND_REMOVE_EVENT = 5;
+export const KIND_NOTES = 1;
+export const KIND_REVIEW = 1985;
+export const KIND_REPOSITORY = 30117;
 
 // https://www.npmjs.com/package/platform-detect#osmjs + web
 export const platforms = [

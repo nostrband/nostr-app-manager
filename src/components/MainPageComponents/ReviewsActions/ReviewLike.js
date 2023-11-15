@@ -5,6 +5,7 @@ import { useAuthShowModal } from '../../../context/ShowModalContext';
 import LikedHeart from '../../../icons/LikedHeart';
 import { useNewReviewState } from '../../../context/NewReviewsContext';
 import { toast } from 'react-toastify';
+import { KIND_LIKE, KIND_REMOVE_EVENT } from '../../../const';
 
 const ReviewLike = ({
   review,
@@ -41,7 +42,7 @@ const ReviewLike = ({
           autoClose: false,
         });
         const event = {
-          kind: 7,
+          kind: KIND_LIKE,
           tags: [
             ['p', loginPubkey, 'wss://relay.nostr.band'],
             ['e', review.id, 'wss://relay.nostr.band'],
@@ -78,7 +79,7 @@ const ReviewLike = ({
         }
       } else {
         const eventForDelete = {
-          kind: 5,
+          kind: KIND_REMOVE_EVENT,
           pubkey: loginPubkey,
           tags: [['e', like.id]],
           content: 'Deleting the app',

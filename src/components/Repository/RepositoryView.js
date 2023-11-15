@@ -15,6 +15,7 @@ import ZapFunctional from '../MainPageComponents/ReviewsActions/ZapFunctional';
 import Releases from '../Releases';
 import RepositoryContributions from './RepositoryContributions';
 import RepositoryIssues from './RepositoryIssues';
+import { KIND_REMOVE_EVENT } from '../../const';
 
 const tabs = [
   {
@@ -174,7 +175,7 @@ const RepositoryView = () => {
 
   const deleteRepositoryHandler = async () => {
     const deleteEventRepository = {
-      kind: 5,
+      kind: KIND_REMOVE_EVENT,
       pubkey: repository?.pubkey,
       tags: [['e', repository?.id]],
       content: 'Deleting the repository',
