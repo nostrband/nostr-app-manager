@@ -15,21 +15,21 @@ const BountyModal = ({
   show,
   handleClose,
   issueUrl,
-  topTenContributorPubkeys,
+//  topTenContributorPubkeys,
   naddr,
 }) => {
   const submitForm = async (values) => {
-    const contributorTags = topTenContributorPubkeys.map((pubkey) => [
-      'p',
-      pubkey,
-    ]);
+    // const contributorTags = topTenContributorPubkeys.map((pubkey) => [
+    //   'p',
+    //   pubkey,
+    // ]);
     const event = {
-      kind: 100119,
+      kind: 9042,
       tags: [
         ['r', issueUrl],
-        ['bounty', values.satoshi.toString()],
+        ['amount', values.satoshi.toString()],
         ['a', naddr],
-        ...contributorTags,
+      // ...contributorTags,
       ],
       content: values.comment,
     };

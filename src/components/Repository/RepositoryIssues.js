@@ -147,7 +147,7 @@ const RepositoryIssues = ({
             handleClose={() => navigate(`/r/${naddr}`)}
             show={pathname === `/r/${naddr}/bounty`}
             naddr={naddr}
-            topTenContributorPubkeys={topTenContributorPubkeys}
+            // topTenContributorPubkeys={topTenContributorPubkeys}
           />
         </ListGroup>
       )}
