@@ -236,3 +236,4 @@ export const categoriesTabMainPage = [
 ];
 
 export const isTablet = window.screen.width < 615;
+export const isPhone = window.screen.width < 415;
