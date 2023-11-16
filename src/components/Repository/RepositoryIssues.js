@@ -133,7 +133,11 @@ const RepositoryIssues = ({
                 <div className="d-flex align-items-center">
                   {issue.bounty_issue > 0 && !isPhone ? (
                     <span className="mx-2 d-flex">
-                      Bounty: <strong> {issue.bounty_issue / 1000}</strong>sats
+                      Bounty:
+                      <strong className="mx-1">
+                        {cmn.formatNumber(issue.bounty_issue)}
+                      </strong>
+                      sats
                     </span>
                   ) : null}
 
