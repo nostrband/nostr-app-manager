@@ -63,7 +63,6 @@ const RepositoryIssues = ({
         allIssues = allIssues.concat(issues);
         page++;
       } while (issues.length > 0);
-      console.log(allIssues, 'ALL ISSUES');
       const issueUrls = allIssues.map((issue) => issue.html_url);
 
       const bountyRequest = {
@@ -88,7 +87,7 @@ const RepositoryIssues = ({
 
         return {
           ...issue,
-          bounty_issue: bountySum,
+          bounty_issue: bountySum / 1000,
         };
       });
       setIssues(enrichedIssues);
@@ -125,7 +124,11 @@ const RepositoryIssues = ({
                   <h6 style={{ margin: 0 }}>{issue.title}</h6>
                   {issue.bounty_issue > 0 && isPhone ? (
                     <span className="d-flex">
-                      Bounty: <strong> {issue.bounty_issue / 1000}</strong>sats
+                      Bounty:
+                      <strong className="mx-1">
+                        {cmn.formatNumber(issue.bounty_issue)}
+                      </strong>
+                      sats
                     </span>
                   ) : null}
                 </div>
