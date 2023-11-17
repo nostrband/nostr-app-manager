@@ -231,164 +231,165 @@ const RepositoryView = () => {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Container className="mt-4 repository-view d-flex justify-content-between">
-          <ul>
-            <Container className="container-name">
-              <div>
-                <h2 className="font-weight-bold">
-                  {`${
-                    repository?.tags.find((tag) => tag[0] === 'title')?.[1] ||
-                    ''
-                  }`}
-                </h2>
-                <GitHubIconWithStar link={linkTagValue} />
-              </div>
-            </Container>
+        <Container className="mt-4 repository-view d-flex flex-column justify-content-between">
+          <div className="d-flex">
+            <ul>
+              <Container className="container-name">
+                <div>
+                  <h2 className="font-weight-bold">
+                    {`${
+                      repository?.tags.find((tag) => tag[0] === 'title')?.[1] ||
+                      ''
+                    }`}
+                  </h2>
+                  <GitHubIconWithStar link={linkTagValue} />
+                </div>
+              </Container>
 
-            {linkTagValue ? (
-              <li>
-                <ShareIconForRepository />
-                <a
-                  href={linkTagValue}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {linkTagValue}
-                </a>
-              </li>
-            ) : null}
-            {processedDescription ? (
-              <div className="description-repository">
-                {processedDescription.split('\n').map((str, index) => (
-                  <p className="description" key={index}>
-                    {str}
-                  </p>
-                ))}
-              </div>
-            ) : null}
-
-            {licenseTagValue ? (
-              <li>
-                <strong>License: </strong>
-                {licenseTagValue}
-              </li>
-            ) : null}
-
-            <li className="mt-3">
-              <strong className="d-block">Tags </strong>
-              {repository.otherTags.map((item) => {
-                return (
-                  <button
-                    class="btn btn-outline-primary mx-1 mb-2"
-                    onClick={() => navigate(`/tag/${item}`)}
-                    key={item}
+              {linkTagValue ? (
+                <li>
+                  <ShareIconForRepository />
+                  <a
+                    href={linkTagValue}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    {item}
-                  </button>
-                );
-              })}
-            </li>
-
-            {dynamicTags.map(({ title, key }) =>
-              repository[key]?.length > 0 ? (
-                <li className="mt-3" key={title}>
-                  <strong className="d-block">{title}</strong>
-                  {repository[key].map((item) => {
-                    return (
-                      <KindElement
-                        className="mx-1 mt-2"
-                        key={item}
-                        size="sm"
-                        variant="outline-primary"
-                      >
-                        {item}
-                      </KindElement>
-                    );
-                  })}
+                    {linkTagValue}
+                  </a>
                 </li>
-              ) : null
-            )}
+              ) : null}
+              {processedDescription ? (
+                <div className="description-repository">
+                  {processedDescription.split('\n').map((str, index) => (
+                    <p className="description" key={index}>
+                      {str}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
 
-            <li className="mt-4">
-              <div className="mt-2">
-                <strong>Published by:</strong>
-                <Profile
-                  profile={authorRepository}
-                  pubkey={pubkey}
-                  small={true}
-                />
-              </div>
-              {repository.profile ? (
+              {licenseTagValue ? (
+                <li>
+                  <strong>License: </strong>
+                  {licenseTagValue}
+                </li>
+              ) : null}
+
+              <li className="mt-3">
+                <strong className="d-block">Tags </strong>
+                {repository.otherTags.map((item) => {
+                  return (
+                    <button
+                      class="btn btn-outline-primary mx-1 mb-2"
+                      onClick={() => navigate(`/tag/${item}`)}
+                      key={item}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+              </li>
+
+              {dynamicTags.map(({ title, key }) =>
+                repository[key]?.length > 0 ? (
+                  <li className="mt-3" key={title}>
+                    <strong className="d-block">{title}</strong>
+                    {repository[key].map((item) => {
+                      return (
+                        <KindElement
+                          className="mx-1 mt-2"
+                          key={item}
+                          size="sm"
+                          variant="outline-primary"
+                        >
+                          {item}
+                        </KindElement>
+                      );
+                    })}
+                  </li>
+                ) : null
+              )}
+
+              <li className="mt-4">
                 <div className="mt-2">
-                  <strong>Author:</strong>
+                  <strong>Published by:</strong>
                   <Profile
-                    profile={{ profile: repository.profile }}
-                    pubkey={repository.profile.pubkey}
+                    profile={authorRepository}
+                    pubkey={pubkey}
                     small={true}
                   />
                 </div>
-              ) : null}
-            </li>
+                {repository.profile ? (
+                  <div className="mt-2">
+                    <strong>Author:</strong>
+                    <Profile
+                      profile={{ profile: repository.profile }}
+                      pubkey={repository.profile.pubkey}
+                      small={true}
+                    />
+                  </div>
+                ) : null}
+              </li>
+            </ul>
 
-            <div className="d-flex  justify-content-center pt-4 pb-3">
-              <ul className="nav nav-pills d-flex justify-content-center">
-                {tabs.map((nav) => {
-                  return (
-                    <li
-                      onClick={() => {
-                        setActiveComponent(nav.path);
-                      }}
-                      className={`pointer nav-link nav-item ${
-                        activeComponent === nav.path ? 'active' : ''
-                      }`}
-                    >
-                      {nav.title}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-
-            {appInfoViewComponents[activeComponent]}
-          </ul>
-
-          <div>
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
-            >
-              <button className="repository-info-zap-button">
-                <span className="font-weight-bold">
-                  {cmn.formatNumber(zapCount)}
-                </span>
-                <ZapFunctional
-                  noteId={nip19.noteEncode(repository.id)}
-                  comment={linkTagValue ? `For ${linkTagValue}` : ''}
-                />
-              </button>
-            </OverlayTrigger>
-            {allowEditDelete ? (
-              <div>
-                <div className="mt-2 d-flex justify-content-center">
-                  <Link className="w-100" to={editUrl}>
-                    <Button
-                      size="sm"
-                      variant="outline-secondary"
-                      className="w-100"
-                    >
-                      Edit
-                    </Button>
-                  </Link>
+            <div>
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip className="tooltip-zap">Send zap</Tooltip>}
+              >
+                <button className="repository-info-zap-button">
+                  <span className="font-weight-bold">
+                    {cmn.formatNumber(zapCount)}
+                  </span>
+                  <ZapFunctional
+                    noteId={nip19.noteEncode(repository.id)}
+                    comment={linkTagValue ? `For ${linkTagValue}` : ''}
+                  />
+                </button>
+              </OverlayTrigger>
+              {allowEditDelete ? (
+                <div>
+                  <div className="mt-2 d-flex justify-content-center">
+                    <Link className="w-100" to={editUrl}>
+                      <Button
+                        size="sm"
+                        variant="outline-secondary"
+                        className="w-100"
+                      >
+                        Edit
+                      </Button>
+                    </Link>
+                  </div>
+                  <Button
+                    onClick={() => setOpenConfirmDeleteModal(true)}
+                    size="sm"
+                    className="btn-danger w-100 mt-2"
+                  >
+                    Delete
+                  </Button>
                 </div>
-                <Button
-                  onClick={() => setOpenConfirmDeleteModal(true)}
-                  size="sm"
-                  className="btn-danger w-100 mt-2"
-                >
-                  Delete
-                </Button>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
+          </div>
+
+          <div className="pt-4 pb-3">
+            <ul className="nav nav-pills d-flex justify-content-center mb-2">
+              {tabs.map((nav) => {
+                return (
+                  <li
+                    onClick={() => {
+                      setActiveComponent(nav.path);
+                    }}
+                    className={`pointer nav-link nav-item ${
+                      activeComponent === nav.path ? 'active' : ''
+                    }`}
+                  >
+                    {nav.title}
+                  </li>
+                );
+              })}
+            </ul>
+            {appInfoViewComponents[activeComponent]}
           </div>
 
           <ReasubleModal

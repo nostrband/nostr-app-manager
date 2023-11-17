@@ -26,11 +26,12 @@ const BountyModal = ({
     //   'p',
     //   pubkey,
     // ]);
+    const millisatoshi = values.satoshi * 1000;
     const event = {
       kind: KIND_BOUNTY,
       tags: [
         ['r', issueUrl],
-        ['amount', values.satoshi.toString()],
+        ['amount', millisatoshi.toString()],
         ['a', naddr],
         // ...contributorTags,
       ],

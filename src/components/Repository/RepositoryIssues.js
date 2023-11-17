@@ -12,6 +12,7 @@ import BountyModal from './BountyModal';
 import { useAuthShowModal } from '../../context/ShowModalContext';
 import * as cmn from '../../common';
 import { useAuth } from '../../context/AuthContext';
+import { isPhone } from '../../const';
 
 const RepositoryIssues = ({
   repoLink,
@@ -62,7 +63,34 @@ const RepositoryIssues = ({
         allIssues = allIssues.concat(issues);
         page++;
       } while (issues.length > 0);
-      setIssues(allIssues);
+      const issueUrls = allIssues.map((issue) => issue.html_url);
+
+      const bountyRequest = {
+        kinds: [9042],
+        '#r': issueUrls,
+      };
+      const ndk = await cmn.getNDK();
+      const bounties = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, bountyRequest),
+      ]);
+      const enrichedIssues = allIssues.map((issue) => {
+        let bountySum = 0;
+        bounties.forEach((bounty) => {
+          const issueUrlTag = bounty.tags.find((tag) => tag[0] === 'r');
+          if (issueUrlTag && issueUrlTag[1] === issue.html_url) {
+            const amountTag = bounty.tags.find((tag) => tag[0] === 'amount');
+            if (amountTag) {
+              bountySum += parseInt(amountTag[1], 10);
+            }
+          }
+        });
+
+        return {
+          ...issue,
+          bounty_issue: bountySum / 1000,
+        };
+      });
+      setIssues(enrichedIssues);
       setLoading(false);
     };
 
@@ -92,13 +120,37 @@ const RepositoryIssues = ({
                 }
                 className="d-flex align-items-center justify-content-between releases-item-title"
               >
-                <h6 style={{ margin: 0 }}>{issue.title}</h6>
-                <div>
-                  <ArrowIcon
-                    className={`arrow ${
-                      issue.id === selectedIssueId ? 'reverse' : ''
-                    }`}
-                  />
+                <div className="d-flex flex-column">
+                  <h6 style={{ margin: 0 }}>{issue.title}</h6>
+                  {issue.bounty_issue > 0 && isPhone ? (
+                    <span className="d-flex">
+                      Bounty:
+                      <strong className="mx-1">
+                        {cmn.formatNumber(issue.bounty_issue)}
+                      </strong>
+                      sats
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="d-flex align-items-center">
+                  {issue.bounty_issue > 0 && !isPhone ? (
+                    <span className="mx-2 d-flex">
+                      Bounty:
+                      <strong className="mx-1">
+                        {cmn.formatNumber(issue.bounty_issue)}
+                      </strong>
+                      sats
+                    </span>
+                  ) : null}
+
+                  <div>
+                    <ArrowIcon
+                      className={`arrow ${
+                        issue.id === selectedIssueId ? 'reverse' : ''
+                      }`}
+                    />
+                  </div>
                 </div>
               </div>
               {issue.id === selectedIssueId ? (
