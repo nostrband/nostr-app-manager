@@ -32,7 +32,7 @@ const BountyModal = ({
       tags: [
         ['r', issueUrl],
         ['amount', millisatoshi.toString()],
-        ['a', naddr],
+        ['a', cmn.naddrToAddr(naddr)],
         // ...contributorTags,
       ],
       content: values.comment,
