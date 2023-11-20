@@ -16,6 +16,8 @@ import Releases from '../Releases';
 import RepositoryContributions from './RepositoryContributions';
 import RepositoryIssues from './RepositoryIssues';
 import { KIND_REMOVE_EVENT } from '../../const';
+import Bounties from './RepositoryBounties';
+import RepositoryBounties from './RepositoryBounties';
 
 const tabs = [
   {
@@ -30,6 +32,10 @@ const tabs = [
   {
     title: 'Issues',
     path: 'issues',
+  },
+  {
+    title: 'Bounties',
+    path: 'bounties',
   },
 ];
 
@@ -222,6 +228,13 @@ const RepositoryView = () => {
         naddr={naddr}
         repoLink={githubLink}
         topTenContributorPubkeys={processedPubkeys}
+      />
+    ),
+    bounties: (
+      <RepositoryBounties
+        linkToRepo={linkTagValue}
+        naddr={naddr}
+        repoLink={githubLink}
       />
     ),
   };
