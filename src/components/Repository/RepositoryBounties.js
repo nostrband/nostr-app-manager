@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Button, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ArrowIcon from '../../icons/Arrow';
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
-import { useAuthShowModal } from '../../context/ShowModalContext';
 import * as cmn from '../../common';
 import { useAuth } from '../../context/AuthContext';
-import { isPhone } from '../../const';
+import { KIND_REMOVE_EVENT, isPhone } from '../../const';
 import Profile from '../../elements/Profile';
+import DeleteIcon from '../../icons/DeleteIcon';
 
 const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
-  const { pathname } = useLocation();
   const [issues, setIssues] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { pubkey } = useAuth();
+  const [bountyIdForRemove, setBountyIdForRemove] = useState();
 
   const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
@@ -111,6 +104,33 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
       setLoading(false);
     });
   }, [repoLink]);
+
+  const removeBountyRequest = async (issueId, bountyId) => {
+    const eventForRemove = {
+      kind: KIND_REMOVE_EVENT,
+      tags: [['e', bountyId]],
+      content: 'Deleting the bounty',
+    };
+    const result = await cmn.publishEvent(eventForRemove);
+    if (result) {
+      setIssues((prevIssues) => {
+        return prevIssues.reduce((acc, issue) => {
+          if (issue.id === issueId) {
+            const updatedBounties = issue.bounties.filter(
+              (bounty) => bounty.id !== bountyId
+            );
+            if (updatedBounties.length > 0) {
+              acc.push({ ...issue, bounties: updatedBounties });
+            }
+          } else {
+            acc.push(issue);
+          }
+          return acc;
+        }, []);
+      });
+    }
+  };
+
   return (
     <>
       {issues.length > 0 && (
@@ -159,22 +179,63 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                         ? cmn.convertContentToProfile([bounty.author])
                         : {};
                       return (
-                        <div className="bounty-item mx-2">
-                          <div className="d-flex align-items-center">
-                            <Profile
-                              small
-                              profile={{ profile: authorProfile }}
-                              pubkey={bounty.pubkey}
-                            />
-                            <span className="mx-3">
-                              Bounty:
-                              <strong className="mx-1">
-                                {cmn.formatNumber(bounty.amount)}
-                              </strong>
-                            </span>
+                        <>
+                          <div className="bounty-item mx-2">
+                            <div>
+                              <div className="d-flex align-items-center">
+                                <Profile
+                                  small
+                                  profile={{ profile: authorProfile }}
+                                  pubkey={bounty.pubkey}
+                                />
+                                <span className="mx-3">
+                                  Bounty:
+                                  <strong className="mx-1">
+                                    {cmn.formatNumber(bounty.amount)}
+                                  </strong>
+                                </span>
+                              </div>
+                              <p>{bounty.content}</p>
+                            </div>
+                            {bounty.pubkey === pubkey ? (
+                              <DeleteIcon
+                                onClick={() => setBountyIdForRemove(bounty.id)}
+                              />
+                            ) : null}
                           </div>
-                          <p>{bounty.content}</p>
-                        </div>
+                          <Modal
+                            show={bounty.id === bountyIdForRemove}
+                            onHide={() => setBountyIdForRemove('')}
+                          >
+                            <Modal.Header closeButton>
+                              <Modal.Title>
+                                Do you want to delete bounty?
+                              </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <div className="d-flex justify-content-center ">
+                                <Button
+                                  onClick={() => {
+                                    setBountyIdForRemove('');
+                                  }}
+                                  variant="secondary"
+                                  className="w-50 "
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    removeBountyRequest(issue.id, bounty.id)
+                                  }
+                                  variant="primary"
+                                  className="w-50 ms-3 btn-danger"
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </Modal.Body>
+                          </Modal>
+                        </>
                       );
                     })}
                   </>
