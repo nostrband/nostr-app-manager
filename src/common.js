@@ -954,7 +954,6 @@ export async function publishEvent(event) {
   if (!isAuthed()) {
     return { error: 'Please authorize' };
   }
-
   const ndk = await getNDK();
   const ndkEvent = new NDKEvent(ndk);
 

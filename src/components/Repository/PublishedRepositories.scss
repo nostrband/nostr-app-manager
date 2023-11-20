@@ -112,6 +112,9 @@
 }
 
 .bounty-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid #dee2e6;
   padding: 4px 0;
   p {
