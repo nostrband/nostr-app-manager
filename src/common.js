@@ -1355,3 +1355,10 @@ export const fetchZapCounts = async (event) => {
     return error;
   }
 };
+
+export const associateEventsWithReviews = (events, authors) => {
+  return events.map((event) => {
+    const author = authors.find((author) => author.pubkey === event.pubkey);
+    return { ...event, author: author || null };
+  });
+};
