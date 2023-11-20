@@ -144,9 +144,17 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                     />
                   </div>
                 </div>
-
-                {issue.id === selectedIssueId
-                  ? issue.bounties.map((bounty) => {
+                {issue.id === selectedIssueId ? (
+                  <>
+                    <a
+                      className="mx-2 pb-1"
+                      href={issue.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button size="sm">Open on Github</Button>
+                    </a>
+                    {issue.bounties.map((bounty) => {
                       let authorProfile = bounty.author?.content
                         ? cmn.convertContentToProfile([bounty.author])
                         : {};
@@ -168,8 +176,9 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                           <p>{bounty.content}</p>
                         </div>
                       );
-                    })
-                  : null}
+                    })}
+                  </>
+                ) : null}
               </div>
             </ListGroupItem>
           ))}
