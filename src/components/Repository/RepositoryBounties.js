@@ -168,7 +168,7 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                   {issue.id === selectedIssueId ? (
                     <>
                       <a
-                        className="mx-2 pb-3"
+                        className="pb-3"
                         href={issue.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
