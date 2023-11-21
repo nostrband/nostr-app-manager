@@ -9,7 +9,6 @@ import DeleteIcon from '../../icons/DeleteIcon';
 
 const BountiesByUser = ({ pubkey }) => {
   const [issues, setIssues] = useState([]);
-  const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [bountyIdForRemove, setBountyIdForRemove] = useState();
 
@@ -132,8 +131,6 @@ const BountiesByUser = ({ pubkey }) => {
       });
     }
   };
-
-  console.log(issues, 'ISSUES');
 
   return (
     <>
