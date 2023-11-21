@@ -21,7 +21,6 @@ const BountiesByUser = ({ pubkey }) => {
           kinds: [9042],
           authors: [pubkey],
         };
-
         const ndk = await cmn.getNDK();
         const bounties = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, bountyRequest),
@@ -82,6 +81,7 @@ const BountiesByUser = ({ pubkey }) => {
               bountySum += parseInt(amountTag[1], 10);
             }
           });
+
           return {
             ...issue,
             bounty_total_amount: bountySum / 1000,
@@ -133,44 +133,48 @@ const BountiesByUser = ({ pubkey }) => {
     }
   };
 
+  console.log(issues, 'ISSUES');
+
   return (
     <>
       <h4>My bounties</h4>
       {issues.length > 0 && (
         <ListGroup>
-          {issues.map((issue) => (
-            <ListGroupItem className="d-flex flex-column" key={issue.id}>
-              <div className="d-flex flex-column">
-                <div
-                  onClick={() =>
-                    setSelectedIssueId(
-                      issue.id === selectedIssueId ? null : issue.id
-                    )
-                  }
-                  className="d-flex justify-content-between pointer align-items-center"
-                >
-                  <h6 style={{ margin: 0 }}>{issue.title}</h6>
-                  <div className="d-flex align-items-center">
-                    {issue.bounty_total_amount > 0 && !isPhone ? (
-                      <span className="mx-2 d-flex">
-                        Bounty:
-                        <strong className="mx-1">
-                          {cmn.formatNumber(issue.bounty_total_amount)}
-                        </strong>
-                        sats
-                      </span>
-                    ) : null}
-                    <ArrowIcon
-                      className={`arrow ${
-                        issue.id === selectedIssueId ? 'reverse' : ''
-                      }`}
-                    />
+          {issues.map((issue) => {
+            const repoUrl = issue.html_url.match(
+              /https:\/\/github\.com\/([^\/]+\/[^\/]+)\/issues\/(\d+)/
+            )[1];
+            return (
+              <ListGroupItem className="d-flex flex-column" key={issue.id}>
+                <div className="d-flex flex-column">
+                  <div className="d-flex justify-content-between  align-items-center">
+                    <div>
+                      <h6 style={{ margin: 0 }}>{issue.title}</h6>
+                      Repository:
+                      <a
+                        className="mx-1"
+                        href={`https://github.com/${repoUrl}`}
+                        target="_blank"
+                      >
+                        {repoUrl.split('/')[1]}
+                      </a>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      {issue.bounty_total_amount > 0 && !isPhone ? (
+                        <span className="mx-2 d-flex">
+                          Bounty:
+                          <strong className="mx-1">
+                            {cmn.formatNumber(issue.bounty_total_amount)}
+                          </strong>
+                          sats
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-                {issue.id === selectedIssueId ? (
+
                   <>
                     <a
-                      className="mx-2 pb-1"
+                      className="pb-1 pt-1"
                       href={issue.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -242,10 +246,10 @@ const BountiesByUser = ({ pubkey }) => {
                       );
                     })}
                   </>
-                ) : null}
-              </div>
-            </ListGroupItem>
-          ))}
+                </div>
+              </ListGroupItem>
+            );
+          })}
         </ListGroup>
       )}
       {loading ? <LoadingSpinner /> : null}
