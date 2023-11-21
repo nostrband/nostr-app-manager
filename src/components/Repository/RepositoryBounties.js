@@ -139,14 +139,7 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
             return (
               <ListGroupItem className="d-flex flex-column" key={issue.id}>
                 <div className="d-flex flex-column">
-                  <div
-                    onClick={() =>
-                      setSelectedIssueId(
-                        issue.id === selectedIssueId ? null : issue.id
-                      )
-                    }
-                    className="d-flex justify-content-between pointer align-items-center"
-                  >
+                  <div className="d-flex justify-content-between pointer align-items-center">
                     <h6 style={{ margin: 0 }}>{issue.title}</h6>
                     <div className="d-flex align-items-center">
                       {issue.bounty_total_amount > 0 && !isPhone ? (
@@ -158,91 +151,82 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                           sats
                         </span>
                       ) : null}
-                      <ArrowIcon
-                        className={`arrow ${
-                          issue.id === selectedIssueId ? 'reverse' : ''
-                        }`}
-                      />
                     </div>
                   </div>
-                  {issue.id === selectedIssueId ? (
-                    <>
-                      <a
-                        className="pb-3"
-                        href={issue.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button size="sm">Open on Github</Button>
-                      </a>
-                      {issue.bounties.map((bounty) => {
-                        let authorProfile = bounty.author?.content
-                          ? cmn.convertContentToProfile([bounty.author])
-                          : {};
-                        return (
-                          <>
-                            <div className="bounty-item mx-2">
-                              <div>
-                                <div className="d-flex align-items-center">
-                                  <Profile
-                                    small
-                                    profile={{ profile: authorProfile }}
-                                    pubkey={bounty.pubkey}
-                                  />
-                                  <span className="mx-3">
-                                    Bounty:
-                                    <strong className="mx-1">
-                                      {cmn.formatNumber(bounty.amount)}
-                                    </strong>
-                                  </span>
-                                </div>
-                                <p>{bounty.content}</p>
-                              </div>
-                              {bounty.pubkey === pubkey ? (
-                                <DeleteIcon
-                                  onClick={() =>
-                                    setBountyIdForRemove(bounty.id)
-                                  }
+                  <>
+                    <a
+                      className="pb-3 pt-1"
+                      href={issue.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button size="sm">Open on Github</Button>
+                    </a>
+                    {issue.bounties.map((bounty) => {
+                      let authorProfile = bounty.author?.content
+                        ? cmn.convertContentToProfile([bounty.author])
+                        : {};
+                      return (
+                        <>
+                          <div className="bounty-item mx-2">
+                            <div>
+                              <div className="d-flex align-items-center">
+                                <Profile
+                                  small
+                                  profile={{ profile: authorProfile }}
+                                  pubkey={bounty.pubkey}
                                 />
-                              ) : null}
+                                <span className="mx-3">
+                                  Bounty:
+                                  <strong className="mx-1">
+                                    {cmn.formatNumber(bounty.amount)}
+                                  </strong>
+                                </span>
+                              </div>
+                              <p>{bounty.content}</p>
                             </div>
-                            <Modal
-                              show={bounty.id === bountyIdForRemove}
-                              onHide={() => setBountyIdForRemove('')}
-                            >
-                              <Modal.Header closeButton>
-                                <Modal.Title>
-                                  Do you want to delete bounty?
-                                </Modal.Title>
-                              </Modal.Header>
-                              <Modal.Body>
-                                <div className="d-flex justify-content-center ">
-                                  <Button
-                                    onClick={() => {
-                                      setBountyIdForRemove('');
-                                    }}
-                                    variant="secondary"
-                                    className="w-50 "
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    onClick={() =>
-                                      removeBountyRequest(issue.id, bounty.id)
-                                    }
-                                    variant="primary"
-                                    className="w-50 ms-3 btn-danger"
-                                  >
-                                    Delete
-                                  </Button>
-                                </div>
-                              </Modal.Body>
-                            </Modal>
-                          </>
-                        );
-                      })}
-                    </>
-                  ) : null}
+                            {bounty.pubkey === pubkey ? (
+                              <DeleteIcon
+                                onClick={() => setBountyIdForRemove(bounty.id)}
+                              />
+                            ) : null}
+                          </div>
+                          <Modal
+                            show={bounty.id === bountyIdForRemove}
+                            onHide={() => setBountyIdForRemove('')}
+                          >
+                            <Modal.Header closeButton>
+                              <Modal.Title>
+                                Do you want to delete bounty?
+                              </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <div className="d-flex justify-content-center ">
+                                <Button
+                                  onClick={() => {
+                                    setBountyIdForRemove('');
+                                  }}
+                                  variant="secondary"
+                                  className="w-50 "
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    removeBountyRequest(issue.id, bounty.id)
+                                  }
+                                  variant="primary"
+                                  className="w-50 ms-3 btn-danger"
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </Modal.Body>
+                          </Modal>
+                        </>
+                      );
+                    })}
+                  </>
                 </div>
               </ListGroupItem>
             );
