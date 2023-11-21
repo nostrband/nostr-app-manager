@@ -108,7 +108,7 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
 
   return (
     <Container className="ps-0 pe-0">
-      <div className="pb-3 pt-5">
+      <div className={`${!myReviews ? 'pb-3 pt-5' : ''}`}>
         {myReviews ? (
           <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
         ) : (

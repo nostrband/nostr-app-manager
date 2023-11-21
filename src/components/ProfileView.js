@@ -10,6 +10,7 @@ import Apps from './Profile/Apps';
 import UsedApps from './Profile/UsedApps';
 import NewReviews from './MainPageComponents/NewReviews';
 import { useNewReviewState } from '../context/NewReviewsContext';
+import BountiesByUser from './Profile/BountiesByUser';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
@@ -73,6 +74,10 @@ const tabs = [
   {
     title: 'Reviews',
     path: 'reviews',
+  },
+  {
+    title: 'Bounties',
+    path: 'bounties',
   },
 ];
 
@@ -156,6 +161,7 @@ const ProfileView = () => {
         profilePubkey={profilePubkey}
       />
     ),
+    bounties: <BountiesByUser pubkey={pubkey} />,
   };
   if (!npub) return null;
   return (
