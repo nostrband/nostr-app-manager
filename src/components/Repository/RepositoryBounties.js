@@ -135,39 +135,27 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
     <>
       {issues.length > 0 && (
         <ListGroup>
-          {issues.map((issue) => (
-            <ListGroupItem className="d-flex flex-column" key={issue.id}>
-              <div className="d-flex flex-column">
-                <div
-                  onClick={() =>
-                    setSelectedIssueId(
-                      issue.id === selectedIssueId ? null : issue.id
-                    )
-                  }
-                  className="d-flex justify-content-between pointer align-items-center"
-                >
-                  <h6 style={{ margin: 0 }}>{issue.title}</h6>
-                  <div className="d-flex align-items-center">
-                    {issue.bounty_total_amount > 0 && !isPhone ? (
-                      <span className="mx-2 d-flex">
-                        Bounty:
-                        <strong className="mx-1">
-                          {cmn.formatNumber(issue.bounty_total_amount)}
-                        </strong>
-                        sats
-                      </span>
-                    ) : null}
-                    <ArrowIcon
-                      className={`arrow ${
-                        issue.id === selectedIssueId ? 'reverse' : ''
-                      }`}
-                    />
+          {issues.map((issue) => {
+            return (
+              <ListGroupItem className="d-flex flex-column" key={issue.id}>
+                <div className="d-flex flex-column">
+                  <div className="d-flex justify-content-between pointer align-items-center">
+                    <h6 style={{ margin: 0 }}>{issue.title}</h6>
+                    <div className="d-flex align-items-center">
+                      {issue.bounty_total_amount > 0 && !isPhone ? (
+                        <span className="mx-2 d-flex">
+                          Bounty:
+                          <strong className="mx-1">
+                            {cmn.formatNumber(issue.bounty_total_amount)}
+                          </strong>
+                          sats
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-                {issue.id === selectedIssueId ? (
                   <>
                     <a
-                      className="mx-2 pb-1"
+                      className="pb-3 pt-1"
                       href={issue.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -239,10 +227,10 @@ const RepositoryBounties = ({ repoLink, naddr, linkToRepo }) => {
                       );
                     })}
                   </>
-                ) : null}
-              </div>
-            </ListGroupItem>
-          ))}
+                </div>
+              </ListGroupItem>
+            );
+          })}
         </ListGroup>
       )}
       {loading ? <LoadingSpinner /> : null}

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import ArrowIcon from '../../icons/Arrow';
 import * as cmn from '../../common';
 import { KIND_REMOVE_EVENT, isPhone } from '../../const';
 import Profile from '../../elements/Profile';
 import DeleteIcon from '../../icons/DeleteIcon';
+import { nip19 } from '@nostrband/nostr-tools';
+import { Link } from 'react-router-dom';
 
 const BountiesByUser = ({ pubkey }) => {
   const [issues, setIssues] = useState([]);
-  const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [bountyIdForRemove, setBountyIdForRemove] = useState();
 
@@ -21,7 +21,6 @@ const BountiesByUser = ({ pubkey }) => {
           kinds: [9042],
           authors: [pubkey],
         };
-
         const ndk = await cmn.getNDK();
         const bounties = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, bountyRequest),
@@ -82,6 +81,7 @@ const BountiesByUser = ({ pubkey }) => {
               bountySum += parseInt(amountTag[1], 10);
             }
           });
+
           return {
             ...issue,
             bounty_total_amount: bountySum / 1000,
@@ -138,39 +138,35 @@ const BountiesByUser = ({ pubkey }) => {
       <h4>My bounties</h4>
       {issues.length > 0 && (
         <ListGroup>
-          {issues.map((issue) => (
-            <ListGroupItem className="d-flex flex-column" key={issue.id}>
-              <div className="d-flex flex-column">
-                <div
-                  onClick={() =>
-                    setSelectedIssueId(
-                      issue.id === selectedIssueId ? null : issue.id
-                    )
-                  }
-                  className="d-flex justify-content-between pointer align-items-center"
-                >
-                  <h6 style={{ margin: 0 }}>{issue.title}</h6>
-                  <div className="d-flex align-items-center">
-                    {issue.bounty_total_amount > 0 && !isPhone ? (
-                      <span className="mx-2 d-flex">
-                        Bounty:
-                        <strong className="mx-1">
-                          {cmn.formatNumber(issue.bounty_total_amount)}
-                        </strong>
-                        sats
-                      </span>
-                    ) : null}
-                    <ArrowIcon
-                      className={`arrow ${
-                        issue.id === selectedIssueId ? 'reverse' : ''
-                      }`}
-                    />
+          {issues.map((issue) => {
+            const { naddrRepo, repoName } = cmn.getNaddrAndNameRepo(issue);
+            return (
+              <ListGroupItem className="d-flex flex-column" key={issue.id}>
+                <div className="d-flex flex-column">
+                  <div className="d-flex justify-content-between  align-items-center">
+                    <div>
+                      <h6 style={{ margin: 0 }}>{issue.title}</h6>
+                      Repository:
+                      <Link to={`/r/${naddrRepo}`} className="mx-1">
+                        {repoName.split('/')[1]}
+                      </Link>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      {issue.bounty_total_amount > 0 && !isPhone ? (
+                        <span className="mx-2 d-flex">
+                          Bounty:
+                          <strong className="mx-1">
+                            {cmn.formatNumber(issue.bounty_total_amount)}
+                          </strong>
+                          sats
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-                {issue.id === selectedIssueId ? (
+
                   <>
                     <a
-                      className="mx-2 pb-1"
+                      className="pb-3 pt-1"
                       href={issue.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -242,10 +238,10 @@ const BountiesByUser = ({ pubkey }) => {
                       );
                     })}
                   </>
-                ) : null}
-              </div>
-            </ListGroupItem>
-          ))}
+                </div>
+              </ListGroupItem>
+            );
+          })}
         </ListGroup>
       )}
       {loading ? <LoadingSpinner /> : null}
