@@ -1361,3 +1361,17 @@ export const associateEventsWithReviews = (events, authors) => {
     return { ...event, author: author || null };
   });
 };
+
+export const getNaddrAndNameRepo = (issue) => {
+  const repoUrl = issue.bounties[0].tags.find((tag) => tag[0] === 'a');
+  const repoName = issue.html_url.match(
+    /https:\/\/github\.com\/([^\/]+\/[^\/]+)\/issues\/(\d+)/
+  )[1];
+  let parts = repoUrl[1].split(':');
+  let naddrRepo = nip19.naddrEncode({
+    kind: parseInt(parts[0]),
+    pubkey: parts[1],
+    identifier: parts[2],
+  });
+  return { naddrRepo, repoName };
+};

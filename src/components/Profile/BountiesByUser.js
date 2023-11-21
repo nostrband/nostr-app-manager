@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import ArrowIcon from '../../icons/Arrow';
 import * as cmn from '../../common';
 import { KIND_REMOVE_EVENT, isPhone } from '../../const';
 import Profile from '../../elements/Profile';
 import DeleteIcon from '../../icons/DeleteIcon';
+import { nip19 } from '@nostrband/nostr-tools';
+import { Link } from 'react-router-dom';
 
 const BountiesByUser = ({ pubkey }) => {
   const [issues, setIssues] = useState([]);
@@ -138,9 +139,7 @@ const BountiesByUser = ({ pubkey }) => {
       {issues.length > 0 && (
         <ListGroup>
           {issues.map((issue) => {
-            const repoUrl = issue.html_url.match(
-              /https:\/\/github\.com\/([^\/]+\/[^\/]+)\/issues\/(\d+)/
-            )[1];
+            const { naddrRepo, repoName } = cmn.getNaddrAndNameRepo(issue);
             return (
               <ListGroupItem className="d-flex flex-column" key={issue.id}>
                 <div className="d-flex flex-column">
@@ -148,13 +147,9 @@ const BountiesByUser = ({ pubkey }) => {
                     <div>
                       <h6 style={{ margin: 0 }}>{issue.title}</h6>
                       Repository:
-                      <a
-                        className="mx-1"
-                        href={`https://github.com/${repoUrl}`}
-                        target="_blank"
-                      >
-                        {repoUrl.split('/')[1]}
-                      </a>
+                      <Link to={`/r/${naddrRepo}`} className="mx-1">
+                        {repoName.split('/')[1]}
+                      </Link>
                     </div>
                     <div className="d-flex align-items-center">
                       {issue.bounty_total_amount > 0 && !isPhone ? (
@@ -171,7 +166,7 @@ const BountiesByUser = ({ pubkey }) => {
 
                   <>
                     <a
-                      className="pb-1 pt-1"
+                      className="pb-3 pt-1"
                       href={issue.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
