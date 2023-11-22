@@ -32,7 +32,6 @@ import Repositories from './components/MainPageComponents/RepositoriesInMainPage
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import SearchResultApps from './components/App/SearchResultApps';
-import BountyModal from './components/Repository/BountyModal';
 
 const HTTP = new QueryClient();
 
@@ -62,11 +61,11 @@ export const router = createBrowserRouter([
     element: <Recommendations />,
   },
   {
-    path: '/p/:npub',
+    path: '/p/:npub/:activeTab?',
     element: <Profile />,
   },
   {
-    path: '/a/:naddr/:review?',
+    path: '/a/:naddr/:activeTab?/:review?',
     element: <AppInfo />,
   },
   {
@@ -78,7 +77,11 @@ export const router = createBrowserRouter([
     element: <RepositoryPage />,
   },
   {
-    path: '/r/:naddr/bounty?/:issueUrl?',
+    path: '/r/:naddr/:activeTab',
+    element: <RepositoryInfo />,
+  },
+  {
+    path: '/r/:naddr/:activeTab?/bounty?/:issueUrl?',
     element: <RepositoryInfo />,
   },
   {

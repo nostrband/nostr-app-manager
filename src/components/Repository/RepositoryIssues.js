@@ -7,6 +7,7 @@ import {
   useLocation,
   useNavigate,
   useSearchParams,
+  useParams,
 } from 'react-router-dom';
 import BountyModal from './BountyModal';
 import { useAuthShowModal } from '../../context/ShowModalContext';
@@ -14,12 +15,7 @@ import * as cmn from '../../common';
 import { useAuth } from '../../context/AuthContext';
 import { isPhone } from '../../const';
 
-const RepositoryIssues = ({
-  repoLink,
-  naddr,
-  linkToRepo,
-  topTenContributorPubkeys,
-}) => {
+const RepositoryIssues = ({ repoLink, naddr }) => {
   const { pathname } = useLocation();
   const [issues, setIssues] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
@@ -29,6 +25,7 @@ const RepositoryIssues = ({
   const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
   const { pubkey } = useAuth();
+  const { activeTab } = useParams();
 
   const getIssuesFromGithub = async (repoName, page = 1) => {
     const response = await fetch(
@@ -167,7 +164,7 @@ const RepositoryIssues = ({
                       onClick={showAuthModal}
                       to={
                         cmn.isAuthed()
-                          ? `/r/${naddr}/bounty?issue=${issue.html_url}`
+                          ? `/r/${naddr}/${activeTab}/bounty?issueUrl=${issue.html_url}`
                           : ''
                       }
                       className="mt-1 mb-1 mx-2"
@@ -196,10 +193,9 @@ const RepositoryIssues = ({
           ))}
           <BountyModal
             issueUrl={issueUrl}
-            handleClose={() => navigate(`/r/${naddr}`)}
-            show={pathname === `/r/${naddr}/bounty`}
+            handleClose={() => navigate(`/r/${naddr}/${activeTab}`)}
+            show={pathname === `/r/${naddr}/${activeTab}/bounty`}
             naddr={naddr}
-            // topTenContributorPubkeys={topTenContributorPubkeys}
           />
         </ListGroup>
       )}

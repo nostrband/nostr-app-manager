@@ -38,7 +38,6 @@ const BountyModal = ({
       ],
       content: values.comment,
     };
-    console.log(event, 'EVENT');
     const response = await cmn.publishEvent(event);
     if (response) {
       handleClose();
