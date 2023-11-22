@@ -238,7 +238,7 @@ const AppInfoView = () => {
   };
 
   if (!params.activeTab) {
-    navigate(`/a/${naddr}/reviews`);
+    navigate(`/a/${naddr}/reviews`, { replace: true });
   }
 
   return (

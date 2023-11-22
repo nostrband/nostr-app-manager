@@ -235,7 +235,7 @@ const RepositoryView = () => {
   };
 
   if (!activeTab && !issueUrl) {
-    navigate(`/r/${naddr}/contributor-repositories`);
+    navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
   }
 
   return (
