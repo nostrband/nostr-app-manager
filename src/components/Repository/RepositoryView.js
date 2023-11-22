@@ -234,9 +234,11 @@ const RepositoryView = () => {
     ),
   };
 
-  if (!activeTab && !issueUrl) {
-    navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
-  }
+  useEffect(() => {
+    if (!activeTab && !issueUrl) {
+      navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
+    }
+  }, []);
 
   return (
     <>
