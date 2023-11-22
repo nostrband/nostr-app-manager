@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
 import Profile from '../elements/Profile';
 import * as cmn from '../common';
@@ -98,10 +98,10 @@ const ProfileView = () => {
     kinds: [],
   });
 
-  const [activeComponent, setActiveComponent] = useState('apps');
   const [isLoading, setIsLoading] = useState(false);
   const { pubkey: isLogged } = useAuth();
   const { newReview } = useNewReviewState();
+  const navigate = useNavigate();
 
   const getRecomnsQuery = useCallback(() => {
     setIsLoading(true);
@@ -163,6 +163,11 @@ const ProfileView = () => {
     ),
     bounties: <BountiesByUser pubkey={pubkey} />,
   };
+
+  if (!params.activeTab) {
+    navigate(`/p/${npub}/apps`, { replace: true });
+  }
+
   if (!npub) return null;
   return (
     <>
@@ -179,21 +184,20 @@ const ProfileView = () => {
                 <ul className="nav nav-pills d-flex justify-content-center">
                   {tabs.map((nav) => {
                     return (
-                      <li
-                        onClick={() => {
-                          setActiveComponent(nav.path);
-                        }}
-                        className={`pointer nav-link nav-item ${
-                          activeComponent === nav.path ? 'active' : ''
-                        }`}
-                      >
-                        {nav.title}
-                      </li>
+                      <Link to={`/p/${npub}/${nav.path}`}>
+                        <li
+                          className={`pointer nav-link nav-item ${
+                            params.activeTab === nav.path ? 'active' : ''
+                          }`}
+                        >
+                          {nav.title}
+                        </li>
+                      </Link>
                     );
                   })}
                 </ul>
               </div>
-              {profileViewComponents[activeComponent]}
+              {profileViewComponents[params.activeTab]}
             </div>
           )}
         </>

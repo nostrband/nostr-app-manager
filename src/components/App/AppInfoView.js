@@ -53,7 +53,6 @@ const AppInfoView = () => {
   const [sending, setSending] = useState(false);
   const [countUsers, setCountUsers] = useState(0);
   const [author, setAuthor] = useState({});
-  const [activeComponent, setActiveComponent] = useState('reviews');
   const navigate = useNavigate();
   const [assignedCategory, setAssignedCategory] = useState('');
   const [repositoryLink, setRepositoryLink] = useState({
@@ -238,6 +237,10 @@ const AppInfoView = () => {
     );
   };
 
+  if (!params.activeTab) {
+    navigate(`/a/${naddr}/reviews`, { replace: true });
+  }
+
   return (
     <>
       {info === null && (
@@ -336,22 +339,21 @@ const AppInfoView = () => {
             <ul className="nav nav-pills d-flex justify-content-center">
               {tabs.map((nav) => {
                 return (
-                  <li
-                    onClick={() => {
-                      setActiveComponent(nav.path);
-                    }}
-                    className={`pointer nav-link nav-item ${
-                      activeComponent === nav.path ? 'active' : ''
-                    }`}
-                  >
-                    {nav.title}
-                  </li>
+                  <Link to={`/a/${naddr}/${nav.path}`}>
+                    <li
+                      className={`pointer nav-link nav-item ${
+                        params.activeTab === nav.path ? 'active' : ''
+                      }`}
+                    >
+                      {nav.title}
+                    </li>
+                  </Link>
                 );
               })}
             </ul>
           </div>
-          {appInfoViewComponents[activeComponent]}
-          {activeComponent === 'users' ? (
+          {appInfoViewComponents[params.activeTab]}
+          {params.activeTab === 'users' ? (
             <div className="mt-2">
               <Button variant="primary" onClick={(e) => setShowAddApp(true)}>
                 Add app to my list

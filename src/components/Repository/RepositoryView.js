@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useParams } from 'react-router';
 import * as cmn from '../../common';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import ShareIconForRepository from '../../icons/ShareForRepository';
 import KindElement from '../../elements/KindElement';
 import Profile from '../../elements/Profile';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ReasubleModal from '../../elements/Modal';
 import { nip19 } from '@nostrband/nostr-tools';
 import GitHubIconWithStar from '../../elements/GitHubIconWithStar';
@@ -16,7 +15,6 @@ import Releases from '../Releases';
 import RepositoryContributions from './RepositoryContributions';
 import RepositoryIssues from './RepositoryIssues';
 import { KIND_REMOVE_EVENT } from '../../const';
-import Bounties from './RepositoryBounties';
 import RepositoryBounties from './RepositoryBounties';
 
 const tabs = [
@@ -51,27 +49,24 @@ const dynamicTags = [
 ];
 
 const RepositoryView = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [repository, setRepository] = useState({
     tags: [],
   });
   const [authorRepository, setAuthorRepository] = useState();
-  const { naddr } = useParams();
+  const { naddr, activeTab, issueUrl } = useParams();
   const editUrl = cmn.formatRepositoryEditUrl(naddr);
   const [pubkey, setPubKey] = useState('');
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
   const [contributors, setContributors] = useState([]);
   const [githubLink, setGithubLink] = useState([]);
-  const [activeComponent, setActiveComponent] = useState(
-    'contributor-repositories'
-  );
   const [zapCount, setZapCount] = useState(0);
 
   const npub = cmn?.getLoginPubkey()
     ? nip19?.npubEncode(cmn?.getLoginPubkey())
     : '';
 
-  const navigate = useNavigate();
   const allowEditDelete =
     cmn.isAuthed() && cmn.getLoginPubkey() === repository?.pubkey;
 
@@ -239,6 +234,10 @@ const RepositoryView = () => {
     ),
   };
 
+  if (!activeTab && !issueUrl) {
+    navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
+  }
+
   return (
     <>
       {loading ? (
@@ -389,20 +388,19 @@ const RepositoryView = () => {
             <ul className="nav nav-pills d-flex justify-content-center mb-2">
               {tabs.map((nav) => {
                 return (
-                  <li
-                    onClick={() => {
-                      setActiveComponent(nav.path);
-                    }}
-                    className={`pointer nav-link nav-item ${
-                      activeComponent === nav.path ? 'active' : ''
-                    }`}
-                  >
-                    {nav.title}
-                  </li>
+                  <Link to={`/r/${naddr}/${nav.path}`}>
+                    <li
+                      className={`pointer nav-link nav-item ${
+                        activeTab === nav.path ? 'active' : ''
+                      }`}
+                    >
+                      {nav.title}
+                    </li>
+                  </Link>
                 );
               })}
             </ul>
-            {appInfoViewComponents[activeComponent]}
+            {appInfoViewComponents[activeTab]}
           </div>
 
           <ReasubleModal
