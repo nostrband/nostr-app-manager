@@ -94,8 +94,9 @@ const RepositoryView = () => {
     if (authorTag) {
       profile = await cmn.getProfile(authorTag[1]);
     }
+
     const contributorTags = resultFetchAllEvents[0]?.tags?.filter(
-      (tag) => tag[0] === 'zap'
+      (tag) => tag[0] === 'p' && tag[2] === 'contributor'
     );
 
     const totalZapAmount = await cmn.fetchZapCounts(resultFetchAllEvents[0]);
@@ -126,7 +127,6 @@ const RepositoryView = () => {
         if (correspondingTag) {
           return {
             ...profileContribution,
-            countContributions: parseInt(correspondingTag[3], 10),
           };
         } else {
           return profileContribution;
@@ -157,7 +157,7 @@ const RepositoryView = () => {
         authorRepositoryByFilter[0].content || '{}'
       );
       const profile = {
-        name: contentJson.name || '',
+        name: contentJson.display_name || contentJson.name || '',
         picture: contentJson.picture || '',
         about: contentJson.about || '',
         email: contentJson.nip05 || '',
@@ -211,6 +211,8 @@ const RepositoryView = () => {
       .map((contributor) => contributor.pubkey)
       .slice(0, 10);
   }
+
+  console.log(contributors, 'CONTRIBUTORS');
 
   const appInfoViewComponents = {
     releases: <Releases repoLink={githubLink} />,

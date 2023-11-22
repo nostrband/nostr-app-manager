@@ -16,7 +16,6 @@ const RepositoryContributions = ({ contributors }) => {
                 pubkey={r.pubkey}
                 small={true}
               />
-              <strong className="mx-1 ">({r.countContributions})</strong>
             </div>
           </ListGroupItem>
         );
