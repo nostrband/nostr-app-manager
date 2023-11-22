@@ -237,11 +237,9 @@ const AppInfoView = () => {
     );
   };
 
-  useEffect(() => {
-    if (!params.activeTab) {
-      navigate(`/a/${naddr}/reviews`, { replace: true });
-    }
-  }, []);
+  if (!params.activeTab) {
+    navigate(`/a/${naddr}/reviews`, { replace: true });
+  }
 
   return (
     <>

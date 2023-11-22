@@ -234,11 +234,9 @@ const RepositoryView = () => {
     ),
   };
 
-  useEffect(() => {
-    if (!activeTab && !issueUrl) {
-      navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
-    }
-  }, []);
+  if (!activeTab && !issueUrl) {
+    navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
+  }
 
   return (
     <>

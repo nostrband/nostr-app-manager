@@ -164,11 +164,9 @@ const ProfileView = () => {
     bounties: <BountiesByUser pubkey={pubkey} />,
   };
 
-  useEffect(() => {
-    if (!params.activeTab) {
-      navigate(`/p/${npub}/apps`, { replace: true });
-    }
-  }, []);
+  if (!params.activeTab) {
+    navigate(`/p/${npub}/apps`, { replace: true });
+  }
 
   if (!npub) return null;
   return (
