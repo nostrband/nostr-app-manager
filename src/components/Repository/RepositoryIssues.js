@@ -21,7 +21,7 @@ const RepositoryIssues = ({ repoLink, naddr }) => {
   const [selectedIssueId, setSelectedIssueId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
-  const issueUrl = searchParams.get('issue');
+  const issueUrl = searchParams.get('issueUrl');
   const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
   const { pubkey } = useAuth();

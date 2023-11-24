@@ -33,11 +33,17 @@ const BountyModal = ({
         ['r', issueUrl],
         ['amount', millisatoshi.toString()],
         ['a', cmn.naddrToAddr(naddr)],
-        ['alt', `Code issue bounty: ${values.satoshi} sats\n${values.comment}`],
+        [
+          'alt',
+          `Code issue bounty: ${values.satoshi.toString()} sats\n${
+            values.comment
+          }`,
+        ],
         // ...contributorTags,
       ],
       content: values.comment,
     };
+    console.log(event, 'EVEENT');
     const response = await cmn.publishEvent(event);
     if (response) {
       handleClose();
