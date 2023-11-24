@@ -11,6 +11,27 @@ export const fetchAppsBySearchQuery = createAsyncThunk(
         search: `${searchValue} include:spam`,
       };
       let apps = await cmn.fetchAllEvents([cmn.startFetch(ndk, filterApps)]);
+      const appsWithEmptyContent = apps.filter((app) => !app.content);
+      if (appsWithEmptyContent.length) {
+        const pubkeysForEmptyContentApps = appsWithEmptyContent.map(
+          (app) => app.pubkey
+        );
+        const filterForAuthorsOfEmptyContentApps = {
+          kinds: [0],
+          authors: pubkeysForEmptyContentApps,
+        };
+        const authorsOfEmptyContentApps = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, filterForAuthorsOfEmptyContentApps),
+        ]);
+        authorsOfEmptyContentApps.forEach((updatedApp) => {
+          const index = apps.findIndex(
+            (app) => app.pubkey === updatedApp.pubkey
+          );
+          if (index !== -1) {
+            apps[index].content = updatedApp.content;
+          }
+        });
+      }
       return apps;
     }
   }
