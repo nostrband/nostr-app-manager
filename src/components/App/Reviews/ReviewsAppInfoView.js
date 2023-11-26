@@ -7,7 +7,7 @@ import RatingStatistics from '../RatingStatistics';
 import LoadingSpinner from '../../../elements/LoadingSpinner';
 import { useReviewModal } from '../../../context/ShowReviewContext';
 import Profile from '../../../elements/Profile';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ReviewAnswers from '../../MainPageComponents/ReviewsActions/ReviewAnswers';
 import ReviewLike from '../../MainPageComponents/ReviewsActions/ReviewLike';
 import { useAuth } from '../../../context/AuthContext';
@@ -25,12 +25,13 @@ function usePrevious(value) {
 }
 
 const ReviewsAppInfoView = ({ app }) => {
+  const { naddr, activeTab } = useParams();
   const [reviews, setReviews] = useState({ reviewsData: [] });
   const [loading, setLoading] = useState(false);
   const { pubkey } = useAuth();
   const prevPubkey = usePrevious(pubkey);
   const [updateLike, setUpdateLike] = useState(false);
-  const { setShowReviewModal, reviewAction } = useReviewModal();
+  const { reviewAction } = useReviewModal();
   const [showAnswersReviewById, setShowAnswersById] = useState('');
   const { updateAnswers } = useUpdateAnswersReviewState();
 
@@ -207,7 +208,13 @@ const ReviewsAppInfoView = ({ app }) => {
         </ListGroup>
       )}
       <div className="mt-2">
-        <Button onClick={() => setShowReviewModal(true)}>Write review</Button>
+        <Link
+          to={
+            cmn.localGet('loginPubkey') ? `/a/${naddr}/${activeTab}/review` : ''
+          }
+        >
+          <Button>Write review</Button>
+        </Link>
       </div>
     </div>
   );

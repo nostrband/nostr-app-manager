@@ -22,7 +22,9 @@ import { useReviewModal } from '../../context/ShowReviewContext';
 import { KIND_LIKE, KIND_REMOVE_EVENT, REMOVE_EVENT_KIND } from '../../const';
 
 const AppInfo = (props) => {
-  const { naddr, review: reviewParams } = useParams();
+  const { naddr, review: reviewParams, activeTab } = useParams();
+  const params = useParams();
+  console.log(params, 'PARAMS');
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
@@ -320,7 +322,11 @@ const AppInfo = (props) => {
               }
             >
               <Link
-                to={cmn.localGet('loginPubkey') ? `/a/${naddr}/review` : ''}
+                to={
+                  cmn.localGet('loginPubkey')
+                    ? `/a/${naddr}/${activeTab}/review`
+                    : ''
+                }
               >
                 <div
                   onClick={openReviewModalHandler}
