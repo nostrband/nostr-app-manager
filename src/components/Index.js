@@ -4,13 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
-} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import AppSelectItem from '../elements/AppSelectItem';
 import * as cmn from '../common';
 import UsedApps from './MainPageComponents/UsedApps';
@@ -19,7 +13,7 @@ import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
 import NewReviews from './MainPageComponents/NewReviews';
 
-const Index = ({ addr }) => {
+const Index = () => {
   const [link, setLink] = useState('');
   const [apps, setApps] = useState([]);
   const [editShow, setEditShow] = useState(false);
@@ -143,7 +137,9 @@ const Index = ({ addr }) => {
         <>
           <NewApps />
           <Repositories main />
-          <NewReviews />
+          <div className="pt-5 pb-3">
+            <NewReviews />
+          </div>
           <FindApps setLink={setLink} link={link} open={open} go={go} />
         </>
       )}
