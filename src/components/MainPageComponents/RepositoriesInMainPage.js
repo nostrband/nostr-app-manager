@@ -7,17 +7,15 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { mainDataActions } from '../../redux/slices/mainData-slice';
 import { useSelector, useDispatch } from 'react-redux';
 
-const Repositories = () => {
+const Repositories = ({ main }) => {
   const { pathname } = useLocation();
   const onTheMainPage = pathname === '/';
   const dispatch = useDispatch();
   const { repositoriesData } = useSelector((state) => state.mainData);
   const { repos: allRepositories, last_created_at: lastCreatedAt } =
     repositoriesData;
-
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [empty, setEmpty] = useState(false);
 
   const fetchPublishedRepositories = async (created_at) => {
     setLoading(true);
@@ -43,7 +41,7 @@ const Repositories = () => {
           .sort((a, b) => b.created_at - a.created_at);
 
         if (filteredRepositories.length === 0) {
-          setEmpty(true);
+          dispatch(mainDataActions.setEmpty());
         }
 
         const addContributionCounts = (repositories) => {
@@ -92,7 +90,7 @@ const Repositories = () => {
         document.documentElement.scrollHeight -
           (window.innerHeight + document.documentElement.scrollTop)
       );
-      if (scrollBottom < 10 && !empty) {
+      if (scrollBottom < 10 && !allRepositories.empty) {
         fetchPublishedRepositories(lastCreatedAt);
       }
     }
@@ -107,7 +105,7 @@ const Repositories = () => {
 
   return (
     <Container className="ps-0 pe-0">
-      <div className="pb-2 pt-5">
+      <div className={`pb-2 ${main ? 'pt-5' : ''}`}>
         <h2>Code repositories</h2>
         <ListGroup className="mb-3">
           {allRepositories.length > 0
@@ -129,7 +127,9 @@ const Repositories = () => {
                 })
             : null}
         </ListGroup>
-        {loading && !empty && !onTheMainPage && <LoadingSpinner />}
+        {loading && !allRepositories.empty && !onTheMainPage && (
+          <LoadingSpinner />
+        )}
         {loading && allRepositories.length === 0 && onTheMainPage && (
           <LoadingSpinner />
         )}

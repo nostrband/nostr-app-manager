@@ -5,6 +5,7 @@ const initialState = {
   repositoriesData: {
     repos: [],
     last_created_at: null,
+    empty: false,
   },
   searchResultApps: [],
 };
@@ -22,6 +23,9 @@ export const mainDataSlice = createSlice({
         ...payload.repos,
       ];
       state.repositoriesData.last_created_at = payload.last_created_at;
+    },
+    setEmpty(state) {
+      state.repositoriesData.empty = true;
     },
   },
 });

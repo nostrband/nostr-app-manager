@@ -142,7 +142,7 @@ const Index = ({ addr }) => {
       ) : (
         <>
           <NewApps />
-          <Repositories />
+          <Repositories main />
           <NewReviews />
           <FindApps setLink={setLink} link={link} open={open} go={go} />
         </>
