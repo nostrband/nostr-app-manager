@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -6,34 +6,24 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BoxArrowUpRight, Lightning } from 'react-bootstrap-icons';
 import * as cmn from '../../common';
 import ConfirmDeleteModal from '../../elements/ConfirmDeleteModal';
-import Zap from '../../icons/Zap';
-import Heart from '../../icons/Heart';
-import LikedHeart from '../../icons/LikedHeart';
-import Share from '../../icons/Share';
 import { useAuthShowModal } from '../../context/ShowModalContext';
 import ShareAppModal from './ShareAppModal';
 import './AppInfo.scss';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import UnCheckedStar from '../../icons/UnCheckedStar';
 import ReviewModal from './Reviews/ReviewModal';
-import CheckedStar from '../../icons/CheckedStar';
-import { useReviewModal } from '../../context/ShowReviewContext';
 import { KIND_LIKE, KIND_REMOVE_EVENT, REMOVE_EVENT_KIND } from '../../const';
+import AppInfoActions from './AppInfoActions';
 
 const AppInfo = (props) => {
   const { naddr, review: reviewParams, activeTab } = useParams();
-  const params = useParams();
-  console.log(params, 'PARAMS');
-  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
+  const app = props.app.profile;
+  const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
   const [liked, setLiked] = useState(false);
   const [review, setReview] = useState(false);
   const [countReview, setCountReview] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const app = props.app.profile;
-  const editUrl = cmn.formatAppEditUrl(cmn.getNaddr(props.app));
+  const [showModal, setShowModal] = useState(false);
   const [textForShare, setTextForShare] = useState('');
   const [likeCount, setLikeCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
@@ -262,86 +252,17 @@ const AppInfo = (props) => {
                 src={app.picture}
               />
             )}
-            <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip className="tooltip-zap">Total zap amount</Tooltip>
-              }
-            >
-              <div className="zap count-block">
-                <span className="font-weight-bold">
-                  {cmn.formatNumber(zapCount)}
-                </span>
-                <a
-                  href={`https://zapper.nostrapps.org/zap?id=${naddr}`}
-                  target="_blank"
-                >
-                  <Zap />
-                </a>
-              </div>
-            </OverlayTrigger>
-
-            <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip className="tooltip-like">Number of likes</Tooltip>
-              }
-            >
-              <div className="like count-block">
-                <span className="font-weight-bold" style={{ color: '#b32322' }}>
-                  {likeCount}
-                </span>
-                {liked.length > 0 ? (
-                  <LikedHeart onClick={handleLike} />
-                ) : (
-                  <Heart onClick={handleLike} />
-                )}
-              </div>
-            </OverlayTrigger>
-
-            <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip className="tooltip-share">Number of shares</Tooltip>
-              }
-            >
-              <div className="share count-block">
-                <span className="font-weight-bold" style={{ color: '#84b7ff' }}>
-                  {shareCount}
-                </span>
-                <Share onClick={openShareAppModalAndSetText} />
-              </div>
-            </OverlayTrigger>
-
-            <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip className="tooltip-review">
-                  Review for this application
-                </Tooltip>
-              }
-            >
-              <Link
-                to={
-                  cmn.localGet('loginPubkey')
-                    ? `/a/${naddr}/${activeTab}/review`
-                    : ''
-                }
-              >
-                <div
-                  onClick={openReviewModalHandler}
-                  className="review count-block"
-                >
-                  <span
-                    className="font-weight-bold"
-                    style={{ color: '#FFC700' }}
-                  >
-                    {review ? countReview : '+'}
-                  </span>
-                  {review ? <CheckedStar /> : <UnCheckedStar />}
-                </div>
-              </Link>
-            </OverlayTrigger>
+            <AppInfoActions
+              likeCount={likeCount}
+              zapCount={zapCount}
+              shareCount={shareCount}
+              handleLike={handleLike}
+              liked={liked}
+              openReviewModalHandler={openReviewModalHandler}
+              openShareAppModalAndSetText={openShareAppModalAndSetText}
+              countReview={countReview}
+              review={review}
+            />
           </div>
 
           {allowEdit && (
