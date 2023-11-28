@@ -1,16 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { nip19 } from '@nostrband/nostr-tools';
-import Profile from '../elements/Profile';
-import * as cmn from '../common';
+import Profile from '../../elements/Profile';
+import * as cmn from '../../common';
 import { Spinner } from 'react-bootstrap';
-import PublishedRepositories from './Repository/PublishedRepositories';
-import { useAuth } from '../context/AuthContext';
-import Apps from './Profile/Apps';
-import UsedApps from './Profile/UsedApps';
-import NewReviews from './MainPageComponents/NewReviews';
-import { useNewReviewState } from '../context/NewReviewsContext';
-import BountiesByUser from './Profile/BountiesByUser';
+import PublishedRepositories from '../Repository/PublishedRepositories';
+import { useAuth } from '../../context/AuthContext';
+import Apps from './Apps';
+import UsedApps from './UsedApps';
+import NewReviews from '../MainPageComponents/NewReviews';
+import { useNewReviewState } from '../../context/NewReviewsContext';
+import BountiesByUser from './BountiesByUser';
 
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);

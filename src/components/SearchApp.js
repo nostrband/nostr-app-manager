@@ -27,7 +27,7 @@ const SearchApp = () => {
 
   return (
     <form onSubmit={searchAppsAndRepositories}>
-      <div className="search-field-container w-100">
+      <div className="search-field-container">
         <TextField
           fullWidth
           size="small"

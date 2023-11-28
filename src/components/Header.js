@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-
 import Logo from '../icons/Logo';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,7 +8,6 @@ import Alert from 'react-bootstrap/Alert';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, useLocation } from 'react-router-dom';
 import './Header.scss';
-
 import * as cmn from '../common';
 import { useAuthShowModal } from '../context/ShowModalContext';
 import { useAuth } from '../context/AuthContext';
@@ -103,7 +101,7 @@ const Header = () => {
             </Link>
           </h4>
         </Col>
-        <Col style={{ width: isTablet ? '45%' : '60%' }} xs="auto">
+        <Col style={{ width: isTablet ? '45%' : '65%' }} xs="auto">
           <div className="d-flex justify-content-end">
             {!isTablet ? <SearchApp /> : null}
             {!pubkey && (

@@ -135,6 +135,7 @@ const ReviewsAppInfoView = ({ app }) => {
       handleAnswersUpdate();
     }
   }, [updateAnswers]);
+
   return (
     <div>
       {loading ? (
