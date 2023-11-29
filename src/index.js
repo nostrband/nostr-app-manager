@@ -120,7 +120,7 @@ export const router = createBrowserRouter([
     path: '/reviews',
     element: (
       <ContainerWithHeaderFooter>
-        <NewReviews />
+        <NewReviews removePadding />
       </ContainerWithHeaderFooter>
     ),
   },

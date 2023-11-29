@@ -3,7 +3,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { Link, useNavigate } from 'react-router-dom';
-
 import AddKind from '../../elements/AddKind';
 import KindButton from '../../elements/KindButton';
 import HandlerUrl from '../../elements/HandlerUrl';

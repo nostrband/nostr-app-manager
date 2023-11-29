@@ -25,7 +25,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = ({ myReviews, profilePubkey }) => {
+const NewReviews = ({ myReviews, profilePubkey, removePadding }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
   const { pathname } = useLocation();
@@ -108,7 +108,7 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
 
   return (
     <Container className="ps-0 pe-0">
-      <div className={`${!myReviews ? 'pb-3 pt-5' : ''}`}>
+      <div>
         {myReviews ? (
           <h4>{profilePubkey === pubkey ? 'My reviews' : 'Reviews'}</h4>
         ) : (

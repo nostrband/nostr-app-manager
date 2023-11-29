@@ -1,10 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { nip19 } from '@nostrband/nostr-tools';
-
 import AppEditForm from './AppEditForm';
-
 import * as cmn from '../../common';
 
 const AppEditView = () => {
@@ -25,7 +22,6 @@ const AppEditView = () => {
       addr = data;
       setAddr(addr);
     }
-
     cmn.addOnNostr(async () => {
       if (addr) {
         const info = await cmn.fetchApps(addr.pubkey, addr);
@@ -63,6 +59,7 @@ const AppEditView = () => {
   const forbidden =
     naddr && info && cmn.isAuthed() && cmn.getLoginPubkey() !== app.pubkey;
   const viewUrl = naddr && info ? '/a/' + cmn.getNaddr(app) : '';
+  
   return (
     <div className="mt-5">
       {!ready && <>Loading...</>}
