@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import * as cmn from '../../common';
 import { useNewReviewState } from '../../context/NewReviewsContext';
 import { Container, ListGroup, ListGroupItem } from 'react-bootstrap';
@@ -6,7 +12,7 @@ import Profile from '../../elements/Profile';
 import { Rating } from '@mui/material';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import './NewReviews.scss';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ReviewLike from './ReviewsActions/ReviewLike';
 import { nip19 } from '@nostrband/nostr-tools';
@@ -25,7 +31,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const NewReviews = ({ myReviews, profilePubkey, removePadding }) => {
+const NewReviews = ({ myReviews, profilePubkey }) => {
   const { newReview, empty, fetchReviews, setNewReview, updateState } =
     useNewReviewState();
   const { pathname } = useLocation();
@@ -37,10 +43,15 @@ const NewReviews = ({ myReviews, profilePubkey, removePadding }) => {
   const [updateLike, setUpdateLike] = useState('FALSE');
   const zapButtonRef = useRef(null);
   const { updateAnswersMainPage } = useUpdateAnswersReviewState();
-  const filteredReviews = reviews
-    ?.filter((review) => review.app)
-    .filter((review) => (myReviews ? review.pubkey === profilePubkey : true));
-
+  const filteredReviews = useMemo(
+    () =>
+      reviews
+        .filter((review) => review.app)
+        .filter((review) =>
+          myReviews ? review.pubkey === profilePubkey : true
+        ),
+    [reviews, myReviews, profilePubkey]
+  );
   const handleScroll = useCallback(() => {
     if (hasMore && lastCreatedAt) {
       const scrollBottom = Math.abs(

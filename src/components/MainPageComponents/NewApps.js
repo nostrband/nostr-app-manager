@@ -14,7 +14,7 @@ import { mainDataActions } from '../../redux/slices/mainData-slice';
 const NewApps = () => {
   const { pubkey } = useAuth();
   const { category: categoryUrl } = useParams();
-  const { apps: appsForMain } = useSelector((state) => state.mainData);
+  const appsForMain = useSelector((state) => state.mainData.apps);
   const [activeCategory, setActiveCategory] = useState('social');
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,7 +84,7 @@ const NewApps = () => {
       const filter = pubkey
         ? {
             kinds: [31989],
-            '#a': newAppAddrs, // Только новые адреса
+            '#a': newAppAddrs,
             authors: followedPubkeys,
             limit: 100,
           }
@@ -290,7 +290,6 @@ const NewApps = () => {
                 {allApps.length === 0 && !loading && 'Nothing found on relays.'}
                 <div className="container-apps">
                   {allApps.map((app) => {
-                    const appAddr = generateAddr(app);
                     return (
                       <div key={app.id}>
                         <ApplicationItem
@@ -325,4 +324,4 @@ const NewApps = () => {
   );
 };
 
-export default NewApps;
+export default React.memo(NewApps);
