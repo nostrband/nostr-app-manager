@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as cmn from '../common';
 import { useNewReviewState } from '../context/NewReviewsContext';
 import Profile from '../elements/Profile';

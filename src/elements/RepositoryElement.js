@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import GitHubIconWithStar from './GitHubIconWithStar';
 import ZapFunctional from '../components/MainPageComponents/ReviewsActions/ZapFunctional';

@@ -13,11 +13,10 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
   const [showModal, setShowModal] = useState(false);
   const textRef = useRef();
   const [textForShare, setTextForShare] = useState('');
-  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const loginPubkey = cmn.getLoginPubkey() || '';
   const { setShowLogin } = useAuthShowModal();
   const { setUpdateAnswers, setUpdateAnswersMainPage } =
     useUpdateAnswersReviewState();
-
   const { newReview, updateState } = useNewReviewState();
 
   useEffect(() => {

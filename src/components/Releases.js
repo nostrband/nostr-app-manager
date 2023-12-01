@@ -4,46 +4,49 @@ import ArrowIcon from '../icons/Arrow';
 import './Releases.scss';
 import LoadingSpinner from '../elements/LoadingSpinner';
 
+const parseRepoLink = (link) => {
+  let repoName = link?.replace('https://github.com/', '');
+  return repoName.endsWith('/') ? repoName.slice(0, -1) : repoName;
+};
+
 const Releases = ({ repoLink }) => {
   const [releases, setReleases] = useState([]);
   const [selectedRelease, setSelectedRelease] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const getReleasesFromGithub = async (repoLink) => {
-    let repoName = repoLink?.replace('https://github.com/', '');
-    if (repoName.endsWith('/')) {
-      repoName = repoName.slice(0, -1);
+  const getReleasesFromGithub = async (repoName) => {
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${repoName}/releases`
+      );
+      if (!response.ok) throw new Error('Network response was not ok');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching releases:', error);
+      return [];
     }
-    const response = await fetch(
-      `https://api.github.com/repos/${repoName}/releases`
-    );
-    return await response.json();
   };
 
   useEffect(() => {
     setLoading(true);
-    let githubLink;
-    if (typeof repoLink !== 'string') {
-      githubLink = repoLink.tags.find((tag) => tag[0] === 'r')[1];
-    } else {
-      githubLink = repoLink;
-    }
-    getReleasesFromGithub(githubLink)
+    let githubLink =
+      typeof repoLink === 'string'
+        ? repoLink
+        : repoLink.tags.find((tag) => tag[0] === 'r')[1];
+    const repoName = parseRepoLink(githubLink);
+
+    getReleasesFromGithub(repoName)
       .then((data) => {
-        if (Array.isArray(data)) {
-          setReleases(data);
-        }
+        setReleases(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch((error) => {
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, [repoLink]);
 
   return (
     <div>
       <ListGroup>
-        {releases?.map((release) => (
+        {releases.map((release) => (
           <ListGroupItem className="releases-item" key={release.id}>
             <div
               onClick={() =>
@@ -70,7 +73,6 @@ const Releases = ({ repoLink }) => {
                     }}
                   ></p>
                 ) : null}
-
                 <a
                   href={release.html_url}
                   target="_blank"
@@ -84,7 +86,7 @@ const Releases = ({ repoLink }) => {
         ))}
       </ListGroup>
       {loading ? <LoadingSpinner /> : null}
-      {!loading && releases?.length === 0 ? <span>Nothing yet.</span> : null}
+      {!loading && releases.length === 0 ? <span>Nothing yet.</span> : null}
     </div>
   );
 };

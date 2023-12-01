@@ -9,7 +9,7 @@ const NewReviewLike = ({ review }) => {
   const [like, setLike] = useState(review.like);
   const [countLikes, setCountLikes] = useState(review.countLikes);
   const { setShowLogin } = useAuthShowModal();
-  const loginPubkey = cmn.getLoginPubkey() ? cmn.getLoginPubkey() : '';
+  const loginPubkey = cmn.getLoginPubkey() || '';
 
   useEffect(() => {
     setLike(review.like);
@@ -60,9 +60,7 @@ const NewReviewLike = ({ review }) => {
 
   return (
     <>
-      <span className="count-likes">
-        {countLikes !== 0 ? countLikes : null}
-      </span>
+      <span className="count-likes">{countLikes !== 0 && countLikes}</span>
       {like ? (
         <LikedHeart onClick={handleLike} />
       ) : (

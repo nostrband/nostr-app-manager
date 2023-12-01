@@ -12,6 +12,33 @@ import NewReviews from '../MainPageComponents/NewReviews';
 import { useNewReviewState } from '../../context/NewReviewsContext';
 import BountiesByUser from './BountiesByUser';
 
+const tabs = [
+  {
+    title: 'Apps',
+    path: 'apps',
+  },
+  {
+    title: 'Repositories',
+    path: 'repos',
+  },
+  {
+    title: 'Contributions',
+    path: 'contributor-repositories',
+  },
+  {
+    title: 'Used apps',
+    path: 'used-apps',
+  },
+  {
+    title: 'Reviews',
+    path: 'reviews',
+  },
+  {
+    title: 'Bounties',
+    path: 'bounties',
+  },
+];
+
 const init = async (npub, setPubkey, setApps, setRecomms) => {
   const { type, data } = nip19?.decode(npub);
   const pubkey = type === 'npub' ? data : '';
@@ -53,33 +80,6 @@ const reorganizeData = (recomms, setReorganizesData) => {
   );
   setReorganizesData(sortedApps);
 };
-
-const tabs = [
-  {
-    title: 'Apps',
-    path: 'apps',
-  },
-  {
-    title: 'Repositories',
-    path: 'repos',
-  },
-  {
-    title: 'Contributions',
-    path: 'contributor-repositories',
-  },
-  {
-    title: 'Used apps',
-    path: 'used-apps',
-  },
-  {
-    title: 'Reviews',
-    path: 'reviews',
-  },
-  {
-    title: 'Bounties',
-    path: 'bounties',
-  },
-];
 
 const ProfileView = () => {
   const params = useParams();

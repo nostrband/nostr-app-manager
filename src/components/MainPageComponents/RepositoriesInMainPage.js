@@ -11,7 +11,9 @@ const Repositories = ({ main }) => {
   const { pathname } = useLocation();
   const onTheMainPage = pathname === '/';
   const dispatch = useDispatch();
-  const { repositoriesData } = useSelector((state) => state.mainData);
+  const repositoriesData = useSelector(
+    (state) => state.mainData.repositoriesData
+  );
   const { repos: allRepositories, last_created_at: lastCreatedAt } =
     repositoriesData;
   const [loading, setLoading] = useState(false);
