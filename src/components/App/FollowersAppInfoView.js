@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import * as cmn from '../../common';
+import React from 'react';
 import './FollowersAppInfo.scss';
 import { ListGroupItem, ListGroup } from 'react-bootstrap';
 import Profile from '../../elements/Profile';
