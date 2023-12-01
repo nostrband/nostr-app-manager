@@ -79,7 +79,6 @@ const CodeRepositoryForm = () => {
       );
     }
     event.tags = event.tags.filter((tag) => tag[1]);
-    const result = await cmn.publishEvent(event);
     const naddr = cmn.formatNaddr({
       kind: KIND_REPOSITORY,
       pubkey: cmn.getLoginPubkey(),
@@ -154,11 +153,7 @@ const CodeRepositoryForm = () => {
   };
 
   const MultiValueLabel = ({ data }) => {
-    return (
-      <div style={{ padding: '5px 5px 5px 10px', fontSize: '13px' }}>
-        {data.value}
-      </div>
-    );
+    return <div className="multi-value-label-repo-form">{data.value}</div>;
   };
 
   return (
