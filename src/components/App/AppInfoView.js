@@ -107,17 +107,17 @@ const AppInfoView = () => {
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
     const repositoryLink = appInfo?.tags?.find((tag) => tag[2] === 'source');
-    if (repositoryLink[1]) {
+    if (repositoryLink) {
       fetchRepositoryEventByRepoLink(repositoryLink[1]);
     }
     const tags = appInfo.tags
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
 
+
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-
     let profile;
     if (pubkey) {
       profile = await cmn.getProfile(pubkey[1]);
