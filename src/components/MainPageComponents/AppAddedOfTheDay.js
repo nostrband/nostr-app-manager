@@ -8,6 +8,7 @@ import Heart from '../../icons/Heart';
 import Zap from '../../icons/Zap';
 import Share from '../../icons/Share';
 import { Link, useNavigate } from 'react-router-dom';
+import RatingStatistics from '../App/RatingStatistics';
 
 const AppAddedOfTheDay = () => {
   const [appOfTheDay, setAppOfTheDay] = useState(null);
@@ -15,7 +16,9 @@ const AppAddedOfTheDay = () => {
   const [shareCount, setShareCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
   const [tags, setTags] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
+
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
   const getStartOfDayTimestamp = () => {
@@ -43,6 +46,24 @@ const AppAddedOfTheDay = () => {
     }
   };
 
+  const getReviews = async (app) => {
+    const ndk = await cmn.getNDK();
+    const addr = cmn.naddrToAddr(cmn.getNaddr(app));
+    const addrForFilter = {
+      kinds: [1985],
+      '#a': [addr],
+    };
+    try {
+      const response = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, addrForFilter),
+      ]);
+
+      setReviews({ reviewsData: response });
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
   const getApps = async () => {
     const ndk = await cmn.getNDK();
     try {
@@ -64,6 +85,7 @@ const AppAddedOfTheDay = () => {
           .filter((tag) => tag[0] === 't')
           .map((tag) => tag[1]);
         setTags(tags);
+        getReviews(app);
       }
     } catch (error) {
       console.log(error);
@@ -80,7 +102,7 @@ const AppAddedOfTheDay = () => {
       <Container className="ps-0 pe-0">
         {appOfTheDay ? (
           <>
-            <div className=" d-flex justify-content-between">
+            <div className=" d-flex justify-content-between mb-2">
               <div className="d-flex">
                 <div className="mx-2">
                   <Link
@@ -193,6 +215,7 @@ const AppAddedOfTheDay = () => {
             </div>
           </>
         ) : null}
+        <RatingStatistics reviews={reviews} />
       </Container>
     </div>
   );
