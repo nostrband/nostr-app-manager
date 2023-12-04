@@ -177,14 +177,7 @@ const AppAddedOfTheDay = () => {
                   }
                 >
                   <div>
-                    <a
-                      href={`https://zapper.nostrapps.org/zap?id=${cmn.getNaddr(
-                        appOfTheDay
-                      )}`}
-                      target="_blank"
-                    >
-                      <Zap />
-                    </a>
+                    <Zap />
                     <span
                       style={{ color: '#9747ff' }}
                       className="font-weight-bold"
@@ -215,7 +208,7 @@ const AppAddedOfTheDay = () => {
             </div>
           </>
         ) : null}
-        <RatingStatistics reviews={reviews} />
+        {reviews.length > 0 ? <RatingStatistics reviews={reviews} /> : null}
       </Container>
     </div>
   );
