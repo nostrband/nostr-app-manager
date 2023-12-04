@@ -28,7 +28,6 @@ const tabs = [
     title: 'Users',
     path: 'users',
   },
-
   {
     title: 'Reactions',
     path: 'reactions',
@@ -102,7 +101,6 @@ const AppInfoView = () => {
     });
     // app info doesn't require authed user data
     const info = await cmn.fetchApps(addr.pubkey, addr);
-
     setInfo(info);
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;

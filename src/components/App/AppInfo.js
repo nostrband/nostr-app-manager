@@ -14,7 +14,7 @@ import { KIND_LIKE, KIND_REMOVE_EVENT, REMOVE_EVENT_KIND } from '../../const';
 import AppInfoActions from './AppInfoActions';
 
 const AppInfo = (props) => {
-  const { naddr, review: reviewParams, activeTab } = useParams();
+  const { naddr, review: reviewParams } = useParams();
   const navigate = useNavigate();
   const { setShowLogin } = useAuthShowModal();
   const app = props.app.profile;
@@ -204,6 +204,8 @@ const AppInfo = (props) => {
       setShowLogin(true);
     }
   };
+
+  console.log(app, 'APP INFO');
 
   return (
     <div className="AppInfo">

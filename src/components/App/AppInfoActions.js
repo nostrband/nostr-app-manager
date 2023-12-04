@@ -55,7 +55,6 @@ const AppInfoActions = ({
           )}
         </div>
       </OverlayTrigger>
-
       <OverlayTrigger
         placement="top"
         overlay={<Tooltip className="tooltip-share">Number of shares</Tooltip>}
@@ -67,7 +66,6 @@ const AppInfoActions = ({
           <Share onClick={openShareAppModalAndSetText} />
         </div>
       </OverlayTrigger>
-
       <OverlayTrigger
         placement="top"
         overlay={
