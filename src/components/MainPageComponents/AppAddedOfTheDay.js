@@ -4,16 +4,19 @@ import * as cmn from '../../common';
 import * as cs from '../../const';
 import { BoxArrowUpRight } from 'react-bootstrap-icons';
 import Tooltip from 'react-bootstrap/Tooltip';
-import LikedHeart from '../../icons/LikedHeart';
 import Heart from '../../icons/Heart';
 import Zap from '../../icons/Zap';
 import Share from '../../icons/Share';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AppAddedOfTheDay = () => {
   const [appOfTheDay, setAppOfTheDay] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
   const [shareCount, setShareCount] = useState(0);
   const [zapCount, setZapCount] = useState(0);
+  const [tags, setTags] = useState([]);
+  const navigate = useNavigate();
+  const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
   const getStartOfDayTimestamp = () => {
     const now = new Date();
@@ -57,6 +60,10 @@ const AppAddedOfTheDay = () => {
         fetchCounts(1, setShareCount, app);
         const totalZapAmount = await cmn.fetchZapCounts(app);
         setZapCount(totalZapAmount / 1000);
+        const tags = app.tags
+          .filter((tag) => tag[0] === 't')
+          .map((tag) => tag[1]);
+        setTags(tags);
       }
     } catch (error) {
       console.log(error);
@@ -69,16 +76,22 @@ const AppAddedOfTheDay = () => {
 
   return (
     <div className="pt-3">
+      <h2>App of the day</h2>
       <Container className="ps-0 pe-0">
         {appOfTheDay ? (
           <>
-            <h2>App of the day</h2>
             <div className=" d-flex justify-content-between">
               <div className="d-flex">
                 <div className="mx-2">
-                  <h4 style={{ margin: '0 !important' }}>
-                    {appOfTheDay?.content?.name}
-                  </h4>
+                  <Link
+                    className="app-title-on-home-page"
+                    to={appOfTheDay ? getUrl(appOfTheDay) : ''}
+                  >
+                    <h4 style={{ margin: '0 !important' }}>
+                      {appOfTheDay?.content?.name}
+                    </h4>
+                  </Link>
+
                   <div className="text-muted">
                     <BoxArrowUpRight className="me-2" />
                     <a
@@ -94,6 +107,20 @@ const AppAddedOfTheDay = () => {
                       {appOfTheDay.content.about}
                     </div>
                   ) : null}
+                  {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
+                  <div>
+                    {tags.map((t) => {
+                      return (
+                        <button
+                          class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                          onClick={() => navigate(`/tag/${t}`)}
+                          key={t}
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -103,8 +130,7 @@ const AppAddedOfTheDay = () => {
                   className="profile"
                   width="70"
                   height="70"
-                  // src={appOfTheDay.content.image}
-                  src="https://nostrudel.ninja/apple-touch-icon.png"
+                  src={appOfTheDay.content.image || appOfTheDay.content.picture}
                 />
                 <OverlayTrigger
                   placement="top"
