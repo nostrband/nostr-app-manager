@@ -103,14 +103,14 @@ const AppAddedOfTheDay = () => {
 
   return (
     <div className="pt-3">
-      <h2>App of the day</h2>
+      <h2>App of the day 🎉</h2>
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <Container className="ps-0 pe-0">
+        <Container className="ps-0 pe-0 app-added-of-the-day">
           {appOfTheDay ? (
             <>
-              <div className=" d-flex justify-content-between mb-2">
+              <div className="inner-block d-flex justify-content-between mb-2">
                 <div className="d-flex">
                   <div className="mx-2">
                     <Link
