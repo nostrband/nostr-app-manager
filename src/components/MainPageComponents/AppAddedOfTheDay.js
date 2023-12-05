@@ -9,6 +9,7 @@ import Zap from '../../icons/Zap';
 import Share from '../../icons/Share';
 import { Link, useNavigate } from 'react-router-dom';
 import RatingStatistics from '../App/RatingStatistics';
+import LoadingSpinner from '../../elements/LoadingSpinner';
 
 const AppAddedOfTheDay = () => {
   const [appOfTheDay, setAppOfTheDay] = useState(null);
@@ -18,6 +19,7 @@ const AppAddedOfTheDay = () => {
   const [tags, setTags] = useState([]);
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
@@ -65,6 +67,7 @@ const AppAddedOfTheDay = () => {
   };
 
   const getApps = async () => {
+    setLoading(true);
     const ndk = await cmn.getNDK();
     try {
       const startOfDayTimestamp = getStartOfDayTimestamp();
@@ -89,6 +92,8 @@ const AppAddedOfTheDay = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,117 +104,127 @@ const AppAddedOfTheDay = () => {
   return (
     <div className="pt-3">
       <h2>App of the day</h2>
-      <Container className="ps-0 pe-0">
-        {appOfTheDay ? (
-          <>
-            <div className=" d-flex justify-content-between mb-2">
-              <div className="d-flex">
-                <div className="mx-2">
-                  <Link
-                    className="app-title-on-home-page"
-                    to={appOfTheDay ? getUrl(appOfTheDay) : ''}
-                  >
-                    <h4 style={{ margin: '0 !important' }}>
-                      {appOfTheDay?.content?.name}
-                    </h4>
-                  </Link>
-
-                  <div className="text-muted">
-                    <BoxArrowUpRight className="me-2" />
-                    <a
-                      href="https://nostrdit.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <Container className="ps-0 pe-0">
+          {appOfTheDay ? (
+            <>
+              <div className=" d-flex justify-content-between mb-2">
+                <div className="d-flex">
+                  <div className="mx-2">
+                    <Link
+                      className="app-title-on-home-page"
+                      to={appOfTheDay ? getUrl(appOfTheDay) : ''}
                     >
-                      https://nostrdit.com
-                    </a>
-                  </div>
-                  {appOfTheDay.content.about ? (
-                    <div className="mt-2 description">
-                      {appOfTheDay.content.about}
+                      <h4 style={{ margin: '0 !important' }}>
+                        {appOfTheDay?.content?.name}
+                      </h4>
+                    </Link>
+
+                    <div className="text-muted">
+                      <BoxArrowUpRight className="me-2" />
+                      <a
+                        href="https://nostrdit.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        https://nostrdit.com
+                      </a>
                     </div>
-                  ) : null}
-                  {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
-                  <div>
-                    {tags.map((t) => {
-                      return (
-                        <button
-                          class="btn btn-outline-primary mx-1 mt-1 mb-1"
-                          onClick={() => navigate(`/tag/${t}`)}
-                          key={t}
-                        >
-                          {t}
-                        </button>
-                      );
-                    })}
+                    {appOfTheDay.content.about ? (
+                      <div className="mt-2 description">
+                        {appOfTheDay.content.about}
+                      </div>
+                    ) : null}
+                    {tags.length > 0 ? <h6 className="mt-3">Tags:</h6> : null}
+                    <div>
+                      {tags.map((t) => {
+                        return (
+                          <button
+                            class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                            onClick={() => navigate(`/tag/${t}`)}
+                            key={t}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="counts-app-on-home-page">
-                <img
-                  alt=""
-                  className="profile"
-                  width="70"
-                  height="70"
-                  src={appOfTheDay.content.image || appOfTheDay.content.picture}
-                />
-                <OverlayTrigger
-                  placement="top"
-                  overlay={
-                    <Tooltip className="tooltip-like">Number of likes</Tooltip>
-                  }
-                >
-                  <div>
-                    <Heart />
-                    <span
-                      className="font-weight-bold"
-                      style={{ color: '#b32322' }}
-                    >
-                      {likeCount}
-                    </span>
-                  </div>
-                </OverlayTrigger>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={
-                    <Tooltip className="tooltip-zap">Total zap amount</Tooltip>
-                  }
-                >
-                  <div>
-                    <Zap />
-                    <span
-                      style={{ color: '#9747ff' }}
-                      className="font-weight-bold"
-                    >
-                      {cmn.formatNumber(zapCount)}
-                    </span>
-                  </div>
-                </OverlayTrigger>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={
-                    <Tooltip className="tooltip-share">
-                      Number of shares
-                    </Tooltip>
-                  }
-                >
-                  <div>
-                    <Share />
-                    <span
-                      className="font-weight-bold"
-                      style={{ color: '#84b7ff' }}
-                    >
-                      {shareCount}
-                    </span>
-                  </div>
-                </OverlayTrigger>
+                <div className="counts-app-on-home-page">
+                  <img
+                    alt=""
+                    className="profile"
+                    width="70"
+                    height="70"
+                    src={
+                      appOfTheDay.content.image || appOfTheDay.content.picture
+                    }
+                  />
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="tooltip-like">
+                        Number of likes
+                      </Tooltip>
+                    }
+                  >
+                    <div>
+                      <Heart />
+                      <span
+                        className="font-weight-bold"
+                        style={{ color: '#b32322' }}
+                      >
+                        {likeCount}
+                      </span>
+                    </div>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="tooltip-zap">
+                        Total zap amount
+                      </Tooltip>
+                    }
+                  >
+                    <div>
+                      <Zap />
+                      <span
+                        style={{ color: '#9747ff' }}
+                        className="font-weight-bold"
+                      >
+                        {cmn.formatNumber(zapCount)}
+                      </span>
+                    </div>
+                  </OverlayTrigger>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={
+                      <Tooltip className="tooltip-share">
+                        Number of shares
+                      </Tooltip>
+                    }
+                  >
+                    <div>
+                      <Share />
+                      <span
+                        className="font-weight-bold"
+                        style={{ color: '#84b7ff' }}
+                      >
+                        {shareCount}
+                      </span>
+                    </div>
+                  </OverlayTrigger>
+                </div>
               </div>
-            </div>
-          </>
-        ) : null}
-        {reviews.length > 0 ? <RatingStatistics reviews={reviews} /> : null}
-      </Container>
+            </>
+          ) : null}
+          {reviews.length > 0 ? <RatingStatistics reviews={reviews} /> : null}
+        </Container>
+      )}
     </div>
   );
 };
