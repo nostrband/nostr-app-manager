@@ -100,7 +100,6 @@ const AppAddedOfTheDay = () => {
   useEffect(() => {
     getApps();
   }, []);
-  console.log(appOfTheDay, 'APP OF THE DAY');
   return (
     <div className="pt-3">
       <h2>App of the day 🎉</h2>
@@ -121,17 +120,19 @@ const AppAddedOfTheDay = () => {
                         {appOfTheDay?.content?.name}
                       </h4>
                     </Link>
+                    {appOfTheDay.content.website ? (
+                      <div className="text-muted d-flex align-items-center">
+                        <BoxArrowUpRight className="me-2" />
+                        <a
+                          href={appOfTheDay.content.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {appOfTheDay.content.website}
+                        </a>
+                      </div>
+                    ) : null}
 
-                    <div className="text-muted">
-                      <BoxArrowUpRight className="me-2" />
-                      <a
-                        href="https://nostrdit.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        https://nostrdit.com
-                      </a>
-                    </div>
                     {appOfTheDay.content.about ? (
                       <div className="mt-2 description">
                         {appOfTheDay.content.about}
@@ -181,13 +182,13 @@ const AppAddedOfTheDay = () => {
                     }
                   >
                     <div>
-                      <Heart />
                       <span
                         className="font-weight-bold"
                         style={{ color: '#b32322' }}
                       >
                         {likeCount}
                       </span>
+                      <Heart />
                     </div>
                   </OverlayTrigger>
                   <OverlayTrigger
@@ -199,13 +200,13 @@ const AppAddedOfTheDay = () => {
                     }
                   >
                     <div>
-                      <Zap />
                       <span
                         style={{ color: '#9747ff' }}
                         className="font-weight-bold"
                       >
                         {cmn.formatNumber(zapCount)}
                       </span>
+                      <Zap />
                     </div>
                   </OverlayTrigger>
                   <OverlayTrigger
@@ -217,13 +218,13 @@ const AppAddedOfTheDay = () => {
                     }
                   >
                     <div>
-                      <Share />
                       <span
                         className="font-weight-bold"
                         style={{ color: '#84b7ff' }}
                       >
                         {shareCount}
                       </span>
+                      <Share />
                     </div>
                   </OverlayTrigger>
                 </div>

@@ -205,8 +205,6 @@ const AppInfo = (props) => {
     }
   };
 
-  console.log(app, 'APP INFO');
-
   return (
     <div className="AppInfo">
       <Row>
