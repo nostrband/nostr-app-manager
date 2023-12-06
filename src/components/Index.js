@@ -12,6 +12,7 @@ import NewApps from './MainPageComponents/NewApps';
 import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
 import NewReviews from './MainPageComponents/NewReviews';
+import AppAddedOfTheDay from './MainPageComponents/AppAddedOfTheDay';
 
 const Index = () => {
   const [link, setLink] = useState('');
@@ -135,6 +136,7 @@ const Index = () => {
         <UsedApps apps={apps} onSelect={onSelect} />
       ) : (
         <>
+          <AppAddedOfTheDay />
           <NewApps />
           <Repositories main />
           <div className="pt-5 pb-3">

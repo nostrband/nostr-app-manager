@@ -20,7 +20,7 @@ import RepositoryBounties from './RepositoryBounties';
 const tabs = [
   {
     title: 'Contributors',
-    path: 'contributor-repositories',
+    path: 'contributors',
   },
   {
     title: 'Releases',
@@ -60,6 +60,7 @@ const RepositoryView = () => {
   const [pubkey, setPubKey] = useState('');
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
   const [contributors, setContributors] = useState([]);
+  console.log(contributors, 'CONTRIBUTORSs');
   const [githubLink, setGithubLink] = useState([]);
   const [zapCount, setZapCount] = useState(0);
 
@@ -212,13 +213,9 @@ const RepositoryView = () => {
       .slice(0, 10);
   }
 
-  console.log(contributors, 'CONTRIBUTORS');
-
   const appInfoViewComponents = {
     releases: <Releases repoLink={githubLink} />,
-    ['contributor-repositories']: (
-      <RepositoryContributions contributors={contributors} />
-    ),
+    ['contributors']: <RepositoryContributions contributors={contributors} />,
     issues: (
       <RepositoryIssues
         linkToRepo={linkTagValue}
@@ -237,7 +234,7 @@ const RepositoryView = () => {
   };
 
   if (!activeTab && !issueUrl) {
-    navigate(`/r/${naddr}/contributor-repositories`, { replace: true });
+    navigate(`/r/${naddr}/contributors`, { replace: true });
   }
 
   return (

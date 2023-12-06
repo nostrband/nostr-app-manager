@@ -567,7 +567,6 @@ export async function fetchAppsByKinds(
       ...(created_at ? { until: created_at } : {}),
       ...(category ? { '#t': [category] } : {}),
     };
-    console.log(filter, 'FILTER');
     if (kinds && kinds.length > 0) filter['#k'] = kinds.map((k) => '' + k);
     let events;
     try {
@@ -1332,7 +1331,6 @@ export const fetchZapCounts = async (event) => {
       '#a': [naddrToAddr(getNaddr(event))],
       limit: 100,
     };
-    console.log(zapQuery, 'ZAP QUERY');
     const zapResponse = await fetchAllEvents([startFetch(ndk, zapQuery)]);
     let totalZapAmount = 0;
     for (const zap of zapResponse) {

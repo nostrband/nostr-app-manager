@@ -17,6 +17,7 @@ const RatingStatistics = ({ reviews }) => {
     (sum, count, index) => sum + count * (index + 1),
     0
   );
+
   const averageRating = totalReviews ? totalRating / totalReviews : 0;
   return (
     <div className="rating-container">

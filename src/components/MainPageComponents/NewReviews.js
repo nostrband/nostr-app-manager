@@ -209,7 +209,7 @@ const NewReviews = ({ myReviews, profilePubkey }) => {
           <Link to="/reviews">
             <button
               type="button"
-              class="btn btn-outline-primary show-more-button"
+              class="more-button btn btn-outline-primary show-more-button"
             >
               More reviews &rarr;
             </button>
