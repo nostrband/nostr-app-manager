@@ -111,7 +111,7 @@ const AppAddedOfTheDay = () => {
             <>
               <div className="inner-block d-flex justify-content-between mb-2">
                 <div className="d-flex">
-                  <div className="mx-2">
+                  <div>
                     <Link
                       className="app-title-on-home-page"
                       to={appOfTheDay ? getUrl(appOfTheDay) : ''}
