@@ -10,6 +10,8 @@ import Share from '../../icons/Share';
 import { Link, useNavigate } from 'react-router-dom';
 import RatingStatistics from '../App/RatingStatistics';
 import LoadingSpinner from '../../elements/LoadingSpinner';
+import OtherApp from '../../icons/OtherApp';
+import './AppAddedOfTheDay.scss';
 
 const AppAddedOfTheDay = () => {
   const [appOfTheDay, setAppOfTheDay] = useState(null);
@@ -20,7 +22,6 @@ const AppAddedOfTheDay = () => {
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const getUrl = (h) => cmn.formatAppUrl(cmn.getNaddr(h));
 
   const getStartOfDayTimestamp = () => {
@@ -74,11 +75,10 @@ const AppAddedOfTheDay = () => {
       const filter = {
         kinds: [cs.KIND_HANDLERS],
         limit: 100,
-        since: startOfDayTimestamp,
       };
       let response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
       if (response && response.length > 0) {
-        let app = response[0];
+        let app = response[startOfDayTimestamp % response.length];
         setAppOfTheDay({ ...app, content: JSON.parse(app?.content) });
         fetchCounts(7, setLikeCount, app);
         fetchCounts(1, setShareCount, app);
@@ -100,7 +100,7 @@ const AppAddedOfTheDay = () => {
   useEffect(() => {
     getApps();
   }, []);
-
+  console.log(appOfTheDay, 'APP OF THE DAY');
   return (
     <div className="pt-3">
       <h2>App of the day 🎉</h2>
@@ -155,15 +155,23 @@ const AppAddedOfTheDay = () => {
                 </div>
 
                 <div className="counts-app-on-home-page">
-                  <img
-                    alt=""
-                    className="profile"
-                    width="70"
-                    height="70"
-                    src={
-                      appOfTheDay.content.image || appOfTheDay.content.picture
-                    }
-                  />
+                  {!appOfTheDay.content.image &&
+                  !appOfTheDay.content.picture ? (
+                    <div className="default-image">
+                      <OtherApp />
+                    </div>
+                  ) : (
+                    <img
+                      alt=""
+                      className="profile"
+                      width="70"
+                      height="70"
+                      src={
+                        appOfTheDay.content.image || appOfTheDay.content.picture
+                      }
+                    />
+                  )}
+
                   <OverlayTrigger
                     placement="top"
                     overlay={
