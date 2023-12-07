@@ -60,7 +60,6 @@ const RepositoryView = () => {
   const [pubkey, setPubKey] = useState('');
   const [openConfirmDeleteModal, setOpenConfirmDeleteModal] = useState(false);
   const [contributors, setContributors] = useState([]);
-  console.log(contributors, 'CONTRIBUTORSs');
   const [githubLink, setGithubLink] = useState([]);
   const [zapCount, setZapCount] = useState(0);
 
@@ -119,21 +118,22 @@ const RepositoryView = () => {
       setGithubLink(githubLink[1]);
     }
 
+    const contributorContributions = contributorTags.reduce((acc, tag) => {
+      if (tag[0] === 'p' && tag[2] === 'contributor') {
+        acc[tag[1]] = (acc[tag[1]] || 0) + parseInt(tag[3], 10);
+      }
+      return acc;
+    }, {});
+
     const contributors = authorProfileContributions
       .map((profileContribution) => {
-        const correspondingTag = contributorTags.find(
-          (tag) => tag[1] === profileContribution.pubkey
-        );
-
-        if (correspondingTag) {
-          return {
-            ...profileContribution,
-          };
-        } else {
-          return profileContribution;
-        }
+        return {
+          ...profileContribution,
+          contributions:
+            contributorContributions[profileContribution.pubkey] || 0,
+        };
       })
-      .sort((a, b) => b.countContributions - a.countContributions);
+      .sort((a, b) => b.contributions - a.contributions);
 
     setContributors(contributors);
 
