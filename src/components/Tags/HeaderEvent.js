@@ -22,11 +22,15 @@ const HeaderForEventPage = () => {
               to={`${pathname !== '/' ? '/' : ''}`}
               onClick={goHome}
             >
-              <Logo /> <span className="logo-text">App Manager</span>
+              <Logo /> <span className="logo-text">Nostr Apps</span>
             </Link>
           </h4>
-          <a target="blank" href="https://nostr.how/">
-            <h4>What is Nostr?</h4>
+          <a
+            className="link-to-nostr-info fs-5"
+            target="blank"
+            href="https://nostr.how/"
+          >
+            What is Nostr?
           </a>
         </Col>
       </Row>

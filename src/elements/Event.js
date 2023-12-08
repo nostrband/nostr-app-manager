@@ -78,7 +78,7 @@ const Event = (props) => {
       return (
         <Container className="ps-0 pe-0">
           <Profile removeLink profile={updatedMeta} pubkey={event.pubkey} />
-          <Row className="pt-3">
+          <Row className="pt-2">
             <Col xs={12}>
               <h3>{title}</h3>
               <p>

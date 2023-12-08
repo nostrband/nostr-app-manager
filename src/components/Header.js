@@ -18,7 +18,6 @@ import { useAppState } from '../context/AppContext';
 
 const Header = () => {
   const { pathname } = useLocation();
-  console.log(pathname, 'PATHNAME');
   const { pubkey, setPubkey } = useAuth();
   const [profile, setProfile] = useState(null);
   const { showLogin, setShowLogin } = useAuthShowModal();
