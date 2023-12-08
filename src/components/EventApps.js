@@ -323,7 +323,6 @@ const EventApps = () => {
       <div>
         {(event && (
           <>
-            <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
             <div>
               <NostrEvent event={event} />
             </div>
@@ -338,6 +337,7 @@ const EventApps = () => {
           <h2>Saved app:</h2>
           <ListGroup>
             <AppSelectItem
+              borderRadiusLogo="15px"
               key={currentApp.id}
               app={currentApp}
               getUrl={getUrl}
@@ -388,6 +388,7 @@ const EventApps = () => {
               .map((a) => {
                 return (
                   <AppSelectItem
+                    borderRadiusLogo="15px"
                     key={a.id}
                     app={a}
                     getUrl={getUrl}
