@@ -29,6 +29,7 @@ const Profile = (props) => {
             <img
               style={{
                 borderRadius: props.appLogo ? '7px' : '50%',
+                cursor: props.removeLink ? 'default' : 'pointer',
               }}
               alt=""
               width={size}

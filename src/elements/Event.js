@@ -77,7 +77,7 @@ const Event = (props) => {
     default:
       return (
         <Container className="ps-0 pe-0">
-          <Profile profile={updatedMeta} pubkey={event.pubkey} />
+          <Profile removeLink profile={updatedMeta} pubkey={event.pubkey} />
           <Row className="pt-3">
             <Col xs={12}>
               <h3>{title}</h3>
@@ -89,14 +89,13 @@ const Event = (props) => {
             <Col xs={12}>
               <small className="text-muted">
                 {new Date(event.created_at * 1000).toLocaleString()}
-                <a
-                  href="#!"
+                <span
                   onClick={toggleDetails}
-                  className="ms-2 fs-6"
+                  className="ms-2 fs-7 pointer"
                   style={{ textDecoration: 'underline' }}
                 >
                   {showDetails ? 'Less info' : 'More info'}
-                </a>
+                </span>
               </small>
             </Col>
 
