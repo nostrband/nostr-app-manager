@@ -8,16 +8,7 @@ import Footer from '../components/Footer';
 const RootPage = () => {
   return (
     <>
-      <Row>
-        <Col>
-          <Header />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <EventApps />
-        </Col>
-      </Row>
+      <EventApps />
       <Row>
         <Col>
           <Footer />

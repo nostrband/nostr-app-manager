@@ -13,6 +13,10 @@ import AppSelectItem from '../elements/AppSelectItem';
 import Index from './Index';
 
 import * as cmn from '../common';
+import Header from './Header';
+import HeaderForEventPage from './Tags/HeaderEvent';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const EventApps = () => {
   const [addr, setAddr] = useState({});
@@ -319,47 +323,53 @@ const EventApps = () => {
   };
 
   return (
-    <main className="mt-5">
-      <div>
-        {(event && (
-          <>
+    <>
+      <Row>
+        <HeaderForEventPage />
+      </Row>
+      <Row>
+        <Col>
+          <main className="mt-5">
             <div>
-              <NostrEvent event={event} />
+              {(event && (
+                <>
+                  <div>
+                    <NostrEvent event={event} />
+                  </div>
+                </>
+              )) ||
+                error ||
+                'Loading...'}
             </div>
-          </>
-        )) ||
-          error ||
-          'Loading...'}
-      </div>
 
-      {currentApp && (
-        <div className="mt-3">
-          <h2>Saved app:</h2>
-          <ListGroup>
-            <AppSelectItem
-              borderRadiusLogo="15px"
-              key={currentApp.id}
-              app={currentApp}
-              getUrl={getUrl}
-              onSelect={onSelect}
-            />
-          </ListGroup>
-        </div>
-      )}
+            {currentApp && (
+              <div className="mt-3">
+                <h2>Saved app:</h2>
+                <ListGroup>
+                  <AppSelectItem
+                    borderRadiusLogo="15px"
+                    key={currentApp.id}
+                    app={currentApp}
+                    getUrl={getUrl}
+                    onSelect={onSelect}
+                  />
+                </ListGroup>
+              </div>
+            )}
 
-      {event && (
-        <div className="mt-3">
-          <h2>Suggested apps:</h2>
-          <Form>
-            <Form.Check
-              type="switch"
-              id="remember-app"
-              checked={remember ? 'checked' : ''}
-              onChange={(e) => setRemember(e.target.checked)}
-              label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
-              style={{ display: 'inline-block' }}
-            />
-            {/*<OverlayTrigger
+            {event && (
+              <div className="mt-3">
+                <h2>Suggested apps:</h2>
+                <Form>
+                  <Form.Check
+                    type="switch"
+                    id="remember-app"
+                    checked={remember ? 'checked' : ''}
+                    onChange={(e) => setRemember(e.target.checked)}
+                    label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
+                    style={{ display: 'inline-block' }}
+                  />
+                  {/*<OverlayTrigger
 		placement="top"
 		overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
 		>
@@ -367,57 +377,60 @@ const EventApps = () => {
 		<i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
 		)}
 		</OverlayTrigger>*/}
-            <div className="text-muted mb-2">
-              {remember && !cmn.isAuthed() && (
-                <small>
-                  <Link onClick={login}>Login</Link> to recommend the app on
-                  Nostr.
-                </small>
-              )}
-              {remember && cmn.isAuthed() && (
-                <small>
-                  Chosen app will be{' '}
-                  <Link to="/recommendations">recommended</Link>.
-                </small>
-              )}
+                  <div className="text-muted mb-2">
+                    {remember && !cmn.isAuthed() && (
+                      <small>
+                        <Link onClick={login}>Login</Link> to recommend the app
+                        on Nostr.
+                      </small>
+                    )}
+                    {remember && cmn.isAuthed() && (
+                      <small>
+                        Chosen app will be{' '}
+                        <Link to="/recommendations">recommended</Link>.
+                      </small>
+                    )}
+                  </div>
+                </Form>
+                <ListGroup>
+                  {kindApps
+                    ?.filter((a) => !currentApp || a.id !== currentApp.id)
+                    .map((a) => {
+                      return (
+                        <AppSelectItem
+                          borderRadiusLogo="15px"
+                          key={a.id}
+                          app={a}
+                          getUrl={getUrl}
+                          onSelect={onSelect}
+                        />
+                      );
+                    })}
+                </ListGroup>
+              </div>
+            )}
+            <div className="mt-5">
+              <h2>New here?</h2>
+              <Link to="/about">
+                <Button size="lg" variant="outline-secondary me-2">
+                  What is App Manager?
+                </Button>
+              </Link>
+              <Link to="https://www.heynostr.com">
+                <Button size="lg" variant="outline-secondary me-2">
+                  What is Nostr?
+                </Button>
+              </Link>
+              <Link to="https://nosta.me">
+                <Button size="lg" variant="outline-primary m2-2">
+                  Start using Nostr
+                </Button>
+              </Link>
             </div>
-          </Form>
-          <ListGroup>
-            {kindApps
-              ?.filter((a) => !currentApp || a.id !== currentApp.id)
-              .map((a) => {
-                return (
-                  <AppSelectItem
-                    borderRadiusLogo="15px"
-                    key={a.id}
-                    app={a}
-                    getUrl={getUrl}
-                    onSelect={onSelect}
-                  />
-                );
-              })}
-          </ListGroup>
-        </div>
-      )}
-      <div className="mt-5">
-        <h2>New here?</h2>
-        <Link to="/about">
-          <Button size="lg" variant="outline-secondary me-2">
-            What is App Manager?
-          </Button>
-        </Link>
-        <Link to="https://www.heynostr.com">
-          <Button size="lg" variant="outline-secondary me-2">
-            What is Nostr?
-          </Button>
-        </Link>
-        <Link to="https://nosta.me">
-          <Button size="lg" variant="outline-primary m2-2">
-            Start using Nostr
-          </Button>
-        </Link>
-      </div>
-    </main>
+          </main>
+        </Col>
+      </Row>
+    </>
   );
 };
 
