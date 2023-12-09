@@ -17,6 +17,7 @@ import HeaderForEventPage from './Tags/HeaderEvent';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { isPhone } from '../const';
+import './EventApps.scss';
 
 const EventApps = () => {
   const [addr, setAddr] = useState({});
@@ -348,10 +349,11 @@ const EventApps = () => {
           <main className="mt-3">
             <div>
               {event && !showFullList && (
-                <div className={`${isPhone ? 'app-on-mobile' : ''}mt-3`}>
+                <div className="app-on-mobile mt-3">
                   <ListGroup>
                     {currentApp ? (
                       <AppSelectItem
+                        defaultApp
                         borderRadiusLogo="15px"
                         showMenuButton
                         toggleFullList={toggleFullList}
@@ -365,6 +367,7 @@ const EventApps = () => {
                         .filter((a, index) => index === 0)
                         .map((a) => (
                           <AppSelectItem
+                            defaultApp
                             showMenuButton
                             borderRadiusLogo="15px"
                             toggleFullList={toggleFullList}

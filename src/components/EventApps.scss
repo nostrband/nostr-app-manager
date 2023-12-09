@@ -1,4 +1,7 @@
-// .app-on-mobile {
-//   position: fixed;
-//   bottom: 0;
-// }
+.app-on-mobile {
+  @media (max-width: 450px) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+}
