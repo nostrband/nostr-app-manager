@@ -8,6 +8,7 @@ import Profile from './Profile';
 import Edit from '../icons/Edit';
 
 const AppSelectItem = (props) => {
+  const { showMenuButton, toggleFullList } = props;
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
   const onSelect = props.onSelect || (() => {});
@@ -26,7 +27,7 @@ const AppSelectItem = (props) => {
 
   return (
     <>
-      <ListGroup.Item className="position-relative d-flex justify-content-between align-items-center">
+      <ListGroup.Item className="position-relative d-flex justify-content-between align-items-start">
         <Link
           className="link"
           to={getUrl(props.app)}
@@ -51,7 +52,9 @@ const AppSelectItem = (props) => {
             </Col>
             <Col>
               <div className="ms-2 me-auto">
-                <div className="fw-bold">{app.display_name || app.name}</div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="fw-bold">{app.display_name || app.name}</div>
+                </div>
                 {about}
                 {showKinds && (
                   <div>
@@ -71,6 +74,11 @@ const AppSelectItem = (props) => {
             </Col>
           </div>
         </Link>
+        {showMenuButton ? (
+          <strong className="pb-1" onClick={toggleFullList}>
+            ...
+          </strong>
+        ) : null}
         {props.myApp ? (
           <div className="edit-button" onClick={props.selecteAppForEdit}>
             <Edit />

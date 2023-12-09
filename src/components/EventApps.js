@@ -13,11 +13,10 @@ import AppSelectItem from '../elements/AppSelectItem';
 import Index from './Index';
 
 import * as cmn from '../common';
-import Header from './Header';
 import HeaderForEventPage from './Tags/HeaderEvent';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Dropdown } from 'react-bootstrap';
+import { isPhone } from '../const';
 
 const EventApps = () => {
   const [addr, setAddr] = useState({});
@@ -28,7 +27,6 @@ const EventApps = () => {
   const [currentApp, setCurrentApp] = useState(null);
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
-  const navigate = useNavigate();
   const [showFullList, setShowFullList] = useState(false);
 
   const getUrl = (app, ad) => {
@@ -333,7 +331,7 @@ const EventApps = () => {
       <Row>
         <HeaderForEventPage />
       </Row>
-      <div>
+      <div className="mt-2">
         {(event && (
           <>
             <div>
@@ -350,20 +348,13 @@ const EventApps = () => {
           <main className="mt-3">
             <div>
               {event && !showFullList && (
-                <div className="mt-3">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h2>Recommended app:</h2>
-                    <Button
-                      variant="outline-secondary"
-                      onClick={toggleFullList}
-                    >
-                      <strong>...</strong>
-                    </Button>
-                  </div>
+                <div className={`${isPhone ? 'app-on-mobile' : ''}mt-3`}>
                   <ListGroup>
                     {currentApp ? (
                       <AppSelectItem
                         borderRadiusLogo="15px"
+                        showMenuButton
+                        toggleFullList={toggleFullList}
                         key={currentApp.id}
                         app={currentApp}
                         getUrl={getUrl}
@@ -374,7 +365,9 @@ const EventApps = () => {
                         .filter((a, index) => index === 0)
                         .map((a) => (
                           <AppSelectItem
+                            showMenuButton
                             borderRadiusLogo="15px"
+                            toggleFullList={toggleFullList}
                             key={a.id}
                             app={a}
                             getUrl={getUrl}
@@ -391,16 +384,12 @@ const EventApps = () => {
                     <div className="mt-3">
                       <div className="d-flex justify-content-between align-items-center">
                         <h2>Saved apps:</h2>
-                        <Button
-                          variant="outline-secondary"
-                          onClick={toggleFullList}
-                        >
-                          <strong>...</strong>
-                        </Button>
                       </div>
                       <ListGroup>
                         <AppSelectItem
+                          showMenuButton
                           borderRadiusLogo="15px"
+                          toggleFullList={toggleFullList}
                           key={currentApp.id}
                           app={currentApp}
                           getUrl={getUrl}
@@ -441,24 +430,27 @@ const EventApps = () => {
                 </>
               )}
             </div>
-
-            <div className="mt-5">
-              <Link to="/about">
-                <Button size="lg" variant="outline-secondary me-2">
-                  What is App Manager?
-                </Button>
-              </Link>
-              <Link to="https://www.heynostr.com">
-                <Button size="lg" variant="outline-secondary me-2">
-                  What is Nostr?
-                </Button>
-              </Link>
-              <Link to="https://nosta.me">
-                <Button size="lg" variant="outline-primary m2-2">
-                  Start using Nostr
-                </Button>
-              </Link>
-            </div>
+            {showFullList ? (
+              <>
+                <div className="mt-5">
+                  <Link to="/about">
+                    <Button size="lg" variant="outline-secondary me-2">
+                      What is App Manager?
+                    </Button>
+                  </Link>
+                  <Link to="https://www.heynostr.com">
+                    <Button size="lg" variant="outline-secondary me-2">
+                      What is Nostr?
+                    </Button>
+                  </Link>
+                  <Link to="https://nosta.me">
+                    <Button size="lg" variant="outline-primary m2-2">
+                      Start using Nostr
+                    </Button>
+                  </Link>
+                </div>
+              </>
+            ) : null}
           </main>
         </Col>
       </Row>

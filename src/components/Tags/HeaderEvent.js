@@ -13,7 +13,7 @@ const HeaderForEventPage = () => {
   };
 
   return (
-    <header className="pt-3">
+    <header className="pt-2">
       <Row>
         <Col className="d-flex align-items-center justify-content-between">
           <h4>
@@ -26,7 +26,7 @@ const HeaderForEventPage = () => {
             </Link>
           </h4>
           <a
-            className="link-to-nostr-info fs-5"
+            className="link-to-nostr-info fs-5 mb-2"
             target="blank"
             href="https://nostr.how/"
           >
