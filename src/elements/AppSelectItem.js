@@ -11,7 +11,7 @@ const AppSelectItem = (props) => {
   const { showMenuButton, toggleFullList, defaultApp } = props;
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
-  const onSelect = props.onSelect || (() => {});
+  const onSelect = props.onSelect || (() => { });
 
   let used = '';
   if (props.app?.forKinds) {
@@ -29,9 +29,15 @@ const AppSelectItem = (props) => {
     about = about.substring(0, 200) + '...';
   }
 
+  const onToggleFullList = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleFullList();
+  }
+
   return (
     <>
-      <ListGroup.Item className="position-relative d-flex justify-content-between align-items-start">
+      <ListGroup.Item className="position-relative d-flex justify-content-between align-items-start p-0">
         <Link
           className="link"
           to={getUrl(props.app)}
@@ -63,8 +69,21 @@ const AppSelectItem = (props) => {
                       {app.display_name || app.name}
                     </span>
                   </div>
+                  {showMenuButton && (
+                    <strong className="pb-1 pointer" onClick={onToggleFullList}>
+                      ...
+                    </strong>
+                  )}
+
                 </div>
-                <p>{about}</p>
+                <p style={{ 
+                  textOverflow: 'ellipsis', 
+                  display: '-webkit-box', 
+                  webkitLineClamp: '2', 
+                  webkitBoxOrient: 'vertical', 
+                  overflow: 'hidden',
+                  marginBottom: '0px'
+                }}>{about}</p>
                 {showKinds && (
                   <div>
                     <small className="text-muted">Used for: {used}</small>
@@ -83,16 +102,11 @@ const AppSelectItem = (props) => {
             </Col>
           </div>
         </Link>
-        {showMenuButton ? (
-          <strong className="pb-1 pointer" onClick={toggleFullList}>
-            ...
-          </strong>
-        ) : null}
-        {props.myApp ? (
+        {props.myApp && (
           <div className="edit-button" onClick={props.selecteAppForEdit}>
             <Edit />
           </div>
-        ) : null}
+        )}
       </ListGroup.Item>
     </>
   );

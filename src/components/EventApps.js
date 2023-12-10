@@ -248,8 +248,12 @@ const EventApps = () => {
       // get apps for this kind
       const info = await cmn.fetchAppsByKinds([addr.kind]);
 
-      // only our platform please
-      const kindApps = cmn.filterAppsByPlatform(info, appPlatform);
+      // only our platform please,
+      // shuffle the apps to suggest different ones
+      const kindApps = cmn.filterAppsByPlatform(info, appPlatform)
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value)
 
       // add default apps
       cmn.addDefaultApps(addr.kind, kindApps);
@@ -332,12 +336,17 @@ const EventApps = () => {
       <Row>
         <HeaderForEventPage />
       </Row>
-      <div className="mt-2">
+
+      <div className="mt-3" style={{paddingBottom: !showFullList ? '70px' : '' }}>
         {(event && (
           <>
             <div>
               <NostrEvent event={event} />
             </div>
+
+            {!showFullList && (
+              <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
+            )}
           </>
         )) ||
           error ||
@@ -390,7 +399,6 @@ const EventApps = () => {
                       </div>
                       <ListGroup>
                         <AppSelectItem
-                          showMenuButton
                           borderRadiusLogo="15px"
                           toggleFullList={toggleFullList}
                           key={currentApp.id}
@@ -433,7 +441,7 @@ const EventApps = () => {
                 </>
               )}
             </div>
-            {showFullList ? (
+            {/* {showFullList && (
               <>
                 <div className="mt-5">
                   <Link to="/about">
@@ -453,7 +461,7 @@ const EventApps = () => {
                   </Link>
                 </div>
               </>
-            ) : null}
+            )} */}
           </main>
         </Col>
       </Row>

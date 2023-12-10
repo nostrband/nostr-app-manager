@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import EventNote from './EventNote';
 import Profile from './Profile';
 import EventProfile from './EventProfile';
+import { nip19 } from '@nostrband/nostr-tools';
 
 const Event = (props) => {
   const event = props.event;
@@ -102,10 +103,12 @@ const Event = (props) => {
             {showDetails && (
               <Col xs={12}>
                 <small className="text-muted">
-                  Id: <b>{event.id}</b>
-                  <span className="ms-2">
+                  <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                    Id: <b>{nip19.noteEncode(event.id)}</b>
+                  </div>
+                  <div>
                     Kind: <b>{event.kind}</b>
-                  </span>
+                  </div>
                 </small>
               </Col>
             )}
