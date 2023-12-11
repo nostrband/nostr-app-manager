@@ -345,13 +345,15 @@ const EventApps = () => {
               <NostrEvent event={event} />
               <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
             </div>
-
           </>
         )) ||
           error ||
           <center style={{width: '100%'}}><LoadingSpinner /></center>
         }
       </div>
+      {event && !showFullList && (
+        <div style={{minHeight: '10vh'}}>&nbsp;</div>
+      )}
 
       <Row>
         <Col>
