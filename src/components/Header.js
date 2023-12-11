@@ -88,7 +88,7 @@ const Header = () => {
   };
 
   return (
-    <header className="pt-3">
+    <header className="pt-2">
       <Row>
         <Col className="d-flex align-items-center">
           <h4>

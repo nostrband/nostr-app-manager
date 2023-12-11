@@ -13,6 +13,12 @@ import AppSelectItem from '../elements/AppSelectItem';
 import Index from './Index';
 
 import * as cmn from '../common';
+import HeaderForEventPage from './Tags/HeaderEvent';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { isPhone } from '../const';
+import './EventApps.scss';
+import LoadingSpinner from '../elements/LoadingSpinner';
 
 const EventApps = () => {
   const [addr, setAddr] = useState({});
@@ -23,7 +29,7 @@ const EventApps = () => {
   const [currentApp, setCurrentApp] = useState(null);
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
-  const navigate = useNavigate();
+  const [showFullList, setShowFullList] = useState(false);
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
@@ -243,8 +249,12 @@ const EventApps = () => {
       // get apps for this kind
       const info = await cmn.fetchAppsByKinds([addr.kind]);
 
-      // only our platform please
-      const kindApps = cmn.filterAppsByPlatform(info, appPlatform);
+      // only our platform please,
+      // shuffle the apps to suggest different ones
+      const kindApps = cmn.filterAppsByPlatform(info, appPlatform)
+        .map(value => ({ value, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ value }) => value)
 
       // add default apps
       cmn.addDefaultApps(addr.kind, kindApps);
@@ -318,105 +328,146 @@ const EventApps = () => {
     window.dispatchEvent(new Event('login'));
   };
 
+  const toggleFullList = () => {
+    setShowFullList(!showFullList);
+  };
+
   return (
-    <main className="mt-5">
-      <div>
+    <>
+      <Row>
+        <HeaderForEventPage />
+      </Row>
+
+      <div className="mt-3 app-container d-flex">
         {(event && (
           <>
-            <h2>Apps for the {cmn.getKindLabel(event?.kind)}:</h2>
-            <div>
+            <div style={{ width: '100%'}}>
               <NostrEvent event={event} />
+              <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
             </div>
           </>
         )) ||
           error ||
-          'Loading...'}
+          <center style={{width: '100%'}}><LoadingSpinner /></center>
+        }
       </div>
-
-      {currentApp && (
-        <div className="mt-3">
-          <h2>Saved app:</h2>
-          <ListGroup>
-            <AppSelectItem
-              key={currentApp.id}
-              app={currentApp}
-              getUrl={getUrl}
-              onSelect={onSelect}
-            />
-          </ListGroup>
-        </div>
+      {event && !showFullList && (
+        <div style={{minHeight: '10vh'}}>&nbsp;</div>
       )}
 
-      {event && (
-        <div className="mt-3">
-          <h2>Suggested apps:</h2>
-          <Form>
-            <Form.Check
-              type="switch"
-              id="remember-app"
-              checked={remember ? 'checked' : ''}
-              onChange={(e) => setRemember(e.target.checked)}
-              label={cmn.getRememberLabel(event?.kind, env?.appPlatform)}
-              style={{ display: 'inline-block' }}
-            />
-            {/*<OverlayTrigger
-		placement="top"
-		overlay={<Tooltip id="remember-tooltip">Remember the chosen app and automatically redirect to it next time. The app will be saved in your browser. You can edit your app list and publish it on Nostr at the nostrapp.link homepage.</Tooltip>}
-		>
-		{({ ref, ...triggerHandler }) => (
-		<i className="ms-1 bi bi-question-circle" ref={ref} {...triggerHandler}></i>
-		)}
-		</OverlayTrigger>*/}
-            <div className="text-muted mb-2">
-              {remember && !cmn.isAuthed() && (
-                <small>
-                  <Link onClick={login}>Login</Link> to recommend the app on
-                  Nostr.
-                </small>
+      <Row>
+        <Col>
+          <main className="mt-3">
+            <div>
+              {event && !showFullList && (
+                <div className="app-on-mobile mt-3">
+                  <ListGroup>
+                    {currentApp ? (
+                      <AppSelectItem
+                        defaultApp
+                        borderRadiusLogo="15px"
+                        showMenuButton
+                        toggleFullList={toggleFullList}
+                        key={currentApp.id}
+                        app={currentApp}
+                        getUrl={getUrl}
+                        onSelect={onSelect}
+                      />
+                    ) : (
+                      kindApps
+                        .filter((a, index) => index === 0)
+                        .map((a) => (
+                          <AppSelectItem
+                            defaultApp
+                            showMenuButton
+                            borderRadiusLogo="15px"
+                            toggleFullList={toggleFullList}
+                            key={a.id}
+                            app={a}
+                            getUrl={getUrl}
+                            onSelect={onSelect}
+                          />
+                        ))
+                    )}
+                  </ListGroup>
+                </div>
               )}
-              {remember && cmn.isAuthed() && (
-                <small>
-                  Chosen app will be{' '}
-                  <Link to="/recommendations">recommended</Link>.
-                </small>
+              {showFullList && (
+                <>
+                  {currentApp && (
+                    <div className="mt-3">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <h2>Saved apps:</h2>
+                      </div>
+                      <ListGroup>
+                        <AppSelectItem
+                          borderRadiusLogo="15px"
+                          toggleFullList={toggleFullList}
+                          key={currentApp.id}
+                          app={currentApp}
+                          getUrl={getUrl}
+                          onSelect={onSelect}
+                        />
+                      </ListGroup>
+                    </div>
+                  )}
+                  <div className="mt-3">
+                    <h2>Suggested apps:</h2>
+                    <Form>
+                      <Form.Check
+                        type="switch"
+                        id="remember-app"
+                        checked={remember ? 'checked' : ''}
+                        onChange={(e) => setRemember(e.target.checked)}
+                        label={cmn.getRememberLabel(
+                          event?.kind,
+                          env?.appPlatform
+                        )}
+                        style={{ display: 'inline-block' }}
+                      />
+                    </Form>
+                    <ListGroup>
+                      {kindApps
+                        ?.filter((a) => !currentApp || a.id !== currentApp.id)
+                        .map((a) => (
+                          <AppSelectItem
+                            borderRadiusLogo="15px"
+                            key={a.id}
+                            app={a}
+                            getUrl={getUrl}
+                            onSelect={onSelect}
+                          />
+                        ))}
+                    </ListGroup>
+                  </div>
+                </>
               )}
             </div>
-          </Form>
-          <ListGroup>
-            {kindApps
-              ?.filter((a) => !currentApp || a.id !== currentApp.id)
-              .map((a) => {
-                return (
-                  <AppSelectItem
-                    key={a.id}
-                    app={a}
-                    getUrl={getUrl}
-                    onSelect={onSelect}
-                  />
-                );
-              })}
-          </ListGroup>
-        </div>
-      )}
-      <div className="mt-5">
-        <h2>New here?</h2>
-        <Link to="/about">
-          <Button size="lg" variant="outline-secondary me-2">
-            What is App Manager?
-          </Button>
-        </Link>
-        <Link to="https://www.heynostr.com">
-          <Button size="lg" variant="outline-secondary me-2">
-            What is Nostr?
-          </Button>
-        </Link>
-        <Link to="https://nosta.me">
-          <Button size="lg" variant="outline-primary m2-2">
-            Start using Nostr
-          </Button>
-        </Link>
-      </div>
-    </main>
+            {/* {showFullList && (
+              <>
+                <div className="mt-5">
+                  <Link to="/about">
+                    <Button size="lg" variant="outline-secondary me-2">
+                      What is App Manager?
+                    </Button>
+                  </Link>
+                  <Link to="https://www.heynostr.com">
+                    <Button size="lg" variant="outline-secondary me-2">
+                      What is Nostr?
+                    </Button>
+                  </Link>
+                  <Link to="https://nosta.me">
+                    <Button size="lg" variant="outline-primary m2-2">
+                      Start using Nostr
+                    </Button>
+                  </Link>
+                </div>
+              </>
+            )} */}
+          </main>
+        </Col>
+      </Row>
+    </>
   );
 };
 

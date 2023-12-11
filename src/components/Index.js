@@ -13,6 +13,7 @@ import FindApps from './MainPageComponents/FindApps';
 import Repositories from './MainPageComponents/RepositoriesInMainPage';
 import NewReviews from './MainPageComponents/NewReviews';
 import AppAddedOfTheDay from './MainPageComponents/AppAddedOfTheDay';
+import Header from './Header';
 
 const Index = () => {
   const [link, setLink] = useState('');
@@ -131,7 +132,8 @@ const Index = () => {
   };
 
   return (
-    <main className="mt-1 pt-2">
+    <main className="">
+      <Header />
       {pathname === '/used-apps' ? (
         <UsedApps apps={apps} onSelect={onSelect} />
       ) : (
