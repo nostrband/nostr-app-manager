@@ -79,8 +79,8 @@ const AppSelectItem = (props) => {
                 <p style={{ 
                   textOverflow: 'ellipsis', 
                   display: '-webkit-box', 
-                  webkitLineClamp: '2', 
-                  webkitBoxOrient: 'vertical', 
+                  WebkitLineClamp: '2', 
+                  WebkitBoxOrient: 'vertical', 
                   overflow: 'hidden',
                   marginBottom: '0px'
                 }}>{about}</p>

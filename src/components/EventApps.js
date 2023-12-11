@@ -18,6 +18,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { isPhone } from '../const';
 import './EventApps.scss';
+import LoadingSpinner from '../elements/LoadingSpinner';
 
 const EventApps = () => {
   const [addr, setAddr] = useState({});
@@ -337,20 +338,19 @@ const EventApps = () => {
         <HeaderForEventPage />
       </Row>
 
-      <div className="mt-3" style={{paddingBottom: !showFullList ? '70px' : '' }}>
+      <div className="mt-3 app-container d-flex">
         {(event && (
           <>
-            <div>
+            <div style={{ width: '100%'}}>
               <NostrEvent event={event} />
+              <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
             </div>
 
-            {!showFullList && (
-              <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
-            )}
           </>
         )) ||
           error ||
-          'Loading...'}
+          <center style={{width: '100%'}}><LoadingSpinner /></center>
+        }
       </div>
 
       <Row>
