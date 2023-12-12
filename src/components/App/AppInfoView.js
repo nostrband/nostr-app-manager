@@ -215,20 +215,26 @@ const AppInfoView = () => {
     releases: <Releases repoLink={repositoryLink.link} />,
   };
 
+  const getRepositoryUrl = (link) => {
+    if (link.startsWith('http://')) {
+      return link.replace('http://', 'https://');
+    } else {
+      return link;
+    }
+  };
+
   const repositoryElement = () => {
+    let repoLink = getRepositoryUrl(repositoryLink.link);
     return (
       <div>
-        {repositoryLink.link ? <h6 className="mt-3">Source code:</h6> : null}
-        {repositoryLink.type === 'REPOSITORY' && repositoryLink.link ? (
+        {repoLink ? <h6 className="mt-3">Source code:</h6> : null}
+        {repositoryLink.type === 'REPOSITORY' && repoLink ? (
           <div className="repo-app-info">
-            <RepositoryElement
-              repo={repositoryLink.link}
-              getUrl={cmn.getRepositoryUrl}
-            />
+            <RepositoryElement repo={repoLink} getUrl={cmn.getRepositoryUrl} />
           </div>
         ) : (
-          <a href={repositoryLink.link} target="blank">
-            {repositoryLink.link}
+          <a href={repoLink} target="blank">
+            {repoLink}
           </a>
         )}
       </div>
