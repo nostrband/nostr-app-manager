@@ -216,15 +216,17 @@ const AppInfoView = () => {
   };
 
   const getRepositoryUrl = (link) => {
-    if (link.startsWith('http://')) {
-      return link.replace('http://', 'https://');
+    if (link?.startsWith('http://')) {
+      return link?.replace('http://', 'https://');
     } else {
       return link;
     }
   };
 
   const repositoryElement = () => {
-    let repoLink = getRepositoryUrl(repositoryLink.link);
+    let repoLink =
+      typeof repositoryLink.link === 'string' &&
+      getRepositoryUrl(repositoryLink.link);
     return (
       <div>
         {repoLink ? <h6 className="mt-3">Source code:</h6> : null}
