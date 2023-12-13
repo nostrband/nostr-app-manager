@@ -103,7 +103,13 @@ const Event = (props) => {
             {showDetails && (
               <Col xs={12}>
                 <small className="text-muted">
-                  <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                  <div
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
                     Id: <b>{nip19.noteEncode(event.id)}</b>
                   </div>
                   <div>

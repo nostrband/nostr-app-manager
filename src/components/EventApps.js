@@ -251,10 +251,11 @@ const EventApps = () => {
 
       // only our platform please,
       // shuffle the apps to suggest different ones
-      const kindApps = cmn.filterAppsByPlatform(info, appPlatform)
-        .map(value => ({ value, sort: Math.random() }))
+      const kindApps = cmn
+        .filterAppsByPlatform(info, appPlatform)
+        .map((value) => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value)
+        .map(({ value }) => value);
 
       // add default apps
       cmn.addDefaultApps(addr.kind, kindApps);
@@ -341,18 +342,28 @@ const EventApps = () => {
       <div className="mt-3 app-container d-flex">
         {(event && (
           <>
-            <div style={{ width: '100%'}}>
+            <div style={{ width: '100%' }}>
               <NostrEvent event={event} />
-              <center className='mt-2 text-muted'><em><small>This is a preview,<br/>choose an app for more info.</small></em></center>
+              <center className="mt-2 text-muted">
+                <em>
+                  <small>
+                    This is a preview,
+                    <br />
+                    choose an app for more info.
+                  </small>
+                </em>
+              </center>
             </div>
           </>
         )) ||
-          error ||
-          <center style={{width: '100%'}}><LoadingSpinner /></center>
-        }
+          error || (
+            <center style={{ width: '100%' }}>
+              <LoadingSpinner />
+            </center>
+          )}
       </div>
       {event && !showFullList && (
-        <div style={{minHeight: '10vh'}}>&nbsp;</div>
+        <div style={{ minHeight: '10vh' }}>&nbsp;</div>
       )}
 
       <Row>
