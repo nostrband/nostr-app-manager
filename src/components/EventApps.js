@@ -157,7 +157,6 @@ const EventApps = ({ byUrl }) => {
 
   const init = useCallback(async () => {
     const params = !byUrl ? window.location.hash : idUrl;
-    console.log(params, 'PARAMS');
     if (!params) {
       console.log('No params');
       setAddr(null);
