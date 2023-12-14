@@ -102,7 +102,9 @@ const AppAddedOfTheDay = () => {
   }, []);
   return (
     <div className="pt-3">
-      <h2>App of the day 🎉</h2>
+      <Container className="ps-0 pe-0">
+        <h2>App of the day 🎉</h2>
+      </Container>
       {loading ? (
         <LoadingSpinner />
       ) : (

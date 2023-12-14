@@ -5,8 +5,6 @@ import { nip19 } from '@nostrband/nostr-tools';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { Link, useNavigate } from 'react-router-dom';
 
 import NostrEvent from '../elements/Event';
 import AppSelectItem from '../elements/AppSelectItem';
@@ -16,11 +14,12 @@ import * as cmn from '../common';
 import HeaderForEventPage from './Tags/HeaderEvent';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { isPhone } from '../const';
 import './EventApps.scss';
 import LoadingSpinner from '../elements/LoadingSpinner';
+import { useParams } from 'react-router-dom';
 
-const EventApps = () => {
+const EventApps = ({ byUrl }) => {
+  const { id: idUrl } = useParams();
   const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
   const [error, setError] = useState('');
@@ -157,7 +156,8 @@ const EventApps = () => {
   };
 
   const init = useCallback(async () => {
-    const params = window.location.hash;
+    const params = !byUrl ? window.location.hash : idUrl;
+    console.log(params, 'PARAMS');
     if (!params) {
       console.log('No params');
       setAddr(null);
@@ -175,6 +175,7 @@ const EventApps = () => {
     console.log('select', select);
 
     const addr = parseAddr(id);
+    console.log(addr, 'ADDDDDDDDRRRR');
     if (!addr) return;
 
     const appPlatform = cmn.getPlatform();
@@ -294,7 +295,11 @@ const EventApps = () => {
   }, [init]);
 
   // homepage
-  if (addr === null) {
+  if (addr === null && !byUrl) {
+    return <Index addr={addr} />;
+  }
+
+  if (!idUrl && byUrl) {
     return <Index addr={addr} />;
   }
 
