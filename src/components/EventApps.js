@@ -164,9 +164,16 @@ const EventApps = ({ byUrl }) => {
       setEvent(null);
       return;
     }
+    let id;
+    if (params.length > 0) {
+      if (params.includes('#') && params.split('#')[1].includes('?')) {
+        id = params.split('#')[1].split('?')[0];
+      } else {
+        id = params;
+      }
+    }
 
-    const id = params.split('#')[1].split('?')[0];
-    console.log('id', id);
+    console.log(id, 'ID');
 
     const q = qs.parse(params.split('?')[1]);
     console.log('query', q);
