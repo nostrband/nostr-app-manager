@@ -18,7 +18,7 @@ import './EventApps.scss';
 import LoadingSpinner from '../elements/LoadingSpinner';
 import { useParams } from 'react-router-dom';
 
-const EventApps = () => {
+const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
   const [addr, setAddr] = useState({});
   const [event, setEvent] = useState(null);
@@ -156,7 +156,7 @@ const EventApps = () => {
   };
 
   const init = useCallback(async () => {
-    const params = window.location.hash;
+    const params = !byUrl ? window.location.hash : idUrl;
     console.log(params, 'PARAMS');
     if (!params) {
       console.log('No params');
@@ -295,7 +295,11 @@ const EventApps = () => {
   }, [init]);
 
   // homepage
-  if (addr === null) {
+  if (addr === null && !byUrl) {
+    return <Index addr={addr} />;
+  }
+
+  if (!idUrl && byUrl) {
     return <Index addr={addr} />;
   }
 
