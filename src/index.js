@@ -32,6 +32,9 @@ import Repositories from './components/MainPageComponents/RepositoriesInMainPage
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import SearchResultApps from './components/App/SearchResultApps';
+import EventAppsByUrl from './components/EventAppsByUrl';
+import { Col, Container, Row } from 'react-bootstrap';
+import Footer from './components/Footer';
 
 const HTTP = new QueryClient();
 
@@ -39,6 +42,19 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
+  },
+  {
+    path: '/:id?',
+    element: (
+      <Container className="Root mt-3">
+        <EventAppsByUrl />
+        <Row>
+          <Col>
+            <Footer />
+          </Col>
+        </Row>
+      </Container>
+    ),
   },
   {
     path: '/about',
