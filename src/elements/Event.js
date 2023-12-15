@@ -20,7 +20,7 @@ const Event = (props) => {
       title = contentData.name || contentData.display_name;
       body = contentData.about;
     } catch (e) {
-      console.error('Error parsing JSON for event', event);
+      console.log('Error parsing JSON for event', event);
     }
 
     if (!title) {
@@ -66,7 +66,7 @@ const Event = (props) => {
     ...event.meta,
     profile: {
       ...event.meta.profile,
-      nip05: processNip05(event.meta.profile.nip05),
+      nip05: processNip05(event.meta.profile?.nip05),
     },
   };
 
