@@ -16,7 +16,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
 import LoadingSpinner from '../elements/LoadingSpinner';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
@@ -29,6 +29,7 @@ const EventApps = ({ byUrl }) => {
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
   const [showFullList, setShowFullList] = useState(false);
+  const navigate = useNavigate();
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
@@ -162,6 +163,8 @@ const EventApps = ({ byUrl }) => {
       setAddr(null);
       setEvent(null);
       return;
+    } else {
+      navigate(`/${params}?select=true`);
     }
     let id;
     if (params.length > 0) {
@@ -172,7 +175,9 @@ const EventApps = ({ byUrl }) => {
       }
     }
 
-    console.log(id, 'ID');
+    console.log(id, 'IDIDIDID');
+
+    console.log(params.split('?')[1], 'TEEEEEST TEEEST');
 
     const q = qs.parse(params.split('?')[1]);
     console.log('query', q);
