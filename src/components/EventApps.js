@@ -157,16 +157,22 @@ const EventApps = ({ byUrl }) => {
 
   const init = useCallback(async () => {
     const params = !byUrl ? window.location.hash : idUrl;
-    console.log(params, 'PARAMS');
     if (!params) {
       console.log('No params');
       setAddr(null);
       setEvent(null);
       return;
     }
+    let id;
+    if (params.length > 0) {
+      if (params.includes('#') && params.split('#')[1].includes('?')) {
+        id = params.split('#')[1].split('?')[0];
+      } else {
+        id = params;
+      }
+    }
 
-    const id = params.split('#')[1].split('?')[0];
-    console.log('id', id);
+    console.log(id, 'ID');
 
     const q = qs.parse(params.split('?')[1]);
     console.log('query', q);
