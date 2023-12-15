@@ -287,7 +287,7 @@ const EventApps = ({ byUrl }) => {
     // no personalized data here
     //    cmn.addOnNostr(reload);
     reload();
-  });
+  }, []);
 
   // on the start
   useEffect(() => {
