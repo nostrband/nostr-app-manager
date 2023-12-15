@@ -167,7 +167,7 @@ const EventApps = ({ byUrl }) => {
     }
     let id;
     if (params.length > 0) {
-      if (params.includes('#') && params.split('#')[1].includes('?')) {
+      if (params.includes('#')) {
         id = params.split('#')[1].split('?')[0];
       } else {
         id = params;
@@ -256,6 +256,11 @@ const EventApps = ({ byUrl }) => {
       // fetch author, need to display the event
       event.meta = (await cmn.fetchProfile(event.pubkey)) || {};
 
+      setAddr(addr);
+      setEvent(event);
+      setAppSettings(appSettings);
+      setEnv({ appPlatform });
+
       // get apps for this kind
       const info = await cmn.fetchAppsByKinds([addr.kind]);
 
@@ -275,13 +280,9 @@ const EventApps = ({ byUrl }) => {
       if (savedApp)
         currentApp = kindApps.find((a) => cmn.getNaddr(a) === savedApp);
 
-      setAddr(addr);
-      setEvent(event);
       setCurrentApp(currentApp);
       setKindApps(kindApps);
       setRemember(!currentApp);
-      setAppSettings(appSettings);
-      setEnv({ appPlatform });
     }
 
     // no personalized data here
@@ -378,6 +379,12 @@ const EventApps = ({ byUrl }) => {
       </div>
       {event && !showFullList && (
         <div style={{ minHeight: '10vh' }}>&nbsp;</div>
+      )}
+
+      {event && !kindApps.length && (
+        <center style={{ width: '100%' }}>
+          <LoadingSpinner />
+        </center>
       )}
 
       <Row>
