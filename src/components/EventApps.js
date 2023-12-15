@@ -16,7 +16,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
 import LoadingSpinner from '../elements/LoadingSpinner';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
@@ -29,6 +29,8 @@ const EventApps = ({ byUrl }) => {
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
   const [showFullList, setShowFullList] = useState(false);
+
+  const location = useLocation();
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
@@ -134,7 +136,7 @@ const EventApps = ({ byUrl }) => {
           addr.relays = data.relays;
           break;
         default:
-          throw 'bad id';
+          throw new Error('bad id');
       }
     } catch (e) {
       if (id.length === 64) {
@@ -174,7 +176,8 @@ const EventApps = ({ byUrl }) => {
 
     console.log(id, 'ID');
 
-    const q = qs.parse(params.split('?')[1]);
+    const queryString = !byUrl ? params.split('?')[1] : location.search
+    const q = qs.parse(queryString);
     console.log('query', q);
 
     const select = q.select === 'true';
@@ -284,7 +287,7 @@ const EventApps = ({ byUrl }) => {
     // no personalized data here
     //    cmn.addOnNostr(reload);
     reload();
-  }, []);
+  });
 
   // on the start
   useEffect(() => {
@@ -335,10 +338,10 @@ const EventApps = ({ byUrl }) => {
     }
   };
 
-  const login = (e) => {
-    e.preventDefault();
-    window.dispatchEvent(new Event('login'));
-  };
+  // const login = (e) => {
+  //   e.preventDefault();
+  //   window.dispatchEvent(new Event('login'));
+  // };
 
   const toggleFullList = () => {
     setShowFullList(!showFullList);
