@@ -22,7 +22,7 @@ import ContainerWithHeaderFooter from './layout/ContainerWithHeaderFooter';
 import KindView from './components/Kinds/KindView';
 import TagView from './components/Tags/TagView';
 import { NewReviewStateProvider } from './context/NewReviewsContext';
-import EventApps from './components/EventApps';
+import EventApps from './components/EventApps/EventApps';
 import { UpdateAnswersReviewProvider } from './context/UpdateAnswersContext';
 import ReviewInfo from './components/ReviewInfo';
 import About from './About';
