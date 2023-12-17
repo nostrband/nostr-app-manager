@@ -374,13 +374,20 @@ const EventApps = ({ byUrl }) => {
           <>
             <div style={{ width: '100%' }}>
               <NostrEvent event={event} />
-              <strong className="mt-2">Users:</strong>
-              <UsersEventApps users={users.users} />
-              {users.countOfOtherUsers > 0 ? (
-                <span className="mx-1 mt-2">
-                  And <strong>{users.countOfOtherUsers}</strong> more profiles
-                </span>
-              ) : null}
+              {(event.kind === 3 ||
+                event.kind === 30000 ||
+                event.kind === 40000) && (
+                <>
+                  <strong className="mt-2">Users:</strong>
+                  <UsersEventApps users={users.users} />
+                  {users.countOfOtherUsers > 0 ? (
+                    <span className="mx-1 mt-2">
+                      And <strong>{users.countOfOtherUsers}</strong> more
+                      profiles
+                    </span>
+                  ) : null}
+                </>
+              )}
               <center className="mt-2 text-muted">
                 <em>
                   <small>
