@@ -6,16 +6,16 @@ import { nip19 } from '@nostrband/nostr-tools';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 
-import NostrEvent from '../elements/Event';
-import AppSelectItem from '../elements/AppSelectItem';
-import Index from './Index';
+import NostrEvent from '../../elements/Event';
+import AppSelectItem from '../../elements/AppSelectItem';
+import Index from '../Index';
 
-import * as cmn from '../common';
-import HeaderForEventPage from './Tags/HeaderEvent';
+import * as cmn from '../../common';
+import HeaderForEventPage from './HeaderEvent';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
-import LoadingSpinner from '../elements/LoadingSpinner';
+import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useLocation, useParams } from 'react-router-dom';
 
 const EventApps = ({ byUrl }) => {
@@ -176,7 +176,7 @@ const EventApps = ({ byUrl }) => {
 
     console.log(id, 'ID');
 
-    const queryString = !byUrl ? params.split('?')[1] : location.search
+    const queryString = !byUrl ? params.split('?')[1] : location.search;
     const q = qs.parse(queryString);
     console.log('query', q);
 
@@ -232,6 +232,8 @@ const EventApps = ({ byUrl }) => {
       addr.kind = event.kind;
       addr.event_id = event.id;
       addr.pubkey = event.pubkey;
+
+      console.log(event, 'EVEEEENT');
       if (event.kind >= 30000 && event.kind < 40000) {
         for (let t of event.tags) {
           if (t.length > 1 && t[0] === 'd') {
@@ -255,7 +257,6 @@ const EventApps = ({ byUrl }) => {
 
       // fetch author, need to display the event
       event.meta = (await cmn.fetchProfile(event.pubkey)) || {};
-
       setAddr(addr);
       setEvent(event);
       setAppSettings(appSettings);

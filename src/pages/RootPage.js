@@ -1,7 +1,7 @@
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import EventApps from '../components/EventApps';
 import Footer from '../components/Footer';
+import EventApps from '../components/EventApps/EventApps';
 
 const RootPage = () => {
   return (
