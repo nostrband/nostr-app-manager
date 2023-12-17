@@ -70,6 +70,8 @@ const Event = (props) => {
     },
   };
 
+  console.log(event, 'EVEEENT');
+
   switch (event.kind) {
     case 0:
       return <EventProfile event={event} />;

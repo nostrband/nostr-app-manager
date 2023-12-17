@@ -17,6 +17,7 @@ import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useLocation, useParams } from 'react-router-dom';
+import UsersEventApps from './UsersEventApps';
 
 const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
@@ -29,6 +30,7 @@ const EventApps = ({ byUrl }) => {
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
   const [showFullList, setShowFullList] = useState(false);
+  const [users, setUsers] = useState();
 
   const location = useLocation();
 
@@ -158,6 +160,7 @@ const EventApps = ({ byUrl }) => {
   };
 
   const init = useCallback(async () => {
+    const ndk = await cmn.getNDK();
     const params = !byUrl ? window.location.hash : idUrl;
     if (!params) {
       console.log('No params');
@@ -174,8 +177,6 @@ const EventApps = ({ byUrl }) => {
       }
     }
 
-    console.log(id, 'ID');
-
     const queryString = !byUrl ? params.split('?')[1] : location.search;
     const q = qs.parse(queryString);
     console.log('query', q);
@@ -184,7 +185,6 @@ const EventApps = ({ byUrl }) => {
     console.log('select', select);
 
     const addr = parseAddr(id);
-    console.log(addr, 'ADDDDDDDDRRRR');
     if (!addr) return;
 
     const appPlatform = cmn.getPlatform();
@@ -233,7 +233,6 @@ const EventApps = ({ byUrl }) => {
       addr.event_id = event.id;
       addr.pubkey = event.pubkey;
 
-      console.log(event, 'EVEEEENT');
       if (event.kind >= 30000 && event.kind < 40000) {
         for (let t of event.tags) {
           if (t.length > 1 && t[0] === 'd') {
@@ -242,7 +241,6 @@ const EventApps = ({ byUrl }) => {
           }
         }
       }
-      console.log('event addr', addr);
 
       // if kind was unknown, retry getting the saved app
       if (!savedApp)
@@ -257,6 +255,22 @@ const EventApps = ({ byUrl }) => {
 
       // fetch author, need to display the event
       event.meta = (await cmn.fetchProfile(event.pubkey)) || {};
+      let pubKeys = event.tags
+        .filter((tag) => tag[0] === 'p')
+        .map((tag) => tag[1]);
+
+      const firstTenPubkeys = pubKeys.slice(0, 10);
+      const filterForGetAuthorsReview = {
+        kinds: [0],
+        authors: firstTenPubkeys,
+      };
+      const users = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filterForGetAuthorsReview),
+      ]);
+      setUsers({
+        countOfOtherUsers: pubKeys.length - firstTenPubkeys.length,
+        users,
+      });
       setAddr(addr);
       setEvent(event);
       setAppSettings(appSettings);
@@ -360,6 +374,13 @@ const EventApps = ({ byUrl }) => {
           <>
             <div style={{ width: '100%' }}>
               <NostrEvent event={event} />
+              <strong className="mt-2">Users:</strong>
+              <UsersEventApps users={users.users} />
+              {users.countOfOtherUsers > 0 ? (
+                <span className="mx-1 mt-2">
+                  And <strong>{users.countOfOtherUsers}</strong> more profiles
+                </span>
+              ) : null}
               <center className="mt-2 text-muted">
                 <em>
                   <small>
