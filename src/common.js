@@ -172,8 +172,11 @@ export function getKindLabel(kind) {
     case 31990:
       label = 'app handlers';
       break;
+    case 34550:
+      label = 'community';
+      break;
     default:
-      label = 'event kind ' + kind;
+      label = 'Kind ' + kind;
       break;
   }
   return label;
@@ -1373,3 +1376,7 @@ export const getNaddrAndNameRepo = (issue) => {
   });
   return { naddrRepo, repoName };
 };
+
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

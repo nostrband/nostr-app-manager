@@ -17,7 +17,6 @@ import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
 import LoadingSpinner from '../../elements/LoadingSpinner';
 import { useLocation, useParams } from 'react-router-dom';
-import UsersEventApps from '../../elements/EventUsers';
 
 const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
@@ -31,6 +30,7 @@ const EventApps = ({ byUrl }) => {
   const [remember, setRemember] = useState(true);
   const [showFullList, setShowFullList] = useState(false);
   const [users, setUsers] = useState();
+  const [moderators, setModerators] = useState([]);
 
   const location = useLocation();
 
@@ -221,7 +221,8 @@ const EventApps = ({ byUrl }) => {
       // unknown event kind, or saved app not found, or
       // need to show the list of apps,
       // anyways, need to load the event
-      const event = window.nometaPreloadedEvents?.event || await cmn.fetchEvent(addr);
+      const event =
+        window.nometaPreloadedEvents?.event || (await cmn.fetchEvent(addr));
       if (!event) {
         // not found
         setError('Failed to find the event ' + id);
@@ -253,8 +254,12 @@ const EventApps = ({ byUrl }) => {
         if (app) return redirect(app, addr);
       }
 
+      console.log(event, 'EVEEENT');
       // fetch author, need to display the event
-      event.meta = window.nometaPreloadedEvents?.profile || (await cmn.fetchProfile(event.pubkey)) || {};
+      event.meta =
+        window.nometaPreloadedEvents?.profile ||
+        (await cmn.fetchProfile(event.pubkey)) ||
+        {};
       if (event.meta && !event.meta.profile)
         event.meta.profile = cmn.parseContentJson(event.meta.content);
 
@@ -270,10 +275,25 @@ const EventApps = ({ byUrl }) => {
       const users = await cmn.fetchAllEvents([
         cmn.startFetch(ndk, filterForGetAuthorsReview),
       ]);
+
       setUsers({
         countOfOtherUsers: pubKeys.length - firstTenPubkeys.length,
         users,
       });
+
+      let pubKeysModerator = event.tags
+        .filter((tag) => tag[0] === 'p' && tag[3] === 'moderator')
+        .map((tag) => tag[1]);
+
+      const filterForGetModeratorsProfile = {
+        kinds: [0],
+        authors: pubKeysModerator,
+      };
+
+      const moderators = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filterForGetModeratorsProfile),
+      ]);
+      setModerators(moderators);
       setAddr(addr);
       setEvent(event);
       setAppSettings(appSettings);
@@ -376,7 +396,7 @@ const EventApps = ({ byUrl }) => {
         {(event && (
           <>
             <div style={{ width: '100%' }}>
-              <NostrEvent users={users} event={event} />
+              <NostrEvent moderators={moderators} users={users} event={event} />
               <center className="mt-2 text-muted">
                 <em>
                   <small>
