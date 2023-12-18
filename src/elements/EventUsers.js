@@ -4,15 +4,15 @@ import Profile from './Profile';
 import * as cmn from '../common';
 
 const EventUsers = ({ event, users }) => {
-  let titleEvent = event.tags
-    .filter((tag) => tag[0] === 'name')
-    .map((tag) => tag[1])[0];
+  let titleEvent = event?.tags
+    ?.filter((tag) => tag[0] === 'name')
+    ?.map((tag) => tag[1])[0];
 
   return (
     <div>
       <h3>{titleEvent}</h3>
       <ListGroup>
-        {users.users.map((user) => {
+        {users?.users?.map((user) => {
           let profile = user?.content
             ? cmn.convertContentToProfile([user])
             : {};
