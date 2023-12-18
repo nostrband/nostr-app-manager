@@ -76,12 +76,6 @@ const Event = (props) => {
       return <EventProfile event={event} />;
     case 1:
       return <EventNote event={event} />;
-    case 3:
-      return <EventUsers users={props.users} event={event} />;
-    case 30000:
-      return <EventUsers users={props.users} event={event} />;
-    case 40000:
-      return <EventUsers users={props.users} event={event} />;
     default:
       return (
         <Container className="ps-0 pe-0">
@@ -93,6 +87,12 @@ const Event = (props) => {
                 {body.length > 1000 ? body.substring(0, 1000) + '...' : body}
               </p>
             </Col>
+
+            {event.kind === 3 ||
+            event.kind === 30000 ||
+            event.kind === 40000 ? (
+              <EventUsers users={props.users} event={event} />
+            ) : null}
 
             <Col xs={12}>
               <small className="text-muted">
