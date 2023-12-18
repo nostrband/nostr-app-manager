@@ -6,6 +6,7 @@ import EventNote from './EventNote';
 import Profile from './Profile';
 import EventProfile from './EventProfile';
 import { nip19 } from '@nostrband/nostr-tools';
+import EventUsers from './EventUsers';
 
 const Event = (props) => {
   const event = props.event;
@@ -86,6 +87,12 @@ const Event = (props) => {
                 {body.length > 1000 ? body.substring(0, 1000) + '...' : body}
               </p>
             </Col>
+
+            {event.kind === 3 ||
+            event.kind === 30000 ||
+            event.kind === 40000 ? (
+              <EventUsers users={props.users} event={event} />
+            ) : null}
 
             <Col xs={12}>
               <small className="text-muted">
