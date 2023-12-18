@@ -254,7 +254,6 @@ const EventApps = ({ byUrl }) => {
         if (app) return redirect(app, addr);
       }
 
-      console.log(event, 'EVEEENT');
       // fetch author, need to display the event
       event.meta =
         window.nometaPreloadedEvents?.profile ||
