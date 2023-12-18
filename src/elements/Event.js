@@ -111,12 +111,12 @@ const Event = (props) => {
                 {cmn.getKindLabel(event.kind)
                   ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
                   : event.kind}
-                <span className="mx-1">
+                <span className="mx-2">
                   {new Date(event.created_at * 1000).toLocaleString()}
                 </span>
                 <spans
                   onClick={toggleDetails}
-                  className="ms-2 fs-7 pointer"
+                  className="fs-7 pointer"
                   style={{ textDecoration: 'underline' }}
                 >
                   {showDetails ? 'Less info' : 'More info'}
