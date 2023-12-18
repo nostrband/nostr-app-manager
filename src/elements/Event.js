@@ -7,6 +7,7 @@ import Profile from './Profile';
 import EventProfile from './EventProfile';
 import { nip19 } from '@nostrband/nostr-tools';
 import EventUsers from './EventUsers';
+import * as cmn from '../common.js';
 
 const Event = (props) => {
   const event = props.event;
@@ -29,6 +30,10 @@ const Event = (props) => {
         (tag) => tag[0] === 'title' || tag[0] === 'name'
       )?.[1];
     }
+    if (!title) {
+      title = event.tags?.find((tag) => tag[0] === 'd')?.[1];
+    }
+
     if (!body) {
       body = event.tags?.find(
         (tag) =>
@@ -94,16 +99,28 @@ const Event = (props) => {
               <EventUsers users={props.users} event={event} />
             ) : null}
 
+            {event.kind === 34550 ? (
+              <>
+                <strong className="mb-1">Moderators:</strong>
+                <EventUsers users={{ users: props.moderators }} event={event} />
+              </>
+            ) : null}
+
             <Col xs={12}>
               <small className="text-muted">
-                {new Date(event.created_at * 1000).toLocaleString()}
-                <span
+                {cmn.getKindLabel(event.kind)
+                  ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
+                  : event.kind}
+                <span className="mx-2">
+                  {new Date(event.created_at * 1000).toLocaleString()}
+                </span>
+                <spans
                   onClick={toggleDetails}
-                  className="ms-2 fs-7 pointer"
+                  className="fs-7 pointer"
                   style={{ textDecoration: 'underline' }}
                 >
                   {showDetails ? 'Less info' : 'More info'}
-                </span>
+                </spans>
               </small>
             </Col>
 

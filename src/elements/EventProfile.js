@@ -2,6 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Profile from './Profile';
+import * as cmn from '../common';
 
 const EventProfile = (props) => {
   const event = props.event;
@@ -23,9 +24,12 @@ const EventProfile = (props) => {
           </Col>
         )}
         <Col xs={12}>
-          <small className="text-muted">
+          {cmn.getKindLabel(event.kind)
+            ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
+            : event.kind}
+          <span className="mx-2">
             {new Date(event.created_at * 1000).toLocaleString()}
-          </small>
+          </span>
         </Col>
       </Row>
     </Container>
