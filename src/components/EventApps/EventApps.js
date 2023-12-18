@@ -221,7 +221,7 @@ const EventApps = ({ byUrl }) => {
       // unknown event kind, or saved app not found, or
       // need to show the list of apps,
       // anyways, need to load the event
-      const event = await cmn.fetchEvent(addr);
+      const event = window.nometaPreloadedEvents?.event || await cmn.fetchEvent(addr);
       if (!event) {
         // not found
         setError('Failed to find the event ' + id);
@@ -254,7 +254,10 @@ const EventApps = ({ byUrl }) => {
       }
 
       // fetch author, need to display the event
-      event.meta = (await cmn.fetchProfile(event.pubkey)) || {};
+      event.meta = window.nometaPreloadedEvents?.profile || (await cmn.fetchProfile(event.pubkey)) || {};
+      if (event.meta && !event.meta.profile)
+        event.meta.profile = cmn.parseContentJson(event.meta.content);
+
       let pubKeys = event.tags
         .filter((tag) => tag[0] === 'p')
         .map((tag) => tag[1]);
