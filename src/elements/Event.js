@@ -6,6 +6,7 @@ import EventNote from './EventNote';
 import Profile from './Profile';
 import EventProfile from './EventProfile';
 import { nip19 } from '@nostrband/nostr-tools';
+import EventUsers from './EventUsers';
 
 const Event = (props) => {
   const event = props.event;
@@ -70,13 +71,17 @@ const Event = (props) => {
     },
   };
 
-  console.log(event, 'EVEEENT');
-
   switch (event.kind) {
     case 0:
       return <EventProfile event={event} />;
     case 1:
       return <EventNote event={event} />;
+    case 3:
+      return <EventUsers users={props.users} event={event} />;
+    case 30000:
+      return <EventUsers users={props.users} event={event} />;
+    case 40000:
+      return <EventUsers users={props.users} event={event} />;
     default:
       return (
         <Container className="ps-0 pe-0">
