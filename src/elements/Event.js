@@ -85,18 +85,6 @@ const Event = (props) => {
     .map((tag) => tag[1])
     .reduce((acc, val) => acc + Number(val), 0);
 
-  const fetchEventTemp = async () => {
-    console.log('DONE FETCH EVENT TEMP  TEEST');
-    const ndk = await cmn.getNDK();
-    try {
-      const filter = {
-        kinds: [9041],
-      };
-      const response = await cmn.fetchAllEvents(cmn.startFetch(ndk, filter));
-      console.log(response, 'RESPONSE');
-    } catch (error) {}
-  };
-
   useEffect(() => {
     fetchEventTemp();
   }, []);

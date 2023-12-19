@@ -178,6 +178,9 @@ export function getKindLabel(kind) {
     case 30311:
       label = 'live event';
       break;
+    case 9041:
+      label = 'Zap Goal';
+      break;
     default:
       label = 'Kind ' + kind;
       break;
