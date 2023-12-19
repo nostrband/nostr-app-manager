@@ -385,8 +385,6 @@ const EventApps = ({ byUrl }) => {
     setShowFullList(!showFullList);
   };
 
-  console.log(event, 'EVENT');
-
   return (
     <>
       <Row>
