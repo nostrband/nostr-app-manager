@@ -92,20 +92,25 @@ const Event = (props) => {
                 {body.length > 1000 ? body.substring(0, 1000) + '...' : body}
               </p>
             </Col>
-
             {event.kind === 3 ||
             event.kind === 30000 ||
             event.kind === 40000 ? (
-              <EventUsers users={props.users} event={event} />
+              <EventUsers users={props.users} />
+            ) : null}
+
+            {event.kinds === 30311 ? (
+              <>
+                <strong className="mb-1">Participants:</strong>
+                <EventUsers users={props.users} />
+              </>
             ) : null}
 
             {event.kind === 34550 ? (
               <>
                 <strong className="mb-1">Moderators:</strong>
-                <EventUsers users={{ users: props.moderators }} event={event} />
+                <EventUsers users={{ users: props.moderators }} />
               </>
             ) : null}
-
             <Col xs={12}>
               <small className="text-muted">
                 {cmn.getKindLabel(event.kind)
@@ -123,7 +128,6 @@ const Event = (props) => {
                 </spans>
               </small>
             </Col>
-
             {showDetails && (
               <Col xs={12}>
                 <small className="text-muted">

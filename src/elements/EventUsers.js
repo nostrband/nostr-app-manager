@@ -3,7 +3,7 @@ import { Col, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Profile from './Profile';
 import * as cmn from '../common';
 
-const EventUsers = ({ event, users }) => {
+const EventUsers = ({ users }) => {
   return (
     <Col>
       <ListGroup className="mb-1">

@@ -175,6 +175,9 @@ export function getKindLabel(kind) {
     case 34550:
       label = 'community';
       break;
+    case 30311:
+      label = 'live event';
+      break;
     default:
       label = 'Kind ' + kind;
       break;
