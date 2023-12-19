@@ -159,7 +159,9 @@ const EventApps = ({ byUrl }) => {
     const url = getUrl(app, addr);
     console.log('Auto redirect url', url);
 
-    window.location.href = url;
+    // make sure browser adds the addSelect to history
+    // before we force it to redirect to target
+    setTimeout(() => window.location.href = url, 50);
   };
 
   const init = useCallback(async () => {
