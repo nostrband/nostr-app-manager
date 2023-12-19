@@ -14,7 +14,6 @@ import EventTags from '../components/EventApps/EventTags.js';
 const Event = (props) => {
   const event = props.event;
   const [showDetails, setShowDetails] = useState(false);
-  const navigate = useNavigate();
 
   function extractTitleAndBody(event) {
     let title;
