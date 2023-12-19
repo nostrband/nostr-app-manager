@@ -8,6 +8,8 @@ import EventProfile from './EventProfile';
 import { nip19 } from '@nostrband/nostr-tools';
 import EventUsers from './EventUsers';
 import * as cmn from '../common.js';
+import { useNavigate } from 'react-router-dom';
+import EventTags from '../components/EventApps/EventTags.js';
 
 const Event = (props) => {
   const event = props.event;
@@ -76,11 +78,14 @@ const Event = (props) => {
     },
   };
 
+  let tags = event.tags.filter((tag) => tag[0] === 't').map((tag) => tag[1]);
+  tags = [...new Set(tags)];
+
   switch (event.kind) {
     case 0:
-      return <EventProfile event={event} />;
+      return <EventProfile tags={tags} event={event} />;
     case 1:
-      return <EventNote event={event} />;
+      return <EventNote tags={tags} event={event} />;
     default:
       return (
         <Container className="ps-0 pe-0">
@@ -112,6 +117,7 @@ const Event = (props) => {
               </>
             ) : null}
             <Col xs={12}>
+              <div>{tags.length > 0 ? <EventTags tags={tags} /> : null}</div>
               <small className="text-muted">
                 {cmn.getKindLabel(event.kind)
                   ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
