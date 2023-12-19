@@ -85,10 +85,6 @@ const Event = (props) => {
     .map((tag) => tag[1])
     .reduce((acc, val) => acc + Number(val), 0);
 
-  useEffect(() => {
-    fetchEventTemp();
-  }, []);
-
   switch (event.kind) {
     case 0:
       return <EventProfile amountZap={amountZap} tags={tags} event={event} />;
