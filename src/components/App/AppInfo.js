@@ -98,8 +98,6 @@ const AppInfo = (props) => {
         authors: [loginPubkey],
       };
 
-      console.log(addrForFilter, 'ADDR FOR FILTER');
-
       try {
         const result = await cmn.fetchAllEvents([
           cmn.startFetch(ndk, addrForFilter),
