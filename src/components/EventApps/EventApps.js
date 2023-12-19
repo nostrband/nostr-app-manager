@@ -16,7 +16,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './EventApps.scss';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const EventApps = ({ byUrl }) => {
   const { id: idUrl } = useParams();
@@ -31,8 +31,6 @@ const EventApps = ({ byUrl }) => {
   const [showFullList, setShowFullList] = useState(false);
   const [users, setUsers] = useState();
   const [moderators, setModerators] = useState([]);
-
-  const location = useLocation();
 
   const getUrl = (app, ad) => {
     ad = ad || addr;
@@ -154,9 +152,14 @@ const EventApps = ({ byUrl }) => {
   };
 
   const redirect = (app, addr) => {
+
+    // make 'back' button return to ?select=true
+    addSelect();
+
     const url = getUrl(app, addr);
     console.log('Auto redirect url', url);
-    document.location.href = url;
+
+    window.location.href = url;
   };
 
   const init = useCallback(async () => {
@@ -177,7 +180,7 @@ const EventApps = ({ byUrl }) => {
       }
     }
 
-    const queryString = !byUrl ? params.split('?')[1] : location.search;
+    const queryString = !byUrl ? params.split('?')[1] : window.location.search;
     const q = qs.parse(queryString);
     console.log('query', q);
 
@@ -350,9 +353,26 @@ const EventApps = ({ byUrl }) => {
     return <Index addr={addr} />;
   }
 
+  const addSelect = () => {
+    const query = "select=true"
+    const url = byUrl ? window.location.search : (window.location.hash.split('?')?.[1] || "")
+    if (!url.includes(query)) {
+      const suffix = (url.length > 0 ? '&' : '?') + query;
+      const result = window.location.href + suffix;
+      window.history.replaceState({}, "", result);
+    }
+  }
+
   // save the app in local settings for this platform
   const onSelect = async (a, e) => {
     console.log('select', a);
+
+    // first, replace the current url w/ one that has ?select=true
+    // and then redirect the user to the app, so that if 'back' is
+    // clicked they return to select=true and won't get redirected
+    // back again immediately
+    addSelect();
+
     if (!remember) return;
 
     if (!appSettings.kinds) appSettings.kinds = {};
