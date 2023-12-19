@@ -80,6 +80,7 @@ const Event = (props) => {
   };
 
   let tags = event.tags.filter((tag) => tag[0] === 't').map((tag) => tag[1]);
+  tags = [...new Set(tags)];
 
   switch (event.kind) {
     case 0:

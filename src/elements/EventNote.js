@@ -14,8 +14,8 @@ const EventNote = (props) => {
       <Row>
         <Col xs={12}>{event.content}</Col>
         <Col xs={12}>
+          <div>{tags.length > 0 ? <EventTags tags={tags} /> : null}</div>
           <small className="text-muted">
-            <div>{tags.length > 0 ? <EventTags tags={tags} /> : null}</div>
             {cmn.getKindLabel(event.kind)
               ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
               : event.kind}
