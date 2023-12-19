@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,7 +8,6 @@ import EventProfile from './EventProfile';
 import { nip19 } from '@nostrband/nostr-tools';
 import EventUsers from './EventUsers';
 import * as cmn from '../common.js';
-import { useNavigate } from 'react-router-dom';
 import EventTags from '../components/EventApps/EventTags.js';
 
 const Event = (props) => {
@@ -81,15 +80,25 @@ const Event = (props) => {
   let tags = event.tags.filter((tag) => tag[0] === 't').map((tag) => tag[1]);
   tags = [...new Set(tags)];
 
+  const amountZap = event.tags
+    .filter((tag) => tag[0] === 'amount')
+    .map((tag) => tag[1])
+    .reduce((acc, val) => acc + Number(val), 0);
+
   switch (event.kind) {
     case 0:
-      return <EventProfile tags={tags} event={event} />;
+      return <EventProfile amountZap={amountZap} tags={tags} event={event} />;
     case 1:
-      return <EventNote tags={tags} event={event} />;
+      return <EventNote amountZap={amountZap} tags={tags} event={event} />;
     default:
       return (
         <Container className="ps-0 pe-0">
           <Profile removeLink profile={updatedMeta} pubkey={event.pubkey} />
+          {event.kind === 9041 && amountZap > 0 && (
+            <div className="mt-2">
+              Amount: {cmn.formatNumber(amountZap / 1000)} sats
+            </div>
+          )}
           <Row className="pt-2">
             <Col xs={12}>
               <h3>{title}</h3>
@@ -116,6 +125,7 @@ const Event = (props) => {
                 <EventUsers users={{ users: props.moderators }} />
               </>
             ) : null}
+
             <Col xs={12}>
               <div>{tags.length > 0 ? <EventTags tags={tags} /> : null}</div>
               <small className="text-muted">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, ListGroup, ListGroupItem, Modal } from 'react-bootstrap';
 import LoadingSpinner from '../../elements/LoadingSpinner';
-import ArrowIcon from '../../icons/Arrow';
 import * as cmn from '../../common';
 import { useAuth } from '../../context/AuthContext';
 import { KIND_REMOVE_EVENT, isPhone } from '../../const';
