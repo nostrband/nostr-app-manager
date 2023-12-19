@@ -3,9 +3,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Profile from './Profile';
 import * as cmn from '../common';
+import EventTags from '../components/EventApps/EventTags';
 
 const EventProfile = (props) => {
-  const event = props.event;
+  const { event, tags } = props;
   const author = event.meta;
   let profile = author;
   try {
@@ -24,6 +25,7 @@ const EventProfile = (props) => {
           </Col>
         )}
         <Col xs={12}>
+          <div>{tags.length > 0 ? <EventTags tags={tags} /> : null}</div>
           {cmn.getKindLabel(event.kind)
             ? cmn.capitalizeFirstLetter(cmn.getKindLabel(event.kind))
             : event.kind}
