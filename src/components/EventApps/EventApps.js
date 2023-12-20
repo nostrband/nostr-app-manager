@@ -152,7 +152,6 @@ const EventApps = ({ byUrl }) => {
   };
 
   const redirect = (app, addr) => {
-
     // make 'back' button return to ?select=true
     addSelect();
 
@@ -161,7 +160,24 @@ const EventApps = ({ byUrl }) => {
 
     // make sure browser adds the addSelect to history
     // before we force it to redirect to target
-    setTimeout(() => window.location.href = url, 50);
+    setTimeout(() => (window.location.href = url), 50);
+  };
+
+  const getUsersForKindApps = async (kindApps, kind) => {
+    const ndk = await cmn.getNDK();
+    try {
+      const addrs = kindApps.map((app) => cmn.naddrToAddr(cmn.getNaddr(app)));
+      const filter = {
+        kinds: [31989],
+        '#a': [...addrs],
+        '#k': [kind],
+      };
+      console.log(filter, 'FILTER');
+      const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
+      console.log(response, 'RESPONSE');
+    } catch (error) {
+      return console.log('ERROR GET USERS FOR KIND APPS', error);
+    }
   };
 
   const init = useCallback(async () => {
@@ -267,7 +283,7 @@ const EventApps = ({ byUrl }) => {
       if (event.meta && !event.meta.profile)
         event.meta.profile = cmn.parseContentJson(event.meta.content);
 
-      // set these as soon as possible to render the 
+      // set these as soon as possible to render the
       // event on the screen
       setAddr(addr);
       setEvent(event);
@@ -331,6 +347,7 @@ const EventApps = ({ byUrl }) => {
 
       setCurrentApp(currentApp);
       setKindApps(kindApps);
+      getUsersForKindApps(kindApps, event.kind);
       setRemember(!currentApp);
     }
 
@@ -363,14 +380,16 @@ const EventApps = ({ byUrl }) => {
   }
 
   const addSelect = () => {
-    const query = "select=true"
-    const url = byUrl ? window.location.search : (window.location.hash.split('?')?.[1] || "")
+    const query = 'select=true';
+    const url = byUrl
+      ? window.location.search
+      : window.location.hash.split('?')?.[1] || '';
     if (!url.includes(query)) {
       const suffix = (url.length > 0 ? '&' : '?') + query;
       const result = window.location.href + suffix;
-      window.history.replaceState({}, "", result);
+      window.history.replaceState({}, '', result);
     }
-  }
+  };
 
   // save the app in local settings for this platform
   const onSelect = async (a, e) => {
