@@ -170,7 +170,7 @@ const EventApps = ({ byUrl }) => {
       const filter = {
         kinds: [31989],
         '#a': [...addrs],
-        '#k': [kind],
+        '#d': [`${kind}`],
       };
       console.log(filter, 'FILTER');
       const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
