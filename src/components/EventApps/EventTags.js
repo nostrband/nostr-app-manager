@@ -2,7 +2,7 @@ import React from 'react';
 
 const EventTags = ({ tags }) => {
   return (
-    <div className="d-flex flex-wrap">
+    <div className="d-flex flex-wrap mt-1">
       <label className="tag-event-apps">Tags:</label>
       {tags.map((t) => {
         return (
