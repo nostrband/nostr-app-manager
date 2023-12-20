@@ -29,7 +29,7 @@ const EventApps = ({ byUrl }) => {
   const [env, setEnv] = useState({});
   const [remember, setRemember] = useState(true);
   const [showFullList, setShowFullList] = useState(false);
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState({});
   const [moderators, setModerators] = useState([]);
 
   const getUrl = (app, ad) => {
@@ -267,41 +267,48 @@ const EventApps = ({ byUrl }) => {
       if (event.meta && !event.meta.profile)
         event.meta.profile = cmn.parseContentJson(event.meta.content);
 
-      let pubKeys = event.tags
-        .filter((tag) => tag[0] === 'p')
-        .map((tag) => tag[1]);
-
-      const firstTenPubkeys = pubKeys.slice(0, 10);
-      const filterForGetAuthorsReview = {
-        kinds: [0],
-        authors: firstTenPubkeys,
-      };
-      const users = await cmn.fetchAllEvents([
-        cmn.startFetch(ndk, filterForGetAuthorsReview),
-      ]);
-
-      setUsers({
-        countOfOtherUsers: pubKeys.length - firstTenPubkeys.length,
-        users,
-      });
-
-      let pubKeysModerator = event.tags
-        .filter((tag) => tag[0] === 'p' && tag[3] === 'moderator')
-        .map((tag) => tag[1]);
-
-      const filterForGetModeratorsProfile = {
-        kinds: [0],
-        authors: pubKeysModerator,
-      };
-
-      const moderators = await cmn.fetchAllEvents([
-        cmn.startFetch(ndk, filterForGetModeratorsProfile),
-      ]);
-      setModerators(moderators);
+      // set these as soon as possible to render the 
+      // event on the screen
       setAddr(addr);
       setEvent(event);
       setAppSettings(appSettings);
       setEnv({ appPlatform });
+
+      if (event.kind === 3 || event.kind === 30000 || event.kind === 10000) {
+        let pubKeys = event.tags
+          .filter((tag) => tag[0] === 'p')
+          .map((tag) => tag[1]);
+
+        const firstTenPubkeys = pubKeys.slice(0, 10);
+        const filterForGetAuthorsReview = {
+          kinds: [0],
+          authors: firstTenPubkeys,
+        };
+        const users = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, filterForGetAuthorsReview),
+        ]);
+
+        setUsers({
+          countOfOtherUsers: pubKeys.length - firstTenPubkeys.length,
+          users,
+        });
+      }
+
+      if (event.kind === 34550) {
+        let pubKeysModerator = event.tags
+          .filter((tag) => tag[0] === 'p' && tag[3] === 'moderator')
+          .map((tag) => tag[1]);
+
+        const filterForGetModeratorsProfile = {
+          kinds: [0],
+          authors: pubKeysModerator,
+        };
+
+        const moderators = await cmn.fetchAllEvents([
+          cmn.startFetch(ndk, filterForGetModeratorsProfile),
+        ]);
+        setModerators(moderators);
+      }
 
       // get apps for this kind
       const info = await cmn.fetchAppsByKinds([addr.kind]);

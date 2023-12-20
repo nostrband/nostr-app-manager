@@ -108,7 +108,7 @@ const Event = (props) => {
             </Col>
             {event.kind === 3 ||
             event.kind === 30000 ||
-            event.kind === 40000 ? (
+            event.kind === 10000 ? (
               <EventUsers users={props.users} />
             ) : null}
 
