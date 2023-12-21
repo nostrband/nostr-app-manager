@@ -12,27 +12,33 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const UserAvatars = ({ users }) => {
-  const displayCount = 10;
+  const displayCount = isPhone ? 3 : 10;
   const extraCount =
     users.length > displayCount ? users.length - displayCount : 0;
 
   return (
     <div
       className="link"
-      style={{ padding: '0 0 10px 10px', pointerEvents: 'none' }}
+      style={{ pointerEvents: 'auto' }}
     >
-      <Stack direction="row" alignItems="center" spacing={2}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        {users.length > 0 && (
+          <span className="text-muted" style={{ margin: '0 0 0 0' }}>
+            Used by
+          </span>
+        )}
         <AvatarGroup max={displayCount}>
-          {users.slice(0, displayCount).map((img, index) => (
+          {users.slice(0, displayCount).map((p) => (
             <StyledAvatar
-              key={index}
-              alt={`User ${index + 1}`}
-              src={img.picture}
+              key={p.pubkey}
+              alt={`${p.profile?.display_name || p.profile?.name}`}
+              title={`${p.profile?.display_name || p.profile?.name}`}
+              src={p.profile?.picture}
             />
           ))}
         </AvatarGroup>
         {extraCount > 0 && (
-          <span style={{ margin: '0 0 0 5px' }}>
+          <span className="text-muted" style={{ margin: '0 0 0 5px' }}>
             {isPhone ? `+${extraCount}` : `and ${extraCount} more`}
           </span>
         )}

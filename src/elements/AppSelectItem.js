@@ -15,7 +15,7 @@ const AppSelectItem = (props) => {
     props;
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
-  const onSelect = props.onSelect || (() => {});
+  const onSelect = props.onSelect || (() => { });
 
   let used = '';
   if (props.app?.forKinds) {
@@ -125,12 +125,12 @@ const AppSelectItem = (props) => {
                     />
                   </div>
                 )}
+                {appOnEventAppsPage && props.app.users?.length > 0 ? (
+                  <UserAvatars users={props.app.users} />
+                ) : null}
               </div>
             </Col>
           </div>
-          {appOnEventAppsPage && props.app.users.length > 0 ? (
-            <UserAvatars users={props.app.users} />
-          ) : null}
         </Link>
         {props.myApp && (
           <div className="edit-button" onClick={props.selecteAppForEdit}>

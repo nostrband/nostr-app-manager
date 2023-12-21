@@ -200,7 +200,12 @@ const EventApps = ({ byUrl }) => {
         );
         return {
           ...app,
-          users: userProfiles.map((profile) => JSON.parse(profile.content)),
+          users: userProfiles.map((profile) => {
+            try {
+              profile.profile = JSON.parse(profile.content)
+            } catch {}
+            return profile
+          }),
         };
       });
     } catch (error) {
@@ -365,20 +370,29 @@ const EventApps = ({ byUrl }) => {
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value);
 
+      setKindApps(kindApps);
+
       // add default apps
       cmn.addDefaultApps(addr.kind, kindApps);
 
       // find the one we saved
+      const updateCurrentApp = (apps) => {
+        let currentApp = null;
+        if (savedApp)
+          currentApp = apps.find(
+            (a) => cmn.getNaddr(a) === savedApp
+          );
+        setCurrentApp(currentApp);
+//        setRemember(!currentApp);  
+        // always remember by default
+        setRemember(true);
+      }
+      updateCurrentApp(kindApps);
 
+      // fetch users
       const kindAppsWithUsers = await getUsersForKindApps(kindApps, event.kind);
       setKindApps(kindAppsWithUsers);
-      let currentApp = null;
-      if (savedApp)
-        currentApp = kindAppsWithUsers.find(
-          (a) => cmn.getNaddr(a) === savedApp
-        );
-      setCurrentApp(currentApp);
-      setRemember(!currentApp);
+      updateCurrentApp(kindAppsWithUsers);
     }
 
     // no personalized data here
