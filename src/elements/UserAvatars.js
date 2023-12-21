@@ -33,7 +33,7 @@ const UserAvatars = ({ users }) => {
         </AvatarGroup>
         {extraCount > 0 && (
           <span style={{ margin: '0 0 0 5px' }}>
-            {isPhone ? `+${extraCount}` : `and {extraCount} more`}
+            {isPhone ? `+${extraCount}` : `and ${extraCount} more`}
           </span>
         )}
       </Stack>
