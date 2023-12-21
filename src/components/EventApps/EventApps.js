@@ -171,10 +171,38 @@ const EventApps = ({ byUrl }) => {
         kinds: [31989],
         '#a': [...addrs],
         '#d': [`${kind}`],
+        limit: 100,
       };
-      console.log(filter, 'FILTER');
-      const response = await cmn.fetchAllEvents([cmn.startFetch(ndk, filter)]);
-      console.log(response, 'RESPONSE');
+      const appRecomms = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filter),
+      ]);
+      const userPubkeys = appRecomms.map((event) => event.pubkey);
+      const uniquePubkeys = [...new Set(userPubkeys)];
+      const filterForFetchProfiles = {
+        kinds: [0],
+        authors: [...uniquePubkeys],
+      };
+      const profiles = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filterForFetchProfiles),
+      ]);
+
+      return kindApps.map((app) => {
+        const appNaddr = cmn.naddrToAddr(cmn.getNaddr(app));
+        const userPubkeys = appRecomms
+          .filter((recomm) =>
+            recomm.tags.some((tag) => tag[0] === 'a' && tag[1] === appNaddr)
+          )
+          .map((recomm) => recomm.pubkey);
+
+        const uniquePubkeys = [...new Set(userPubkeys)];
+        const userProfiles = profiles.filter((profile) =>
+          uniquePubkeys.includes(profile.pubkey)
+        );
+        return {
+          ...app,
+          users: userProfiles.map((profile) => JSON.parse(profile.content)),
+        };
+      });
     } catch (error) {
       return console.log('ERROR GET USERS FOR KIND APPS', error);
     }
@@ -341,13 +369,15 @@ const EventApps = ({ byUrl }) => {
       cmn.addDefaultApps(addr.kind, kindApps);
 
       // find the one we saved
+
+      const kindAppsWithUsers = await getUsersForKindApps(kindApps, event.kind);
+      setKindApps(kindAppsWithUsers);
       let currentApp = null;
       if (savedApp)
-        currentApp = kindApps.find((a) => cmn.getNaddr(a) === savedApp);
-
+        currentApp = kindAppsWithUsers.find(
+          (a) => cmn.getNaddr(a) === savedApp
+        );
       setCurrentApp(currentApp);
-      setKindApps(kindApps);
-      getUsersForKindApps(kindApps, event.kind);
       setRemember(!currentApp);
     }
 
@@ -489,6 +519,7 @@ const EventApps = ({ byUrl }) => {
                         app={currentApp}
                         getUrl={getUrl}
                         onSelect={onSelect}
+                        appOnEventAppsPage
                       />
                     ) : (
                       kindApps
@@ -503,6 +534,7 @@ const EventApps = ({ byUrl }) => {
                             app={a}
                             getUrl={getUrl}
                             onSelect={onSelect}
+                            appOnEventAppsPage
                           />
                         ))
                     )}
@@ -524,6 +556,7 @@ const EventApps = ({ byUrl }) => {
                           app={currentApp}
                           getUrl={getUrl}
                           onSelect={onSelect}
+                          appOnEventAppsPage
                         />
                       </ListGroup>
                     </div>
@@ -553,6 +586,7 @@ const EventApps = ({ byUrl }) => {
                             app={a}
                             getUrl={getUrl}
                             onSelect={onSelect}
+                            appOnEventAppsPage
                           />
                         ))}
                     </ListGroup>

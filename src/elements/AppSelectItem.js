@@ -6,12 +6,14 @@ import * as cmn from '../common';
 import OtherApp from '../icons/OtherApp';
 import Profile from './Profile';
 import Edit from '../icons/Edit';
+import UserAvatars from './UserAvatars';
 
 const AppSelectItem = (props) => {
-  const { showMenuButton, toggleFullList, defaultApp } = props;
+  const { showMenuButton, toggleFullList, defaultApp, appOnEventAppsPage } =
+    props;
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
-  const onSelect = props.onSelect || (() => { });
+  const onSelect = props.onSelect || (() => {});
 
   let used = '';
   if (props.app?.forKinds) {
@@ -33,7 +35,9 @@ const AppSelectItem = (props) => {
     e.stopPropagation();
     e.preventDefault();
     toggleFullList();
-  }
+  };
+
+  console.log(props.app, 'APP FROM PROPS');
 
   return (
     <>
@@ -74,16 +78,19 @@ const AppSelectItem = (props) => {
                       ...
                     </strong>
                   )}
-
                 </div>
-                <p style={{ 
-                  textOverflow: 'ellipsis', 
-                  display: '-webkit-box', 
-                  WebkitLineClamp: '2', 
-                  WebkitBoxOrient: 'vertical', 
-                  overflow: 'hidden',
-                  marginBottom: '0px'
-                }}>{about}</p>
+                <p
+                  style={{
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    marginBottom: '0px',
+                  }}
+                >
+                  {about}
+                </p>
                 {showKinds && (
                   <div>
                     <small className="text-muted">Used for: {used}</small>
@@ -101,6 +108,7 @@ const AppSelectItem = (props) => {
               </div>
             </Col>
           </div>
+          {appOnEventAppsPage ? <UserAvatars users={props.app.users} /> : null}
         </Link>
         {props.myApp && (
           <div className="edit-button" onClick={props.selecteAppForEdit}>
