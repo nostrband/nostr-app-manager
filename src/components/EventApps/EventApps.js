@@ -463,6 +463,8 @@ const EventApps = ({ byUrl }) => {
     setShowFullList(!showFullList);
   };
 
+  console.log(kindApps, 'KIND APPS');
+
   return (
     <>
       <Row>

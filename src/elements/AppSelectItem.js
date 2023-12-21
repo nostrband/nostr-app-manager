@@ -7,6 +7,8 @@ import OtherApp from '../icons/OtherApp';
 import Profile from './Profile';
 import Edit from '../icons/Edit';
 import UserAvatars from './UserAvatars';
+import { isPhone } from '../const';
+import Typography from '@mui/material/Typography';
 
 const AppSelectItem = (props) => {
   const { showMenuButton, toggleFullList, defaultApp, appOnEventAppsPage } =
@@ -37,7 +39,7 @@ const AppSelectItem = (props) => {
     toggleFullList();
   };
 
-  console.log(props.app, 'APP FROM PROPS');
+  console.log(app.display_name === 'Yana' && app.about);
 
   return (
     <>
@@ -79,18 +81,36 @@ const AppSelectItem = (props) => {
                     </strong>
                   )}
                 </div>
-                <p
-                  style={{
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: '2',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    marginBottom: '0px',
-                  }}
-                >
-                  {about}
-                </p>
+                {isPhone ? (
+                  <p
+                    style={{
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      marginBottom: '0px',
+                      wordWrap: 'break-word',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {about}
+                  </p>
+                ) : (
+                  <p
+                    style={{
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: '2',
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      marginBottom: '0px',
+                    }}
+                  >
+                    {about}
+                  </p>
+                )}
+
                 {showKinds && (
                   <div>
                     <small className="text-muted">Used for: {used}</small>
@@ -108,7 +128,9 @@ const AppSelectItem = (props) => {
               </div>
             </Col>
           </div>
-          {appOnEventAppsPage ? <UserAvatars users={props.app.users} /> : null}
+          {appOnEventAppsPage && props.app.users.length > 0 ? (
+            <UserAvatars users={props.app.users} />
+          ) : null}
         </Link>
         {props.myApp && (
           <div className="edit-button" onClick={props.selecteAppForEdit}>

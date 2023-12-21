@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
+import { isPhone } from '../const';
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(4),
@@ -31,7 +32,9 @@ const UserAvatars = ({ users }) => {
           ))}
         </AvatarGroup>
         {extraCount > 0 && (
-          <span style={{ margin: '0 0 0 5px' }}>and {extraCount} more</span>
+          <span style={{ margin: '0 0 0 5px' }}>
+            {isPhone ? `+${extraCount}` : `and {extraCount} more`}
+          </span>
         )}
       </Stack>
     </div>
