@@ -152,7 +152,6 @@ const EventApps = ({ byUrl }) => {
   };
 
   const redirect = (app, addr) => {
-
     // make 'back' button return to ?select=true
     addSelect();
 
@@ -161,7 +160,57 @@ const EventApps = ({ byUrl }) => {
 
     // make sure browser adds the addSelect to history
     // before we force it to redirect to target
-    setTimeout(() => window.location.href = url, 50);
+    setTimeout(() => (window.location.href = url), 50);
+  };
+
+  const getUsersForKindApps = async (kindApps, kind) => {
+    const ndk = await cmn.getNDK();
+    try {
+      const addrs = kindApps.map((app) => cmn.naddrToAddr(cmn.getNaddr(app)));
+      const filter = {
+        kinds: [31989],
+        '#a': [...addrs],
+        '#d': [`${kind}`],
+        limit: 100,
+      };
+      const appRecomms = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filter),
+      ]);
+      const userPubkeys = appRecomms.map((event) => event.pubkey);
+      const uniquePubkeys = [...new Set(userPubkeys)];
+      const filterForFetchProfiles = {
+        kinds: [0],
+        authors: [...uniquePubkeys],
+      };
+      const profiles = await cmn.fetchAllEvents([
+        cmn.startFetch(ndk, filterForFetchProfiles),
+      ]);
+
+      return kindApps.map((app) => {
+        const appNaddr = cmn.naddrToAddr(cmn.getNaddr(app));
+        const userPubkeys = appRecomms
+          .filter((recomm) =>
+            recomm.tags.some((tag) => tag[0] === 'a' && tag[1] === appNaddr)
+          )
+          .map((recomm) => recomm.pubkey);
+
+        const uniquePubkeys = [...new Set(userPubkeys)];
+        const userProfiles = profiles.filter((profile) =>
+          uniquePubkeys.includes(profile.pubkey)
+        );
+        return {
+          ...app,
+          users: userProfiles.map((profile) => {
+            try {
+              profile.profile = JSON.parse(profile.content)
+            } catch {}
+            return profile
+          }),
+        };
+      });
+    } catch (error) {
+      return console.log('ERROR GET USERS FOR KIND APPS', error);
+    }
   };
 
   const init = useCallback(async () => {
@@ -267,7 +316,7 @@ const EventApps = ({ byUrl }) => {
       if (event.meta && !event.meta.profile)
         event.meta.profile = cmn.parseContentJson(event.meta.content);
 
-      // set these as soon as possible to render the 
+      // set these as soon as possible to render the
       // event on the screen
       setAddr(addr);
       setEvent(event);
@@ -321,17 +370,29 @@ const EventApps = ({ byUrl }) => {
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value);
 
+      setKindApps(kindApps);
+
       // add default apps
       cmn.addDefaultApps(addr.kind, kindApps);
 
       // find the one we saved
-      let currentApp = null;
-      if (savedApp)
-        currentApp = kindApps.find((a) => cmn.getNaddr(a) === savedApp);
+      const updateCurrentApp = (apps) => {
+        let currentApp = null;
+        if (savedApp)
+          currentApp = apps.find(
+            (a) => cmn.getNaddr(a) === savedApp
+          );
+        setCurrentApp(currentApp);
+//        setRemember(!currentApp);  
+        // always remember by default
+        setRemember(true);
+      }
+      updateCurrentApp(kindApps);
 
-      setCurrentApp(currentApp);
-      setKindApps(kindApps);
-      setRemember(!currentApp);
+      // fetch users
+      const kindAppsWithUsers = await getUsersForKindApps(kindApps, event.kind);
+      setKindApps(kindAppsWithUsers);
+      updateCurrentApp(kindAppsWithUsers);
     }
 
     // no personalized data here
@@ -363,14 +424,16 @@ const EventApps = ({ byUrl }) => {
   }
 
   const addSelect = () => {
-    const query = "select=true"
-    const url = byUrl ? window.location.search : (window.location.hash.split('?')?.[1] || "")
+    const query = 'select=true';
+    const url = byUrl
+      ? window.location.search
+      : window.location.hash.split('?')?.[1] || '';
     if (!url.includes(query)) {
       const suffix = (url.length > 0 ? '&' : '?') + query;
       const result = window.location.href + suffix;
-      window.history.replaceState({}, "", result);
+      window.history.replaceState({}, '', result);
     }
-  }
+  };
 
   // save the app in local settings for this platform
   const onSelect = async (a, e) => {
@@ -413,6 +476,8 @@ const EventApps = ({ byUrl }) => {
   const toggleFullList = () => {
     setShowFullList(!showFullList);
   };
+
+  console.log(kindApps, 'KIND APPS');
 
   return (
     <>
@@ -470,6 +535,7 @@ const EventApps = ({ byUrl }) => {
                         app={currentApp}
                         getUrl={getUrl}
                         onSelect={onSelect}
+                        appOnEventAppsPage
                       />
                     ) : (
                       kindApps
@@ -484,6 +550,7 @@ const EventApps = ({ byUrl }) => {
                             app={a}
                             getUrl={getUrl}
                             onSelect={onSelect}
+                            appOnEventAppsPage
                           />
                         ))
                     )}
@@ -505,6 +572,7 @@ const EventApps = ({ byUrl }) => {
                           app={currentApp}
                           getUrl={getUrl}
                           onSelect={onSelect}
+                          appOnEventAppsPage
                         />
                       </ListGroup>
                     </div>
@@ -534,6 +602,7 @@ const EventApps = ({ byUrl }) => {
                             app={a}
                             getUrl={getUrl}
                             onSelect={onSelect}
+                            appOnEventAppsPage
                           />
                         ))}
                     </ListGroup>
