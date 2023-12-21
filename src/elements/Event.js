@@ -138,9 +138,9 @@ const Event = (props) => {
                 <spans
                   onClick={toggleDetails}
                   className="fs-7 pointer"
-                  style={{ textDecoration: 'underline' }}
+                  // style={{ textDecoration: 'underline' }}
                 >
-                  {showDetails ? 'Less info' : 'More info'}
+                  {showDetails ? '✗' : 'ⓘ'}
                 </spans>
               </small>
             </Col>
