@@ -105,7 +105,7 @@ const AppInfoView = () => {
     if (info === null || !Object.values(info.apps).length) return;
     const appInfo = Object.values(info.apps)[0].addrHandler;
     const repositoryLink = appInfo?.tags?.find((tag) => tag[2] === 'source');
-    if (repositoryLink[1]) {
+    if (repositoryLink) {
       fetchRepositoryEventByRepoLink(repositoryLink[1]);
     }
     const tags = appInfo.tags
