@@ -12,7 +12,6 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
 }));
 
 const UserAvatar = ({ user }) => {
-  console.log(user, 'USER');
   const { url, viewRef } = useProfileImageSource({
     pubkey: user.pubkey,
     originalImage: user.profile.picture,
