@@ -4,10 +4,16 @@ import { Link } from 'react-router-dom';
 import * as cmn from '../common';
 import Avatar from '../icons/Avatar';
 import defaultImage from '../images/default.png';
+import { useProfileImageSource } from '../hooks/useProfileImageSource';
 
 const Profile = (props) => {
   const p = props?.profile?.profile;
   const pubkey = props?.pubkey;
+  const { url: picture, viewRef } = useProfileImageSource({
+    pubkey,
+    originalImage: p?.picture,
+  });
+
   const getUrl =
     props.getUrl || ((pubkey) => cmn.formatProfileUrl(cmn.formatNpub(pubkey)));
   const onSelect = props.onSelect || (() => {});
@@ -27,6 +33,7 @@ const Profile = (props) => {
         >
           {p?.picture && (
             <img
+              ref={viewRef}
               style={{
                 borderRadius: props.appLogo ? '7px' : '50%',
                 cursor: props.removeLink ? 'default' : 'pointer',
@@ -34,7 +41,7 @@ const Profile = (props) => {
               alt=""
               width={size}
               height={size}
-              src={p?.picture}
+              src={picture}
             />
           )}
           {!p?.picture && !props.appLogo && (

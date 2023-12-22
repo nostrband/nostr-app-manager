@@ -8,14 +8,13 @@ import Profile from './Profile';
 import Edit from '../icons/Edit';
 import UserAvatars from './UserAvatars';
 import { isPhone } from '../const';
-import Typography from '@mui/material/Typography';
 
 const AppSelectItem = (props) => {
   const { showMenuButton, toggleFullList, defaultApp, appOnEventAppsPage } =
     props;
   const app = props.app?.profile;
   const getUrl = props.getUrl || ((h) => cmn.formatAppUrl(cmn.getNaddr(h)));
-  const onSelect = props.onSelect || (() => { });
+  const onSelect = props.onSelect || (() => {});
 
   let used = '';
   if (props.app?.forKinds) {
@@ -38,8 +37,6 @@ const AppSelectItem = (props) => {
     e.preventDefault();
     toggleFullList();
   };
-
-  console.log(app.display_name === 'Yana' && app.about);
 
   return (
     <>

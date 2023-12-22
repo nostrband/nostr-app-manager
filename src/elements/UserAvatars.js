@@ -4,12 +4,29 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import { isPhone } from '../const';
+import { useProfileImageSource } from '../hooks/useProfileImageSource';
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(4),
   height: theme.spacing(4),
-  '&:hover, &:focus': {},
 }));
+
+const UserAvatar = ({ user }) => {
+  const { url, viewRef } = useProfileImageSource({
+    pubkey: user.pubkey,
+    originalImage: user.profile.picture,
+  });
+
+  return (
+    <StyledAvatar
+      ref={viewRef}
+      key={user.pubkey}
+      alt={`${user.profile?.display_name || user.profile?.name}`}
+      title={`${user.profile?.display_name || user.profile?.name}`}
+      src={url}
+    />
+  );
+};
 
 const UserAvatars = ({ users }) => {
   const displayCount = isPhone ? 3 : 10;
@@ -17,10 +34,7 @@ const UserAvatars = ({ users }) => {
     users.length > displayCount ? users.length - displayCount : 0;
 
   return (
-    <div
-      className="link"
-      style={{ pointerEvents: 'auto' }}
-    >
+    <div className="link" style={{ pointerEvents: 'auto' }}>
       <Stack direction="row" alignItems="center" spacing={1}>
         {users.length > 0 && (
           <span className="text-muted" style={{ margin: '0 0 0 0' }}>
@@ -28,13 +42,8 @@ const UserAvatars = ({ users }) => {
           </span>
         )}
         <AvatarGroup max={displayCount}>
-          {users.slice(0, displayCount).map((p) => (
-            <StyledAvatar
-              key={p.pubkey}
-              alt={`${p.profile?.display_name || p.profile?.name}`}
-              title={`${p.profile?.display_name || p.profile?.name}`}
-              src={p.profile?.picture}
-            />
+          {users.slice(0, displayCount).map((user) => (
+            <UserAvatar key={user.pubkey} user={user} />
           ))}
         </AvatarGroup>
         {extraCount > 0 && (
