@@ -225,14 +225,18 @@ const AppInfoView = () => {
 
   const repositoryElement = () => {
     let repoLink =
-      typeof repositoryLink.link === 'string' &&
+      typeof repositoryLink.type === 'GITHUB' &&
       getRepositoryUrl(repositoryLink.link);
+
     return (
       <div>
-        {repoLink ? <h6 className="mt-3">Source code:</h6> : null}
-        {repositoryLink.type === 'REPOSITORY' && repoLink ? (
+        {repositoryLink.link ? <h6 className="mt-3">Source code:</h6> : null}
+        {repositoryLink.type === 'REPOSITORY' ? (
           <div className="repo-app-info">
-            <RepositoryElement repo={repoLink} getUrl={cmn.getRepositoryUrl} />
+            <RepositoryElement
+              repo={repositoryLink.link}
+              getUrl={cmn.getRepositoryUrl}
+            />
           </div>
         ) : (
           <a href={repoLink} target="blank">
