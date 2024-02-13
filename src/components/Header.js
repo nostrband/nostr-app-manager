@@ -15,6 +15,7 @@ import SearchApp from './SearchApp';
 import { isTablet } from '../const';
 import { Avatar } from '@mui/material';
 import { useAppState } from '../context/AppContext';
+import { logout as nostrLoginLogout } from "nostr-login"
 
 const Header = () => {
   const { pathname } = useLocation();
@@ -67,13 +68,15 @@ const Header = () => {
 
   // let other components activate the modal
   window.addEventListener('login', () => {
-    setShowLogin(true);
+    //    setShowLogin(true);
+    login();
   });
 
   async function logout() {
     cmn.setLoginPubkey('');
     setPubkey('');
     setProfile(null);
+    nostrLoginLogout();
   }
 
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
@@ -115,7 +118,7 @@ const Header = () => {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={(e) => setShowLogin(true)}>
+                    <Dropdown.Item onClick={(e) => login() /*setShowLogin(true)*/ }>
                       Log in
                     </Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
