@@ -112,10 +112,10 @@ const AppInfoView = () => {
       .filter((tag) => tag[0] === 't')
       .map((tag) => tag[1]);
 
+
     const pubkey = appInfo.tags.find(
       (tag) => tag[0] === 'p' && tag[3] === 'author'
     );
-
     let profile;
     if (pubkey) {
       profile = await cmn.getProfile(pubkey[1]);
