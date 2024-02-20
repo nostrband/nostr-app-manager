@@ -456,6 +456,19 @@ const AppEditForm = (props) => {
               Could be a link to a screenshot
             </Form.Text>
           </Form.Group>
+          <Form.Group className="mb-3" controlId="metaNip05">
+            <Form.Label>NIP-05</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder={inherit ? '' : 'name@provider.com'}
+              disabled={inherit}
+              value={nip05}
+              onChange={(e) => setNip05(e.target.value)}
+            />
+            <Form.Text className="text-muted">
+              Nip-05 name
+            </Form.Text>
+          </Form.Group>
           <Form.Group className="mb-3" controlId="metaLN">
             <Form.Label>LN address</Form.Label>
             <Form.Control
