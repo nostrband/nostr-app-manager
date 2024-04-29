@@ -6,7 +6,7 @@ const EventTags = ({ tags }) => {
       <label className="tag-event-apps">Tags:</label>
       {tags.map((t) => {
         return (
-          <span class="pointer tag-event-apps mx-1" key={t}>
+          <span className="pointer tag-event-apps mx-1" key={t}>
             #{t}
           </span>
         );

@@ -12,6 +12,7 @@ const Profile = (props) => {
   const { url: picture, viewRef } = useProfileImageSource({
     pubkey,
     originalImage: p?.picture,
+    onlyOriginal: props.appLogo
   });
 
   const getUrl =

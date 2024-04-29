@@ -334,7 +334,7 @@ const AppEditForm = (props) => {
             disabled={props.profileMeta === null}
             onChange={(e) => toggleInherit(e.target.checked)}
           />
-          <ul class="nav nav-pills mt-3 mb-3">
+          <ul className="nav nav-pills mt-3 mb-3">
             {tabs.map((tab) => {
               return (
                 <li

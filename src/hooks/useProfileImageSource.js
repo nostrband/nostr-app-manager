@@ -16,6 +16,7 @@ export const useProfileImageSource = ({
   originalImage = '',
   mediaType = 'picture',
   size = 64,
+  onlyOriginal = false
 }) => {
   const [isFailed, setIsFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +65,7 @@ export const useProfileImageSource = ({
     viewRef: ref,
   };
 
-  if (isFailed || cached < 0) {
+  if (onlyOriginal || isFailed || cached < 0) {
     return { ...returnedObject, url: originalImage };
   }
 

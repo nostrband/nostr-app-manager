@@ -142,7 +142,7 @@ const Repositories = ({ main }) => {
           <Link to="/repos">
             <button
               type="button"
-              class="more-button btn btn-outline-primary show-more-button"
+              className="more-button btn btn-outline-primary show-more-button"
             >
               More code repositories &rarr;
             </button>

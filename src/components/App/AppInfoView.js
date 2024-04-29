@@ -290,7 +290,7 @@ const AppInfoView = () => {
                   {app.kinds.map((k) => {
                     return (
                       <button
-                        class="btn btn-outline-primary mx-1 mb-1 mt-1"
+                        className="btn btn-outline-primary mx-1 mb-1 mt-1"
                         onClick={() => navigate(`/kind/${k}`)}
                         key={k}
                       >
@@ -319,7 +319,7 @@ const AppInfoView = () => {
               {tags.map((t) => {
                 return (
                   <button
-                    class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                    className="btn btn-outline-primary mx-1 mt-1 mb-1"
                     onClick={() => navigate(`/tag/${t}`)}
                     key={t}
                   >
@@ -333,7 +333,7 @@ const AppInfoView = () => {
                 <h6 className="mt-3">Assigned category:</h6>
                 <div>
                   <button
-                    class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                    className="btn btn-outline-primary mx-1 mt-1 mb-1"
                     onClick={() =>
                       navigate(`/apps/category/${assignedCategory}`)
                     }
