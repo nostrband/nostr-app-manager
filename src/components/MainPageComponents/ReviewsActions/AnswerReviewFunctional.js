@@ -91,7 +91,7 @@ const AnswerReviewFunctional = ({ review, mainPage }) => {
           <Modal.Title>Respond to the review</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div class="form-group">
+          <div className="form-group">
             <TextAreaAutosize
               placeholder="Write your reply to this review"
               id="description"

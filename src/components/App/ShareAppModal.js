@@ -71,11 +71,11 @@ const ShareAppModal = ({
         <Modal.Title>Do you want to share the app?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div class="form-group">
+        <div className="form-group">
           <textarea
             ref={textRef}
             onChange={(e) => setTextForShare(e.target.value)}
-            class="form-control"
+            className="form-control"
             id="exampleFormControlTextarea1"
           >
             {textForShare}

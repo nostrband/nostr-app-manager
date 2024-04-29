@@ -291,7 +291,7 @@ const RepositoryView = () => {
                 {repository.otherTags.map((item) => {
                   return (
                     <button
-                      class="btn btn-outline-primary mx-1 mb-2"
+                      className="btn btn-outline-primary mx-1 mb-2"
                       onClick={() => navigate(`/tag/${item}`)}
                       key={item}
                     >

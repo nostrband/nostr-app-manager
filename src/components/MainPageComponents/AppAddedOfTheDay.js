@@ -145,7 +145,7 @@ const AppAddedOfTheDay = () => {
                       {tags.map((t) => {
                         return (
                           <button
-                            class="btn btn-outline-primary mx-1 mt-1 mb-1"
+                            className="btn btn-outline-primary mx-1 mt-1 mb-1"
                             onClick={() => navigate(`/tag/${t}`)}
                             key={t}
                           >

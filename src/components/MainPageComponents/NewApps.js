@@ -224,7 +224,7 @@ const NewApps = () => {
               </li>
               {categories.map((nav) => {
                 return (
-                  <li
+                  <li key={nav.value}
                     onClick={() => fetchAppsByCategory(nav.value)}
                     className={`pointer nav-link nav-item ${
                       categoryUrl === nav.value ? 'active' : ''
@@ -241,7 +241,7 @@ const NewApps = () => {
             <ul className="nav nav-pills d-flex justify-content-center ">
               {categoriesTabMainPage.map((nav) => {
                 return (
-                  <li
+                  <li key={nav.value}
                     onClick={() => setActiveCategoryInMainPage(nav.value)}
                     className={`pointer nav-link nav-item ${
                       activeCategory === nav.value ? 'active' : ''
@@ -311,7 +311,7 @@ const NewApps = () => {
                 <button
                   onClick={clearApps}
                   type="button"
-                  class="btn btn-outline-primary show-more-button"
+                  className="btn btn-outline-primary show-more-button"
                 >
                   More Nostr apps &rarr;
                 </button>

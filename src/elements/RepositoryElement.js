@@ -111,7 +111,7 @@ const RepositoryElement = ({ repo, getUrl, countContributors }) => {
                 {tags?.map((tag) => {
                   return (
                     <button
-                      class="tag-button-repository-element btn btn-outline-primary"
+                      className="tag-button-repository-element btn btn-outline-primary"
                       onClick={() => navigate(`/tag/${tag}`)}
                       key={tag}
                     >

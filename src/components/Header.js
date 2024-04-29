@@ -15,7 +15,12 @@ import SearchApp from './SearchApp';
 import { isTablet } from '../const';
 import { Avatar } from '@mui/material';
 import { useAppState } from '../context/AppContext';
-import { logout as nostrLoginLogout } from "nostr-login"
+
+function onEarlyAuth(event) {
+  // resend to make sure header has rendered and added it's own listener
+  setTimeout(() => document.dispatchEvent(new CustomEvent('nlAuth', { detail: event.detail })), 300);
+}
+document.addEventListener('nlAuth', onEarlyAuth);
 
 const Header = () => {
   const { pathname } = useLocation();
@@ -24,6 +29,29 @@ const Header = () => {
   const { showLogin, setShowLogin } = useAuthShowModal();
   const [error, setError] = useState('');
   const { clearApps } = useAppState();
+
+  async function login() {
+    setError('');
+    if (!window.nostr) {
+      setError('Please install extension');
+      return;
+    }
+    const pubkey = await window.nostr.getPublicKey();
+    if (pubkey) {
+      setPubkey(pubkey);
+      setShowLogin(false);
+      cmn.setLoginPubkey(pubkey);
+      cmn.fetchProfile(pubkey).then((p) => setProfile(p?.profile));
+    } else {
+      setError('Failed to login');
+    }
+  }
+
+  async function logout() {
+    cmn.setLoginPubkey('');
+    setPubkey('');
+    setProfile(null);
+  }
 
   useEffect(() => {
     // on mount, add handler that will be executed
@@ -47,37 +75,20 @@ const Header = () => {
       // async to let other components proceed
       cmn.fetchProfile(pubkey).then((p) => setProfile(p?.profile));
     });
+
+    // update on user login/logout
+    document.removeEventListener('nlAuth', onEarlyAuth);
+    document.addEventListener('nlAuth', (event) => {
+      if (event.detail?.type === 'logout') logout();
+      else login();
+    });
+
+    // let other components activate the modal
+    window.addEventListener('login', () => {
+      //    setShowLogin(true);
+      login();
+    });
   }, []);
-
-  async function login() {
-    setError('');
-    if (!window.nostr) {
-      setError('Please install extension');
-      return;
-    }
-    const pubkey = await window.nostr.getPublicKey();
-    if (pubkey) {
-      setPubkey(pubkey);
-      setShowLogin(false);
-      cmn.setLoginPubkey(pubkey);
-      cmn.fetchProfile(pubkey).then((p) => setProfile(p?.profile));
-    } else {
-      setError('Failed to login');
-    }
-  }
-
-  // let other components activate the modal
-  window.addEventListener('login', () => {
-    //    setShowLogin(true);
-    login();
-  });
-
-  async function logout() {
-    cmn.setLoginPubkey('');
-    setPubkey('');
-    setProfile(null);
-    nostrLoginLogout();
-  }
 
   const appsUrl = cmn.formatProfileUrl(cmn.formatNpub(pubkey));
 
@@ -88,6 +99,11 @@ const Header = () => {
     setTimeout(() => {
       window.dispatchEvent(new Event('goHome'));
     }, 0);
+  };
+
+  const handleLogout = () => {
+    logout();
+    document.dispatchEvent(new Event('nlLogout'));
   };
 
   return (
@@ -176,7 +192,7 @@ const Header = () => {
                     <Dropdown.Item to="/create-repository/" as={Link}>
                       Create repository
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={logout}>Log out</Dropdown.Item>
+                    <Dropdown.Item onClick={handleLogout}>Log out</Dropdown.Item>
                     <Dropdown.Divider></Dropdown.Divider>
                     <Dropdown.Item
                       to="/apps/category/all"
