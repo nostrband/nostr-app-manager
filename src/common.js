@@ -23,8 +23,9 @@ const readRelays = [
   'wss://relay.nostr.band/all',
   'wss://nos.lol',
   'wss://relay.damus.io',
+  'wss://relay.primal.net',
 ];
-const writeRelays = [...readRelays, 'wss://nostr.mutinywallet.com']; // for broadcasting
+const writeRelays = [...readRelays]; // for broadcasting
 
 export async function addOnNostr(handler) {
   if (nostrEnabled) await handler();
@@ -271,7 +272,11 @@ async function createConnectNDK(custom_relays) {
   if (custom_relays) relays.push(...custom_relays);
   const nip07signer = nostrEnabled ? new NDKNip07Signer() : null;
   ndkObject = new NDK({ explicitRelayUrls: relays, signer: nip07signer });
-  await ndkObject.connect();
+  try {
+    await ndkObject.connect();
+  } catch (e) {
+    console.error("ndk connect failed", e);
+  }
 }
 
 export async function getNDK(relays) {
